@@ -1,0 +1,9 @@
+title,file,color
+Project Activity List,Project-Activity-List.pdf,var(--primary)
+Project Proposal,,var(--accent2)
+Logical Framework,,var(--accent2)
+Consortium Agreement,,var(--primary-dark)
+Donor Grant Agreement,,var(--gold)
+Safeguarding Policy,,var(--warn)
+MEAL Framework,,var(--accent2-light)
+Annual Report,,var(--primary-light)

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SURAKKHA · Fraud Control Exam — FIVDB</title>
+<link rel="stylesheet" href="site-shared.css">
+<link rel="stylesheet" href="exam-shared.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<nav class="site-nav" aria-label="Main navigation">
+  <div class="site-nav-inner">
+    <a class="site-brand" href="index.html">
+      <span class="brand-mark">S</span>
+      <span class="brand-text">
+        <span class="b1">SURAKKHA PROJECT</span>
+        <span class="b2">FIVDB &middot; DG ECHO 2026/00158</span>
+      </span>
+    </a>
+    <div class="site-links">
+      <a href="index.html">Home</a>
+      <a href="about-project.html">About Project</a>
+      <a href="reporting-channel.html">Reporting Channel</a>
+      <a href="reporting-template.html">Reporting Template</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="register.html">Register</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+  <div class="page-header">
+    <div class="eyebrow">Capacity Building &middot; 5 of 6</div>
+    <h1>Fraud Control &amp; Anti-Corruption</h1>
+    <p class="lede">Based on FIVDB's Fraud Control &amp; Anti Corruption Policy. Score 75% or higher to receive your certificate.</p>
+  </div>
+
+  <div class="exam-wrap">
+    <p class="exam-intro">Study the module below, then unlock the exam. Score 75% or higher to earn your certificate.</p>
+    <div id="moduleHost"></div>
+    <div class="exam-section" id="examSection">
+      <p class="exam-locked-note">🔒 Complete the study module above to unlock this exam.</p>
+      <div id="examHost"></div>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>SURAKKHA PROJECT · DG ECHO 2026/00158 — FIVDB</span>
+    <span>Support: <a href="mailto:mohasan.uddin@fivdb.org">mohasan.uddin@fivdb.org</a></span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase-client.js"></script>
+<script src="site-shared.js"></script>
+<script>showStaffOnlyNotice(); enforceStaffGate();</script>
+<script src="exam-engine.js"></script>
+<script>
+  const QUESTIONS = [
+    { id:'m1', type:'mcq', text:'The Fraud Control & Anti Corruption Policy applies to:', options:['Only finance department staff', 'All directors, employees, volunteers, contractors, and consultants', 'Only senior management', 'Only staff handling cash directly'], correct:1 },
+    { id:'m2', type:'mcq', text:'Which of these is an example of "fraud" under the policy?', options:['Taking approved annual leave', 'Falsifying records or accounts to deceive', 'Requesting a performance review', 'Working from a different office'], correct:1 },
+    { id:'m3', type:'mcq', text:'Which of these is an example of "corruption" under the policy?', options:['Submitting an expense report on time', 'Misusing FIVDB assets or property for personal benefit', 'Attending a training session', 'Taking a lunch break'], correct:1 },
+    { id:'m4', type:'mcq', text:'"Privacy breaches or data manipulation with intent to cause harm" is classified in the policy as a form of:', options:['A minor administrative error', 'Dishonestly obtaining a benefit by misuse of power or position', 'Standard IT maintenance', 'Not covered by this policy'], correct:1 },
+    { id:'m5', type:'mcq', text:'If you suspect fraud involving your direct supervisor, you should report it to:', options:['No one — stay silent', 'Your supervisor\'s supervisor instead', 'The beneficiary community', 'The media'], correct:1 },
+    { id:'m6', type:'mcq', text:'Who is responsible for fraud control and corruption prevention at FIVDB?', options:['Only the Internal Audit team', 'All staff, directly or indirectly', 'Only the Executive Director', 'Only external auditors'], correct:1 },
+    { id:'m7', type:'mcq', text:'Managers\' specific responsibility under this policy includes:', options:['Ignoring risks unless instructed otherwise', 'Conducting a fraud/corruption risk assessment for their area at least annually', 'Handling all suspected fraud personally without reporting it', 'Delegating all responsibility to Internal Audit'], correct:1 },
+    { id:'m8', type:'mcq', text:'The Head of Administration\'s responsibilities include:', options:['Approving their own expense claims without review', 'Maintaining a database of fraud/corruption incidents and trend analysis', 'Deciding all HR promotions', 'Managing donor relationships exclusively'], correct:1 },
+    { id:'m9', type:'mcq', text:'"Nepotism," as referenced in the policy, means:', options:['Hiring based on merit', 'Favouring relatives', 'Following standard recruitment procedure', 'Promoting based on tenure'], correct:1 },
+    { id:'m10', type:'mcq', text:'What does FIVDB maintain to receive reports of serious wrongdoing?', options:['No formal mechanism exists', 'The Whistleblower Policy and an Integrity Line', 'Only an anonymous suggestion box', 'A quarterly town hall only'], correct:1 },
+
+    { id:'f1', type:'fact', text:'FIVDB is committed to accountability, transparency, and fairness, and states it will not tolerate fraud or corruption.', correct:0 },
+    { id:'f2', type:'fact', text:'Giving or accepting gifts in return for preferential treatment is acceptable as long as the value is small.', correct:1 },
+    { id:'f3', type:'fact', text:'Every person must report suspected fraud or corruption immediately, per the policy.', correct:0 },
+    { id:'f4', type:'fact', text:'Reputational damage from weak fraud controls can affect FIVDB\'s relationships with donors and stakeholders.', correct:0 },
+    { id:'f5', type:'fact', text:'Falsifying job qualifications or safety certifications is listed as an example of corruption in the policy.', correct:0 },
+    { id:'f6', type:'fact', text:'The policy only applies to financial transactions, not to non-financial misconduct like collusion.', correct:1 },
+    { id:'f7', type:'fact', text:'Executive management is responsible for reviewing and monitoring policies for preventing and detecting fraud.', correct:0 },
+
+    { id:'n1', type:'narrative', text:'Describe a situation (real or hypothetical) where you might be uncertain whether something counts as "fraud" versus a genuine mistake. How would you handle it?' },
+    { id:'n2', type:'narrative', text:'Why do you think the policy specifically allows reporting to a supervisor\'s supervisor when the direct supervisor may be involved?' },
+    { id:'n3', type:'narrative', text:'In your own words, explain why "privacy breaches or data manipulation" are grouped together with financial fraud in this policy.' },
+  ];
+
+  const MODULE_CONTENT = `
+    <h3>Introduction &amp; Purpose</h3>
+    <p>FIVDB is committed to acting lawfully and with integrity in every aspect of its operation. This policy protects against, detects, and responds to fraud and corruption to protect the interests of clients, staff, and other stakeholders, while maintaining FIVDB's high ethical standing in the community. It applies to all Directors, employees, volunteers, contractors, and consultants — and to representatives, vendors, and any entity performing services for FIVDB.</p>
+
+    <h3>Policy Statement</h3>
+    <p>FIVDB believes in accountability, transparency, and fairness, and cannot and will not tolerate fraud or corruption. Theft or fraud reduces FIVDB's capacity to serve clients and staff. FIVDB relies on the support of government, business, and community — reputational damage from weak fraud controls can seriously damage relationships with donors and stakeholders, with a knock-on effect on service delivery.</p>
+
+    <h3>Definitions</h3>
+    <ul>
+      <li><strong>Fraud</strong> (dishonestly obtaining a benefit by deception): theft of property, petty cash, gift cards, donations, client funds, or organisational assets; falsifying records or accounts to deceive; dishonestly destroying or concealing accounts or records.</li>
+      <li><strong>Corruption</strong>: misappropriating funding or assets; misusing assets or property for personal benefit (e.g. vehicles); forgery or issuing false/misleading statements to obtain financial advantage or deceive.</li>
+      <li><strong>Dishonestly obtaining a benefit by misuse of power, position, authority, or resources</strong>: bribery, extortion, and blackmail; permitting personal interests to override corporate interests; giving or accepting gifts for preferential treatment; collusion, false quotes or invoices, or price fixing; manipulating specifications for personal gain or to conceal defects; excessive billing or false supporting documents; falsifying qualifications or safety certifications; nepotism; and privacy breaches or data manipulation intended to cause harm.</li>
+    </ul>
+
+    <h3>Responsibilities</h3>
+    <p>All FIVDB staff are responsible for fraud control and corruption prevention, directly or indirectly. Every person must report any suspected incident immediately to the head of Administration and their supervisor — or their supervisor's supervisor, if the supervisor may be involved. Executive management sets the ethical "tone at the top," approves investigation terms of reference, and endorses final action on confirmed incidents. Managers must maintain controls in their area, conduct a fraud/corruption risk assessment at least annually, and notify the head of Administration of any suspected incident immediately. All staff — regardless of employment type — must stay alert to fraud risks and internal control weaknesses, and must never engage in fraudulent or corrupt conduct themselves.</p>
+
+    <h3>The Head of Administration's Role</h3>
+    <p>The Head of Administration carries specific operational responsibilities: preparing investigation terms of reference and investigation plans; consulting with relevant managers about the best course of action when a suspected incident is raised; consulting with appropriate line managers and specialist personnel during inquiries; ensuring there is a quality internal investigative capability independent of line management; providing notice to external parties of incidents after ED approval; facilitating fraud and corruption awareness and education across the organisation; maintaining a database of incidents and providing trend analysis to Senior Managers; maintaining the Whistleblower Policy and the Integrity Line for receiving reports of serious wrongdoing; reporting on the status of the fraud control and corruption prevention strategy to the Senior Management Committee; and regularly reviewing the integrity framework and fraud control strategy.</p>
+
+    <h3>Internal &amp; External Audit</h3>
+    <p><strong>Internal Audit</strong> maintains awareness of the possibility of fraud or corruption throughout its audit work, provides advice and guidance on internal controls to prevent it, conducts tests of systems to identify possible incidents, and provides specialist investigatory expertise where needed, maintaining a manual of investigatory procedures. <strong>External Audit</strong> similarly maintains awareness of fraud or corruption risk during its work, and notifies the Board directly if any incidents are identified.</p>
+
+    <h3>Application &amp; Culture</h3>
+    <p>FIVDB is committed to keeping fraud and corruption at a minimum through a culture of: zero tolerance of fraudulent and corrupt behaviour; inquiring into and investigating every suspected tip-off regardless of source, including anonymous reports; recovering losses that occur due to fraud or corruption wherever possible; and reporting all confirmed incidents to external parties as appropriate.</p>
+
+    <h3>Prevention Measures</h3>
+    <ul>
+      <li>Regular review of the integrity framework supporting a culture of integrity and intolerance of fraud or corruption.</li>
+      <li>Awareness training and education for all staff.</li>
+      <li>Risk assessments conducted as part of annual project risk assessments.</li>
+      <li>Continual quality-improvement reviews of internal control and compliance measures.</li>
+      <li>Maintenance of a database for trend analysis, to identify emerging risks early.</li>
+      <li>Annual update of fraud control and corruption prevention plans to resolve any shortfalls identified.</li>
+      <li>Internal and external audit awareness built into every audit cycle.</li>
+    </ul>
+
+    <h3>Response Measures</h3>
+    <ul>
+      <li>Revision and refreshment of policies to rectify deficiencies as and when needed.</li>
+      <li>Maintenance of an internal investigative capability, including a qualified investigator.</li>
+      <li>Review of internal controls after every confirmed incident.</li>
+      <li>Application of disciplinary procedures for every detected incident.</li>
+      <li>Action to recover losses where appropriate and feasible.</li>
+      <li>Publicising incidents among FIVDB staff where the Executive Director approves — used as a deterrent and a learning opportunity, not punishment for its own sake.</li>
+    </ul>
+
+    <h3>Breach</h3>
+    <p>A breach of this policy may result in disciplinary action that may involve severance from the organisation. Because fraud and corruption cases often overlap with conflicts of interest, staff should also be familiar with FIVDB's Conflict of Interest Policy, summarised below.</p>
+
+    <h3>Conflict of Interest Policy</h3>
+    <p>FIVDB employees and Executive Board members are obligated to always act in the best interest of the organisation, pursuing only the organisation's mission in the performance of their duties. Employees and board members are prohibited from using their job title, the organisation's name, or its property for personal or private profit or benefit.</p>
+    <ul>
+      <li>Employees, board members, and affiliated individuals should neither solicit nor accept favours or anything of monetary value from service providers, contractors, or vendors — this doesn't preclude legitimate fundraising activities.</li>
+      <li>The Board should not include immediate family members of the Executive Director or other staff; immediate family of employees or board members (spouse, parent, child, or sibling) are not eligible for FIVDB assignments or full-time roles.</li>
+      <li>Board members must declare involvement with other organisations to avoid potential conflicts.</li>
+      <li>No one may participate in selecting, awarding, or administering a purchase, contract, or recruitment process where they, their immediate family, or an organisation connected to them is involved.</li>
+      <li>Receiving gifts from vendors, potential vendors, or partner organisations is strongly discouraged, with limited exceptions (educational materials, flowers, souvenirs). Any gift or donation to an individual exceeding TK 5,000 in value must be disclosed in writing and recorded in a gift register.</li>
+    </ul>
+    <p><strong>Disclosure:</strong> any actual or possible conflict must be disclosed by the person concerned. Before Executive Board meetings, anyone with a conflict of interest regarding a contract or transaction under discussion must disclose all relevant facts, recorded in the meeting minutes, and is excluded from the quorum count for that vote. Anyone who believes their relationships, positions, or circumstances could create a conflict of interest must complete a disclosure form. If a conflict does arise between personal interests and FIVDB's, it must be disclosed fully and transparently to the Board or an appointed committee, and the person accepts whatever decision that Board or committee reaches to resolve it.</p>
+
+    <div class="context-box">
+      <strong>In the SURAKKHA context:</strong> Distribution of scholastic materials, MHM kits, and other in-kind items to refugee and host-community households creates specific fraud risks — inflated beneficiary lists, diverted goods, or demanding payment for services meant to be free. Master Rolls and attendance records exist precisely to keep this traceable and accountable.
+    </div>
+
+    <h3>Whistleblowing Policy</h3>
+    <p>FIVDB's Whistleblowing Policy exists to ensure the organisation functions in an open, transparent manner, and protects individuals who report misconduct or cooperate with authorised audits or investigations from retaliation. It provides an alternative channel to learn of serious problems early, so they can be resolved quickly, and reinforces FIVDB's commitment to its policies and values. It's meant for situations with potential detrimental or serious consequences for the organisation or its staff — the policy shouldn't be used lightly or with malicious intent, and carries the utmost confidentiality for all concerned.</p>
+    <p>It is the responsibility of every staff member to report violations or suspected violations of FIVDB's policies, and to cooperate with authorised audits and investigations. No employee who reports a violation in good faith will suffer harassment, retaliation, or adverse employment consequences — <strong>retaliation is itself misconduct</strong>, and anyone who retaliates against a good-faith reporter faces disciplinary measures. As with the PSEA and Fraud policies, transmitting unsubstantiated rumours isn't protected activity, and intentionally false or misleading reports constitute gross misconduct.</p>
+    <p>Employees are encouraged to raise concerns first with their supervisor, who is usually best placed to address them — but if that doesn't feel comfortable or doesn't resolve things, staff can go to the Office of Internal Audit instead. Supervisors and managers are themselves required to pass on any violations or suspected violations they become aware of to Internal Audit. Internal Audit investigates complaints that pose a significant risk to FIVDB's compliance, efficiency, or credibility, advising the Executive Director on follow-up action. Anonymous allegations are only investigated in exceptional cases, such as where they threaten the organisation's operations or stability.</p>
+
+    <h3>Recognising Fraud &amp; Corruption in Practice</h3>
+    <p>Fraud and corruption rarely announce themselves — they're usually disguised as ordinary transactions or reasonable-sounding requests. Warning signs worth staying alert to include: distribution or beneficiary lists that don't match who actually attended or received goods; requests to sign off on activities you didn't personally observe; vendors or suppliers who are unusually insistent about specific staff handling their invoices; documentation that appears altered, backdated, or incomplete; and colleagues who resist normal oversight, such as being reluctant to have their work checked or refusing to take leave (a common indicator, since ongoing fraud often requires continuous personal presence to conceal). None of these signs alone proves wrongdoing — but they're exactly the kind of pattern the risk assessments, audits, and reporting channels described above exist to catch. Raising a concern doesn't require certainty; it requires only a genuine, good-faith belief that something may be wrong, and the courage to say so through the proper channel rather than staying silent.</p>
+
+    <h3>Why This Matters for SURAKKHA</h3>
+    <p>Donor-funded humanitarian programmes like SURAKKHA operate under particularly close scrutiny, because the resources involved are entrusted by DG ECHO specifically to reach vulnerable children and families — not to be diverted, inflated, or misused along the way. A single confirmed incident of fraud can jeopardise not just the individuals involved, but the continuation of funding for the whole project and the trust of the communities it serves. That's why every control described in this module — risk assessments, Master Rolls, the approval chain for data sharing, the whistleblowing channel, and the reporting duty that falls on every single person regardless of seniority — exists as a practical, everyday safeguard, not paperwork for its own sake. Treating these controls seriously, in routine day-to-day decisions as much as in obvious high-risk moments, is what keeps SURAKKHA's resources reaching the people they're meant for. This isn't only a matter of compliance — it's a matter of trust. Every household that hands over identifying information to register for support, every child who attends a CBLF session recorded on an attendance sheet, and every donor that signs off on a budget line is placing trust in FIVDB's systems working as described. Fraud control exists to honour that trust, not just to satisfy an audit.</p>
+  `;
+
+  initExam({
+    title: 'Fraud Control & Anti-Corruption',
+    source: 'FIVDB Fraud Control & Anti Corruption Policy',
+    questions: QUESTIONS,
+    moduleContent: MODULE_CONTENT,
+    moduleSource: 'FIVDB Fraud Control & Anti Corruption Policy, Sections 3–5'
+  });
+</script>
+</body>
+</html>

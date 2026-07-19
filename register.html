@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SURAKKHA · Request Access — FIVDB</title>
+<link rel="stylesheet" href="site-shared.css">
+<style>
+  .form-wrap{max-width:600px; margin:0 auto; padding:24px 20px 60px;}
+  .field-group{margin-bottom:16px;}
+  .field-group label{display:block; font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin-bottom:5px;}
+  .field-group input, .field-group select{
+    width:100%; font:inherit; font-size:14px; padding:10px 12px; border:1px solid var(--line);
+    background:var(--surface); color:var(--ink); border-radius:6px; font-family:var(--sans);
+  }
+  .field-group input:focus{
+    outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(74,122,140,.15);
+  }
+  .field-row{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .actions-row{margin-top:22px;}
+  .actions-row button{
+    font-family:var(--sans); font-weight:700; font-size:14px; padding:12px 22px; border-radius:6px;
+    cursor:pointer; border:none; background:var(--primary); color:#fff;
+  }
+  .note-box{
+    font-size:12.5px; color:var(--ink); background:var(--surface); border-left:3px solid var(--accent2);
+    padding:10px 14px; border-radius:0 5px 5px 0; margin:0 0 20px; line-height:1.6;
+  }
+  .confirm-box{
+    display:none; background:var(--surface); border:1px solid var(--accent2); border-radius:8px;
+    padding:22px; text-align:center; margin-top:10px;
+  }
+  .confirm-box.show{display:block;}
+  .confirm-box h2{font-family:var(--serif); color:var(--accent2); font-size:19px; margin:0 0 8px;}
+  .confirm-box p{font-size:13.5px; color:var(--ink); line-height:1.6; margin:0 0 16px;}
+  .confirm-credentials{
+    display:flex; flex-direction:column; gap:10px; max-width:340px; margin:0 auto; text-align:left;
+  }
+  .confirm-credentials div{
+    background:var(--bg); border:1px solid var(--line); border-radius:6px; padding:10px 14px;
+    display:flex; justify-content:space-between; align-items:center; gap:12px;
+  }
+  .confirm-credentials span{font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.03em; color:var(--muted);}
+  .confirm-credentials strong{font-size:13px; color:var(--primary); word-break:break-all; text-align:right;}
+  #formBody.hide{display:none;}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<nav class="site-nav" aria-label="Main navigation">
+  <div class="site-nav-inner">
+    <a class="site-brand" href="index.html">
+      <span class="brand-mark">S</span>
+      <span class="brand-text">
+        <span class="b1">SURAKKHA PROJECT</span>
+        <span class="b2">FIVDB &middot; DG ECHO 2026/00158</span>
+      </span>
+    </a>
+    <div class="site-links">
+      <a href="index.html">Home</a>
+      <a href="about-project.html">About Project</a>
+      <a href="reporting-channel.html">Reporting Channel</a>
+      <a href="reporting-template.html">Reporting Template</a>
+      <a href="dashboard.html">Dashboard</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+  <div class="page-header">
+    <div class="eyebrow">Access Request</div>
+    <h1>Register for Access</h1>
+    <p class="lede">This site itself is open to view — this form is for staff who want to be added to FIVDB's official access list for internal reporting and coordination.</p>
+  </div>
+
+  <div class="form-wrap">
+    <p class="note-box">
+      This request is reviewed by a person, not approved automatically. Submitting sends your details by email to the MEAL unit — it doesn't create an account by itself. Once reviewed, MEAL will contact you directly with your username and access ID.
+    </p>
+
+    <div id="formBody">
+      <div class="field-group">
+        <label for="r_name">Full name</label>
+        <input type="text" id="r_name" required>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label for="r_designation">Designation</label>
+          <input type="text" id="r_designation" required>
+        </div>
+        <div class="field-group">
+          <label for="r_org">Organization</label>
+          <input type="text" id="r_org" required>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label for="r_phone">Phone number</label>
+          <input type="tel" id="r_phone" required>
+        </div>
+        <div class="field-group">
+          <label for="r_whatsapp">WhatsApp number</label>
+          <input type="tel" id="r_whatsapp">
+        </div>
+      </div>
+      <div class="field-group">
+        <label for="r_email">Email (this becomes your access name)</label>
+        <input type="email" id="r_email" required>
+      </div>
+      <div class="field-group">
+        <label for="r_password">Create an access code (password)</label>
+        <input type="password" id="r_password" required minlength="6">
+      </div>
+
+      <div class="actions-row">
+        <button type="button" onclick="submitRequest()">Send Registration Request</button>
+      </div>
+    </div>
+
+    <div class="confirm-box" id="confirmBox">
+      <h2>Thanks for registering!</h2>
+      <p id="confirmText">Your account has been created and is awaiting approval. Save these — you'll use them to log in once MEAL approves your request:</p>
+      <div class="confirm-credentials">
+        <div><span>Access Name</span><strong id="confirmAccessName"></strong></div>
+        <div><span>Access Code</span><strong id="confirmAccessCode"></strong></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>SURAKKHA PROJECT · DG ECHO 2026/00158 — FIVDB</span>
+    <span>Support: <a href="mailto:mohasan.uddin@fivdb.org">mohasan.uddin@fivdb.org</a></span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase-client.js"></script>
+<script src="site-shared.js"></script>
+<script>
+  const MEAL_EMAIL = "mohasan.uddin@fivdb.org";
+
+  async function submitRequest(){
+    const required = ['r_name','r_designation','r_org','r_phone','r_email','r_password'];
+    for(const id of required){
+      if(!document.getElementById(id).value.trim()){
+        document.getElementById(id).focus();
+        alert('Please fill in all required fields (WhatsApp number is optional).');
+        return;
+      }
+    }
+
+    const v = id => document.getElementById(id).value.trim();
+    const btn = document.querySelector('.actions-row button');
+    btn.disabled = true;
+    btn.textContent = 'Creating account…';
+
+    try{
+      await registerAccount({
+        email: v('r_email'),
+        password: v('r_password'),
+        full_name: v('r_name'),
+        designation: v('r_designation'),
+        organization: v('r_org'),
+        phone: v('r_phone'),
+        whatsapp: v('r_whatsapp'),
+      });
+
+      // Also notify MEAL by email so they know to check the admin panel
+      const body = [
+        'New SURAKKHA account created — needs approval in the admin panel:',
+        '',
+        `Full name: ${v('r_name')}`,
+        `Designation: ${v('r_designation')}`,
+        `Organization: ${v('r_org')}`,
+        `Phone number: ${v('r_phone')}`,
+        `WhatsApp number: ${v('r_whatsapp') || '—'}`,
+        `Email: ${v('r_email')}`,
+      ].join('\n');
+      const subject = encodeURIComponent('SURAKKHA — Access Request: ' + v('r_name'));
+      window.location.href = `mailto:${MEAL_EMAIL}?subject=${subject}&body=${encodeURIComponent(body)}`;
+
+      document.getElementById('formBody').classList.add('hide');
+      document.getElementById('confirmAccessName').textContent = v('r_email');
+      document.getElementById('confirmAccessCode').textContent = v('r_password');
+      document.getElementById('confirmBox').classList.add('show');
+    }catch(err){
+      alert('Could not create your account: ' + err.message);
+      btn.disabled = false;
+      btn.textContent = 'Send Registration Request';
+    }
+  }
+</script>
+</body>
+</html>

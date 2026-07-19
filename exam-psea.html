@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SURAKKHA · PSEA Exam — FIVDB</title>
+<link rel="stylesheet" href="site-shared.css">
+<link rel="stylesheet" href="exam-shared.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<nav class="site-nav" aria-label="Main navigation">
+  <div class="site-nav-inner">
+    <a class="site-brand" href="index.html">
+      <span class="brand-mark">S</span>
+      <span class="brand-text">
+        <span class="b1">SURAKKHA PROJECT</span>
+        <span class="b2">FIVDB &middot; DG ECHO 2026/00158</span>
+      </span>
+    </a>
+    <div class="site-links">
+      <a href="index.html">Home</a>
+      <a href="about-project.html">About Project</a>
+      <a href="reporting-channel.html">Reporting Channel</a>
+      <a href="reporting-template.html">Reporting Template</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="register.html">Register</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+  <div class="page-header">
+    <div class="eyebrow">Capacity Building &middot; 2 of 6</div>
+    <h1>Protection from Sexual Exploitation &amp; Abuse (PSEA)</h1>
+    <p class="lede">Based on FIVDB's PSEA Policy. Score 75% or higher to receive your certificate.</p>
+  </div>
+
+  <div class="exam-wrap">
+    <p class="exam-intro">Study the module below, then unlock the exam. Score 75% or higher to earn your certificate.</p>
+    <div id="moduleHost"></div>
+    <div class="exam-section" id="examSection">
+      <p class="exam-locked-note">🔒 Complete the study module above to unlock this exam.</p>
+      <div id="examHost"></div>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>SURAKKHA PROJECT · DG ECHO 2026/00158 — FIVDB</span>
+    <span>Support: <a href="mailto:mohasan.uddin@fivdb.org">mohasan.uddin@fivdb.org</a></span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase-client.js"></script>
+<script src="site-shared.js"></script>
+<script>showStaffOnlyNotice(); enforceStaffGate();</script>
+<script src="exam-engine.js"></script>
+<script>
+  const QUESTIONS = [
+    { id:'m1', type:'mcq', text:'Sexual exploitation and abuse or child abuse by FIVDB personnel is considered:', options:['A minor policy breach','Gross misconduct, grounds for termination','Acceptable if unintentional','Only a concern for management'], correct:1 },
+    { id:'m2', type:'mcq', text:'Sexual activity with anyone under 18 is prohibited:', options:['Only if the local age of consent is also 18', 'Regardless of the local age of consent', 'Only for international staff', 'Only during working hours'], correct:1 },
+    { id:'m3', type:'mcq', text:'"Mistaken belief about a child\'s age" is:', options:['A valid legal defence', 'Not a defence under this policy', 'Only relevant in court', 'Grounds for a warning, not termination'], correct:1 },
+    { id:'m4', type:'mcq', text:'Exchanging goods or services for sexual favours is:', options:['Allowed if both parties agree', 'Strictly prohibited, including assistance owed to beneficiaries', 'Only prohibited with children', 'A grey area'], correct:1 },
+    { id:'m5', type:'mcq', text:'Sexual relationships between FIVDB personnel and beneficiaries are:', options:['Allowed with the beneficiary\'s consent', 'Not allowed, due to unequal power dynamics', 'Allowed once assistance has ended', 'Only restricted for field staff'], correct:1 },
+    { id:'m6', type:'mcq', text:'"Sexual exploitation," per this policy, means:', options:['Only physical assault', 'Any actual or attempted abuse of a position of vulnerability or power for sexual purposes', 'Only acts involving payment', 'Consensual relationships between adults'], correct:1 },
+    { id:'m7', type:'mcq', text:'A "vulnerable adult" under this policy includes someone who, due to disability or social status, is:', options:['Automatically excluded from services', 'Deemed at greater risk of harm or exploitation', 'Not covered by this policy', 'Only relevant in emergency settings'], correct:1 },
+    { id:'m8', type:'mcq', text:'The term "survivor" is generally preferred over "victim" because it implies:', options:['Legal status', 'Strength, resilience, and capacity to survive', 'Guilt', 'A closed case'], correct:1 },
+    { id:'m9', type:'mcq', text:'FIVDB\'s recruitment screening for roles involving contact with children should include:', options:['No special screening', 'Background and reference checks, and behavioural-based interviews', 'Only a CV review', 'Screening only for senior roles'], correct:1 },
+    { id:'m10', type:'mcq', text:'When FIVDB shares information about SEA cases publicly, it must:', options:['Include full names for transparency', 'Respect confidentiality for all parties involved', 'Share nothing at all, ever', 'Only inform the donor'], correct:1 },
+
+    { id:'f1', type:'fact', text:'Sexual harassment and sexual exploitation and abuse (SEA) mean exactly the same thing under this policy.', correct:1 },
+    { id:'f2', type:'fact', text:'FIVDB personnel who suspect a colleague of SEA must report it immediately through established mechanisms.', correct:0 },
+    { id:'f3', type:'fact', text:'Gender-based violence (GBV) is a broader term, and sexual exploitation and abuse are specific forms of it.', correct:0 },
+    { id:'f4', type:'fact', text:'A beneficiary must be in an obviously vulnerable position for SEA to apply — a normal power/trust relationship is not enough.', correct:1 },
+    { id:'f5', type:'fact', text:'FIVDB is committed to preventing known perpetrators of SEA from being re-hired or re-deployed.', correct:0 },
+    { id:'f6', type:'fact', text:'Support for SEA complainants may include medical, legal, and psycho-social assistance.', correct:0 },
+    { id:'f7', type:'fact', text:'FIVDB\'s six core principles were created entirely by FIVDB with no reference to international standards.', correct:1 },
+
+    { id:'n1', type:'narrative', text:'Why do you think FIVDB treats sexual relationships between staff and beneficiaries as never acceptable, even if both parties say they consent?' },
+    { id:'n2', type:'narrative', text:'Describe how you would support a colleague who confided in you that they were a survivor of SEA by another staff member.' },
+    { id:'n3', type:'narrative', text:'In your own words, explain the difference between "sexual exploitation" and "sexual abuse" as defined in this policy.' },
+  ];
+
+  const MODULE_CONTENT = `
+    <h3>Introduction &amp; Purpose</h3>
+    <p>FIVDB's PSEA Policy ensures all employees and related personnel make ethical decisions in their professional and personal lives to ensure maximum protection of beneficiaries, communities, employees, and everyone FIVDB works for and with, from sexual exploitation and abuse (SEA) by FIVDB staff and related personnel, and affirms <strong>zero tolerance</strong> for such cases.</p>
+    <p>The policy is developed in accordance with the six core principles adopted by the Inter-Agency Standing Committee (IASC) Task Force on Prevention and Response to Sexual Exploitation, the principles of the UN Secretary-General's Bulletin on Special Measures for Protection from Sexual Exploitation and Sexual Abuse (ST/SGB/2003/13), and the UN Convention on the Elimination of All Forms of Discrimination Against Women (CEDAW). FIVDB believes all people have the right to live their lives free from fear and any form of abuse of power, regardless of age, gender, sexuality, disability, religion, or ethnicity.</p>
+
+    <h3>Scope</h3>
+    <p>This policy applies to all FIVDB Personnel and Associates. "FIVDB Personnel" means all individuals who have entered into an employment or collaboration contract with FIVDB — including the governing body, employees, volunteers, community committee members, interns, and consultants — regardless of whether they are compensated or the duration of their contract. "FIVDB Associates" means personnel of other entities who have entered into a cooperative arrangement with FIVDB, including contractors, partners, and visitors.</p>
+
+    <h3>Key Definitions</h3>
+    <ul>
+      <li><strong>Child</strong> — any individual under the age of 18, irrespective of any other definition of adulthood.</li>
+      <li><strong>Sexual exploitation</strong> — any actual or attempted abuse of a position of vulnerability, differential power, or trust for sexual purposes, including but not limited to profiting monetarily, socially, or politically from the sexual exploitation of another. Throughout this policy, "sexual exploitation and abuse" refers to acts against both children and vulnerable adults.</li>
+      <li><strong>Sexual abuse</strong> — the actual or threatened physical intrusion of a sexual nature, whether by force or under unequal or coercive conditions.</li>
+      <li><strong>Sexual harassment vs. SEA</strong> — sexual harassment is any unwelcome sexual advance, request for sexual favour, or verbal or physical conduct of a sexual nature that might reasonably be perceived to cause offence or humiliation, when it interferes with work, is made a condition of employment, or creates a hostile or offensive work environment. It is related to, but conceptually distinct from, SEA, which specifically concerns abuse of power, position, or vulnerability for sexual purposes.</li>
+    </ul>
+
+    <h3>FIVDB's Six Core Principles</h3>
+    <ul>
+      <li>Sexual exploitation and abuse or child abuse by FIVDB personnel constitutes gross misconduct and are therefore grounds for termination of employment.</li>
+      <li>Sexual activity with children (anyone under 18) is prohibited regardless of the local age of majority or consent. Mistaken belief about a child's age is not a defence.</li>
+      <li>Exchange of money, employment, goods, or services for sex, including sexual favours or other forms of humiliating, degrading, or exploitative behaviour, is prohibited. This includes exchange of assistance that is otherwise due to beneficiaries.</li>
+      <li>Sexual relationships between FIVDB personnel and beneficiaries are strongly discouraged since they are based on inherently unequal power dynamics — such relationships undermine the credibility and integrity of FIVDB's work.</li>
+      <li>Where any FIVDB personnel develops concerns or suspicions regarding sexual exploitation or abuse by a colleague, whether in the same or another organisation, they must report such concerns via established reporting mechanisms.</li>
+      <li>FIVDB personnel are obliged to create and maintain an environment which prevents sexual exploitation and abuse, and promotes the implementation of this policy. Managers at all levels have particular responsibilities to support and develop systems which maintain this environment.</li>
+    </ul>
+
+    <h3>Commitment</h3>
+    <p>FIVDB commits to: regularly informing personnel, beneficiaries, and communities of measures taken to prevent and respond to SEA, including details of complaint mechanisms, the general status and outcome of investigations, feedback on action taken against perpetrators, and support available to complainants (while respecting confidentiality on specific cases); engaging communities and government in prevention and response efforts; ensuring complaint mechanisms are accessible and that Focal Persons understand their duties, including a documented reporting procedure and sanctions for non-compliance; providing support to complainants (medical, legal, psycho-social, as needed, respecting confidentiality, cultural sensitivity, and survivor safety); preventing known perpetrators from being re-hired or re-deployed through robust recruitment screening — including background checks, reference checks, and behavioural-based interviews, particularly for roles with contact with children; investigating allegations in a timely, professional manner using appropriate interview practices, engaging professional investigators where needed; taking swift, appropriate action including legal referral where required; protecting people from retaliation for reporting; and maintaining high-level oversight and information systems on SEA reports and actions taken, to monitor effectiveness and improve prevention efforts.</p>
+
+    <h3>Reporting</h3>
+    <p>FIVDB is committed to a robust, timely, and confidential reporting and investigation procedure. It is the obligation of all personnel to report complaints, concerns, or suspicions — actual or perceived — as a matter of urgency, always <strong>within 24 hours</strong> of becoming aware of an incident. Failure to report is itself a breach of the PSEA Policy. Reporting options include: a project-level Focal Person (beneficiaries may report to any employee they feel comfortable with, who must relay it onward); raising a concern internally to a Senior Manager; the PSEA/Safeguarding Focal Person, responsible for receiving SEA complaints and initiating follow-up; the mechanisms in FIVDB's Whistleblowing Policy; the Executive Director; or the Executive Board.</p>
+    <p>When made aware of a possible breach, FIVDB will: protect complainants from retaliation; provide guidance on necessary support to the survivor — counselling, medical support, and access to law enforcement if needed, with the survivor choosing if and when to take up these options; maintain confidentiality at all times for both the referrer and those involved, sharing information strictly on a need-to-know basis; and take swift action, including suspension pending investigation (which does not imply guilt, but protects all parties) and legal action where required. Spreading unsubstantiated rumours is not a protected activity, and intentionally false or misleading reports constitute gross misconduct in themselves. The PSEA Steering Committee/Gender Action Cell leads investigations, maintaining confidentiality. Consequences depend on role: staff face disciplinary action or termination, volunteers face severance, partner organisations face dissolution of partnership, and contractors face termination of agreement. Written records are kept securely by the PSEA Focal Person, and donors, regulators, or legal authorities are informed where appropriate.</p>
+
+    <h3>Roles &amp; Responsibilities</h3>
+    <p>All FIVDB personnel share an obligation to prevent and respond to SEA and child abuse, upholding the Core Principles and Commitments of this policy alongside the Code of Conduct. Personnel working with communities also contribute to monitoring by seeking beneficiary feedback.</p>
+    <p><strong>Executive Management</strong> holds ultimate accountability, committing to: creating a positive organisational culture supporting a safeguarding environment; reviewing and updating this policy every two years; monitoring implementation at a senior level, including an Annual Policy Implementation Review; ensuring sufficient resources for effective implementation across the organisation; protecting FIVDB's credibility and reputation through effective oversight of this policy and its implementation; agreeing protocols with regulatory and donor bodies for handling and reporting SEA information and cases; and role-modelling the standards of conduct and behaviour this policy requires.</p>
+    <p><strong>The Senior Management Team</strong> — the Executive Director, other SMT members, all Focal Persons and Coordinators, and the HR Manager at the Central Office — is responsible for ensuring implementation of and adherence to the PSEA Policy across the organisation. The Executive Director and HR Managers specifically carry responsibility for robust recruitment, induction, and training. All personnel, representatives, managers, and supervisors at every level support implementation in their own areas by: ensuring their teams understand and comply with every aspect of the policy; creating an organisational culture and working environment that is free from and actively prevents exploitation and abuse; applying and maintaining mechanisms and managerial systems that support implementation — effective supervision, awareness-raising, prevention, reporting, and responding; and role-modelling the required standards of conduct themselves.</p>
+    <p><strong>Technical Support</strong> comes through a PSEA Policy Steering Committee (or Gender Action Cell), established to monitor and regularly report progress on implementing and adhering to the policy to the Executive Director. This Committee meets on an ad-hoc basis to provide oversight and management support for alleged SEA incidents, and is responsible for regularly revising the policy itself. A dedicated <strong>PSEA/Safeguarding Focal Person</strong> coordinates the Committee's work, leads the development of training and awareness materials on the policy and related standards of behaviour, and is the designated person to receive complaints and investigate and report on alleged SEA incidents.</p>
+
+    <h3>Related Policies &amp; Procedures</h3>
+    <p>FIVDB's PSEA Policy is linked to, and must be read alongside, several other policies: the Personnel Policies and Procedures manual, the Code of Conduct, the Child Safeguarding Policy, the Gender Policy, and the Whistleblowing Policy. Where a concern involves a child specifically, both the PSEA Policy and the Child Safeguarding Policy apply, and personnel should use whichever reporting channel they find most accessible — the Focal Persons for each are responsible for coordinating with one another so nothing falls between the two policies.</p>
+
+    <h3>Recognising Warning Signs</h3>
+    <p>SEA rarely presents itself obviously. Warning signs worth staying alert to include: a staff member consistently seeking one-on-one time with a specific beneficiary or beneficiary's family beyond what their role requires; unexplained gifts, favouritism, or preferential access to services given to a particular individual or household; a beneficiary or their family becoming noticeably uncomfortable or evasive around a specific staff member; and rumours or informal comments from community members about a staff member's conduct, even if no formal complaint has been made. None of these signs alone proves SEA has occurred — but taken together, or when accompanied by a direct disclosure, they're exactly why every FIVDB staff member has a personal, individual duty to report a concern rather than waiting for someone else to notice or for definitive proof to emerge.</p>
+
+    <h3>Why This Matters for SURAKKHA</h3>
+    <p>SURAKKHA's work — case management, aid distribution, CBLF facilitation — inherently involves FIVDB staff holding real influence over whether a Rohingya or host-community family receives support, a referral, or a service. That influence is precisely the kind of power imbalance PSEA policy exists to guard against. A parent seeking help for their child, or a family dependent on distributed items, is not in a position to easily refuse an inappropriate request from someone who appears to control their access to assistance — which is exactly why the prohibition on exchanging assistance for favours is treated as absolute, with no room for individual staff judgement about whether a particular situation feels acceptable. Upholding this policy isn't only about avoiding disciplinary consequences; it's about making sure that the people SURAKKHA exists to help can trust every single interaction with the project, without exception.</p>
+
+    <div class="context-box">
+      <strong>In the SURAKKHA context:</strong> Aid distribution, case management, and CBLF activities in Rohingya camps and host communities create real power imbalances between FIVDB staff and the people they serve — families dependent on assistance are especially vulnerable to exploitation. The prohibition on exchanging assistance for favours applies fully to any SURAKKHA distribution, service, or referral.
+    </div>
+  `;
+
+  initExam({
+    title: 'PSEA',
+    source: 'FIVDB PSEA Policy',
+    questions: QUESTIONS,
+    moduleContent: MODULE_CONTENT,
+    moduleSource: 'FIVDB PSEA Policy — Introduction, Scope, Definitions, Sections 4–6'
+  });
+</script>
+</body>
+</html>

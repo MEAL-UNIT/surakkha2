@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SURAKKHA · Admin Panel — FIVDB</title>
+<link rel="stylesheet" href="site-shared.css">
+<style>
+  .admin-wrap{max-width:1100px; margin:0 auto; padding:0 20px 60px;}
+  .admin-tabs{display:flex; gap:6px; margin-bottom:22px; border-bottom:1px solid var(--line); flex-wrap:wrap;}
+  .admin-tab{
+    padding:11px 16px; font-family:var(--sans); font-weight:700; font-size:13px; color:var(--muted);
+    background:none; border:none; cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px;
+  }
+  .admin-tab.active{color:var(--primary); border-bottom-color:var(--primary);}
+  .admin-panel{display:none;}
+  .admin-panel.active{display:block;}
+
+  table.admin-table{width:100%; border-collapse:collapse; font-size:13px;}
+  table.admin-table th{
+    background:var(--primary); color:#fff; text-align:left; padding:9px 10px; font-family:var(--sans);
+    font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:.02em;
+  }
+  table.admin-table td{padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:middle;}
+  .status-pill{
+    display:inline-block; padding:3px 9px; border-radius:12px; font-size:10.5px; font-weight:700;
+    text-transform:uppercase; letter-spacing:.03em;
+  }
+  .status-pill.pending{background:rgba(224,147,94,.18); color:var(--accent);}
+  .status-pill.approved{background:rgba(111,162,135,.2); color:var(--accent2);}
+  .status-pill.rejected{background:rgba(188,100,105,.18); color:var(--warn);}
+  .role-select{font:inherit; font-size:12px; padding:4px 6px; border:1px solid var(--line); border-radius:4px;}
+  .admin-btn{
+    font-family:var(--sans); font-weight:700; font-size:11.5px; padding:6px 10px; border-radius:5px;
+    border:none; cursor:pointer; margin-right:4px;
+  }
+  .admin-btn.approve{background:var(--accent2); color:#fff;}
+  .admin-btn.reject{background:var(--warn); color:#fff;}
+  .admin-btn.save{background:var(--primary); color:#fff;}
+
+  .locked-msg{text-align:center; padding:60px 20px; color:var(--muted);}
+  #adminContent{display:none;}
+  .add-activity-form{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:20px; background:var(--surface); padding:16px; border-radius:8px; border:1px solid var(--line);}
+  .add-activity-form input, .add-activity-form select{font:inherit; font-size:12.5px; padding:8px; border:1px solid var(--line); border-radius:5px;}
+  .add-activity-form button{grid-column:1/-1; justify-self:start;}
+
+  .update-form{background:var(--surface); padding:18px; border-radius:8px; border:1px solid var(--line);}
+  .update-form textarea{
+    width:100%; font:inherit; font-size:13.5px; padding:10px 12px; border:1px solid var(--line); border-radius:6px;
+    resize:vertical; margin-bottom:12px;
+  }
+  .update-checkbox{display:flex; align-items:flex-start; gap:8px; font-size:12.5px; color:var(--ink); margin-bottom:14px; cursor:pointer;}
+  .update-checkbox input{margin-top:2px;}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<nav class="site-nav" aria-label="Main navigation">
+  <div class="site-nav-inner">
+    <a class="site-brand" href="index.html">
+      <span class="brand-mark">S</span>
+      <span class="brand-text">
+        <span class="b1">SURAKKHA PROJECT</span>
+        <span class="b2">FIVDB &middot; DG ECHO 2026/00158</span>
+      </span>
+    </a>
+    <div class="site-links">
+      <a href="index.html">Home</a>
+      <a href="about-project.html">About Project</a>
+      <a href="reporting-channel.html">Reporting Channel</a>
+      <a href="reporting-template.html">Reporting Template</a>
+      <a href="dashboard.html">Dashboard</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+  <div class="page-header">
+    <div class="eyebrow">Admin Only</div>
+    <h1>Admin Panel</h1>
+    <p class="lede">Manage staff access, dashboard activities, and view issued certificates.</p>
+  </div>
+
+  <div class="admin-wrap">
+    <div class="locked-msg" id="lockedMsg">Checking your access…</div>
+
+    <div id="adminContent">
+      <div class="admin-tabs">
+        <button class="admin-tab active" data-tab="users">Users &amp; Access</button>
+        <button class="admin-tab" data-tab="activities">Dashboard Activities</button>
+        <button class="admin-tab" data-tab="certificates">Certificates</button>
+        <button class="admin-tab" data-tab="updates">Post Update</button>
+      </div>
+
+      <div class="admin-panel active" id="panel-users">
+        <table class="admin-table">
+          <thead><tr><th>Name</th><th>Organization</th><th>Email</th><th>Status</th><th>Role</th><th>Actions</th></tr></thead>
+          <tbody id="usersBody"></tbody>
+        </table>
+      </div>
+
+      <div class="admin-panel" id="panel-activities">
+        <div class="add-activity-form">
+          <input type="text" id="a_quarter" placeholder="Quarter (e.g. Q1)">
+          <input type="text" id="a_month" placeholder="Month (e.g. July 2026)">
+          <input type="text" id="a_code" placeholder="Activity code">
+          <input type="text" id="a_name" placeholder="Activity name">
+          <input type="text" id="a_group" placeholder="Targeted group">
+          <input type="number" id="a_girls" placeholder="Girls">
+          <input type="number" id="a_boys" placeholder="Boys">
+          <input type="number" id="a_female" placeholder="Female">
+          <input type="number" id="a_male" placeholder="Male">
+          <select id="a_budget"><option>Budgetary</option><option>Non-budgetary</option></select>
+          <input type="text" id="a_desc" placeholder="Description" style="grid-column:span 2;">
+          <button type="button" class="admin-btn save" onclick="addActivity()">+ Add Activity</button>
+        </div>
+        <table class="admin-table">
+          <thead><tr><th>Quarter</th><th>Month</th><th>Code</th><th>Activity</th><th>Total</th><th>Budget</th></tr></thead>
+          <tbody id="activitiesBody"></tbody>
+        </table>
+      </div>
+
+      <div class="admin-panel" id="panel-certificates">
+        <table class="admin-table">
+          <thead><tr><th>Name</th><th>Topic</th><th>Score</th><th>Issued</th></tr></thead>
+          <tbody id="certificatesBody"></tbody>
+        </table>
+      </div>
+
+      <div class="admin-panel" id="panel-updates">
+        <div class="update-form">
+          <textarea id="u_message" rows="4" placeholder="What's the update? e.g. &quot;New reporting template added for Q3 distributions.&quot;"></textarea>
+          <label class="update-checkbox">
+            <input type="checkbox" id="u_notify_all" checked>
+            Notify all approved users (they'll see this the next time they visit any page)
+          </label>
+          <button type="button" class="admin-btn save" onclick="postUpdate()">Post Update</button>
+          <p id="updateStatus" style="font-size:12px; color:var(--accent2); margin-top:8px;"></p>
+        </div>
+        <h3 style="font-family:var(--serif); font-size:15px; margin:24px 0 10px;">Past Updates</h3>
+        <table class="admin-table">
+          <thead><tr><th>Message</th><th>Notified</th><th>Posted</th></tr></thead>
+          <tbody id="updatesBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>SURAKKHA PROJECT · DG ECHO 2026/00158 — FIVDB</span>
+    <span>Support: <a href="mailto:mohasan.uddin@fivdb.org">mohasan.uddin@fivdb.org</a></span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase-client.js"></script>
+<script src="site-shared.js"></script>
+<script>
+  document.querySelectorAll('.admin-tab').forEach(tab=>{
+    tab.addEventListener('click', ()=>{
+      document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('active'));
+      document.querySelectorAll('.admin-panel').forEach(p=>p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  async function loadUsers(){
+    const client = sb();
+    const { data, error } = await client.from('profiles').select('*').order('requested_at', { ascending: false });
+    if(error){ console.error(error); return; }
+    document.getElementById('usersBody').innerHTML = data.map(u => `
+      <tr data-id="${u.id}">
+        <td>${u.full_name}<br><span style="color:var(--muted); font-size:11px;">${u.designation || ''}</span></td>
+        <td>${u.organization || ''}</td>
+        <td>${u.email}</td>
+        <td><span class="status-pill ${u.status}">${u.status}</span></td>
+        <td>
+          <select class="role-select" data-id="${u.id}">
+            <option value="user" ${u.role==='user'?'selected':''}>User</option>
+            <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
+          </select>
+        </td>
+        <td>
+          ${u.status !== 'approved' ? `<button class="admin-btn approve" onclick="setStatus('${u.id}','approved')">Approve</button>` : ''}
+          ${u.status !== 'rejected' ? `<button class="admin-btn reject" onclick="setStatus('${u.id}','rejected')">Reject</button>` : ''}
+          <button class="admin-btn save" onclick="saveRole('${u.id}')">Save role</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  async function setStatus(id, status){
+    const client = sb();
+    const { error } = await client.from('profiles').update({ status }).eq('id', id);
+    if(error) return alert('Could not update: ' + error.message);
+    loadUsers();
+  }
+
+  async function saveRole(id){
+    const row = document.querySelector(`tr[data-id="${id}"] .role-select`);
+    const client = sb();
+    const { error } = await client.from('profiles').update({ role: row.value }).eq('id', id);
+    if(error) return alert('Could not update: ' + error.message);
+    loadUsers();
+  }
+
+  async function loadActivities(){
+    const client = sb();
+    const { data, error } = await client.from('dashboard_activities').select('*').order('created_at', { ascending: false });
+    if(error){ console.error(error); return; }
+    document.getElementById('activitiesBody').innerHTML = data.map(a => `
+      <tr><td>${a.quarter||''}</td><td>${a.month||''}</td><td>${a.activity_code||''}</td><td>${a.activity_name||''}</td><td>${a.total||0}</td><td>${a.budget_status||''}</td></tr>
+    `).join('');
+  }
+
+  async function addActivity(){
+    const v = id => document.getElementById(id).value;
+    const girls = parseInt(v('a_girls'))||0, boys = parseInt(v('a_boys'))||0, female = parseInt(v('a_female'))||0, male = parseInt(v('a_male'))||0;
+    const client = sb();
+    const { error } = await client.from('dashboard_activities').insert({
+      quarter: v('a_quarter'), month: v('a_month'), activity_code: v('a_code'), activity_name: v('a_name'),
+      targeted_group: v('a_group'), girls, boys, female, male, total: girls+boys+female+male,
+      budget_status: v('a_budget'), description: v('a_desc'),
+    });
+    if(error) return alert('Could not add activity: ' + error.message);
+    ['a_quarter','a_month','a_code','a_name','a_group','a_girls','a_boys','a_female','a_male','a_desc'].forEach(id => document.getElementById(id).value = '');
+    loadActivities();
+  }
+
+  async function loadCertificates(){
+    const client = sb();
+    const { data, error } = await client.from('certificates').select('*').order('issued_at', { ascending: false });
+    if(error){ console.error(error); return; }
+    document.getElementById('certificatesBody').innerHTML = data.map(c => `
+      <tr><td>${c.name_on_certificate}</td><td>${c.topic}</td><td>${c.score}%</td><td>${new Date(c.issued_at).toLocaleDateString()}</td></tr>
+    `).join('');
+  }
+
+  async function postUpdate(){
+    const message = document.getElementById('u_message').value.trim();
+    if(!message){ document.getElementById('u_message').focus(); return; }
+    const notifyAll = document.getElementById('u_notify_all').checked;
+    const client = sb();
+    const { error } = await client.from('notifications').insert({ message, notify_all: notifyAll });
+    if(error) return alert('Could not post update: ' + error.message);
+    document.getElementById('u_message').value = '';
+    document.getElementById('updateStatus').textContent = notifyAll
+      ? '✓ Posted — everyone will see this notification.'
+      : '✓ Posted (not sent as a notification — just kept as a log entry).';
+    setTimeout(()=>{ document.getElementById('updateStatus').textContent = ''; }, 4000);
+    loadUpdates();
+  }
+
+  async function loadUpdates(){
+    const client = sb();
+    const { data, error } = await client.from('notifications').select('*').order('created_at', { ascending: false });
+    if(error){ console.error(error); return; }
+    document.getElementById('updatesBody').innerHTML = data.map(u => `
+      <tr><td>${u.message}</td><td>${u.notify_all ? '✓ Yes' : '— No'}</td><td>${new Date(u.created_at).toLocaleString()}</td></tr>
+    `).join('');
+  }
+
+  (async function initAdmin(){
+    const admin = await isAdmin();
+    if(!admin){
+      document.getElementById('lockedMsg').textContent = 'This page is for approved admins only.';
+      return;
+    }
+    document.getElementById('lockedMsg').style.display = 'none';
+    document.getElementById('adminContent').style.display = 'block';
+    loadUsers();
+    loadActivities();
+    loadCertificates();
+    loadUpdates();
+  })();
+</script>
+</body>
+</html>

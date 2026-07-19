@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SURAKKHA · Document Templates — FIVDB</title>
+<meta name="description" content="Fill-in-browser document templates for the SURAKKHA project — export straight to PDF or Word, no installs required.">
+<link rel="stylesheet" href="site-shared.css"><style>
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans); line-height:1.5;}
+  a{color:var(--primary);}
+  .skip-link{
+    position:absolute; left:-999px; top:0; background:var(--primary); color:#fff;
+    padding:10px 16px; z-index:100; font-family:var(--sans); font-size:13px; border-radius:0 0 6px 0;
+  }
+  .skip-link:focus{left:0;}
+  :focus-visible{outline:3px solid var(--accent2); outline-offset:2px;}
+
+  .wrap{max-width:900px; margin:0 auto; padding:0 22px;}
+
+  header.masthead{padding:34px 0 20px;}
+  .masthead-row{display:flex; justify-content:space-between; align-items:flex-end; gap:20px; flex-wrap:wrap;}
+  .eyebrow{
+    font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--accent2); font-weight:700;
+  }
+  h1{
+    font-family:var(--serif); font-weight:700; font-size:clamp(26px,4vw,36px);
+    margin:8px 0 6px; color:var(--primary); letter-spacing:.01em;
+  }
+  .org-line{font-family:var(--serif); font-style:italic; font-size:15px; color:var(--muted);}
+  .proj-code{
+    font-family:var(--mono); font-size:11.5px; color:var(--muted); text-align:right;
+    border:1px solid var(--line); padding:7px 11px; background:var(--surface); border-radius:5px;
+  }
+  .proj-code strong{display:block; color:var(--ink); font-size:12px; margin-bottom:2px;}
+  .lede{max-width:60ch; font-size:15px; color:var(--muted); margin:18px 0 0;}
+
+  .a11y-strip{display:flex; gap:8px; flex-wrap:wrap; margin:16px 0 0; padding:0; list-style:none;}
+  .a11y-strip li{
+    font-family:var(--mono); font-size:11px; color:var(--accent2);
+    border:1px solid var(--accent2); border-radius:3px; padding:4px 8px;
+    background:rgba(111,162,135,.09); display:flex; align-items:center; gap:5px;
+  }
+  .a11y-strip li svg{width:11px; height:11px; flex:none;}
+
+  .search-row{margin:24px 0 30px;}
+  .search-row label{
+    display:block; font-family:var(--mono); font-size:11px; text-transform:uppercase;
+    letter-spacing:.06em; color:var(--muted); margin-bottom:6px;
+  }
+  .search-row input{
+    width:100%; font:inherit; font-size:15px; padding:12px 14px;
+    border:1px solid var(--line); background:var(--surface); color:var(--ink);
+    font-family:var(--sans); border-radius:6px;
+  }
+  .search-row input:focus{outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(74,122,140,.16);}
+
+  /* ---- Cabinet — plain card list, matching the rest of the site ---- */
+  #cabinet{display:flex; flex-direction:column; gap:14px;}
+  .cabinet-plate{
+    background:none; border:none; cursor:pointer; color:var(--primary); font-family:var(--sans);
+    font-size:12.5px; font-weight:700; padding:6px 2px 16px; display:flex; align-items:center; gap:6px;
+    transition:color .15s; width:100%; text-align:left;
+  }
+  .cabinet-plate:hover{color:var(--primary-dark); text-decoration:underline;}
+  .cabinet-plate .plate-hint{font-weight:400; color:var(--muted); font-size:11.5px;}
+
+  .drawer{
+    background:var(--surface); border:1px solid var(--line); border-radius:8px; overflow:hidden;
+    box-shadow:var(--shadow-sm); transition:box-shadow .2s ease;
+  }
+  .drawer[data-open="true"]{box-shadow:var(--shadow-md);}
+
+  .drawer-face{
+    width:100%; text-align:left; border:none; cursor:pointer; background:var(--surface);
+    padding:16px 20px; display:flex; align-items:center; gap:16px;
+    font-family:inherit; color:var(--ink);
+    border-top:4px solid var(--drawer-accent, var(--primary));
+    transition:background .15s;
+  }
+  .drawer-face:hover{background:var(--bg);}
+  .drawer-face:active{transform:translateY(1px);}
+
+  .drawer-num{
+    font-family:var(--mono); font-size:10.5px; color:var(--muted);
+    border:1px solid var(--line); border-radius:3px; padding:3px 6px; flex:none;
+  }
+  .drawer-handle{display:none;}
+  .drawer-title{
+    font-family:var(--serif); font-size:17px; font-weight:700; flex:1;
+    display:flex; align-items:baseline; gap:10px; color:var(--ink);
+  }
+  .drawer-title .dot{
+    width:9px; height:9px; border-radius:50%; flex:none; background:var(--drawer-accent, var(--primary));
+  }
+  .drawer-title .count{
+    font-family:var(--mono); font-size:11px; font-weight:400; color:var(--muted);
+  }
+  .drawer-chevron{
+    font-size:14px; color:var(--muted); flex:none; transition:transform .22s ease;
+  }
+  .drawer[data-open="true"] .drawer-chevron{transform:rotate(90deg);}
+
+  .drawer-tray{
+    overflow:hidden; max-height:0; opacity:0;
+    transition:max-height .32s ease, opacity .28s ease;
+    background:var(--bg);
+  }
+  .drawer[data-open="true"] .drawer-tray{opacity:1;}
+
+  .tray-inner{padding:20px; display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px;}
+
+  .subdrawer{
+    grid-column:1/-1; border:1px solid var(--line); border-radius:6px; overflow:hidden; background:var(--surface);
+  }
+  .subdrawer-face{
+    width:100%; text-align:left; border:none; cursor:pointer; background:var(--bg);
+    padding:11px 16px; display:flex; align-items:center; gap:10px;
+    font-family:var(--sans); color:var(--ink); font-weight:700; font-size:13px;
+    transition:background .12s;
+  }
+  .subdrawer-face:hover{background:var(--line);}
+  .sub-chevron{font-size:11px; color:var(--muted); transition:transform .2s ease; flex:none;}
+  .subdrawer[data-open="true"] .sub-chevron{transform:rotate(90deg);}
+  .subdrawer-title{flex:1;}
+  .sub-count{font-family:var(--mono); font-size:10.5px; font-weight:400; color:var(--muted);}
+  .subdrawer-tray{overflow:hidden; max-height:0; transition:max-height .28s ease;}
+  .subtray-inner{padding:16px; display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; background:var(--surface);}
+  .subdrawer .folder{margin-top:0;}
+
+  .folder{
+    position:relative; background:var(--surface); border:1px solid var(--line);
+    border-top:3px solid var(--drawer-accent, var(--primary)); border-radius:6px;
+    padding:18px 16px 14px; display:flex; flex-direction:column; gap:10px;
+    margin-top:14px;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .subdrawer .folder{margin-top:0;}
+  .folder::before{display:none;}
+  .folder:hover, .folder:focus-within{
+    transform:translateY(-3px);
+    box-shadow:var(--shadow-md);
+  }
+  .folder h3{font-family:var(--serif); font-size:16px; margin:0; color:var(--ink); line-height:1.3;}
+  .folder p.desc{font-size:13px; color:var(--muted); margin:0;}
+  ul.badges{list-style:none; margin:2px 0 0; padding:0; display:flex; flex-wrap:wrap; gap:6px;}
+  ul.badges li{
+    font-size:10px; color:var(--muted); background:var(--bg); border:1px solid var(--line);
+    border-radius:3px; padding:3px 7px;
+  }
+  .folder-footer{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:4px;}
+  .open-link{
+    font-family:var(--sans); font-weight:700; font-size:13px; text-decoration:none;
+    color:#fff; background:var(--drawer-accent, var(--primary)); padding:9px 15px;
+    display:inline-flex; align-items:center; gap:6px; border-radius:5px;
+    transition:filter .15s;
+  }
+  .open-link:hover{filter:brightness(1.12);}
+  .open-link svg{width:12px; height:12px;}
+  .open-link-newtab{
+    font-size:13px; text-decoration:none; color:var(--muted); margin-left:8px;
+    display:inline-flex; align-items:center; padding:9px 6px; transition:color .15s;
+  }
+  .open-link-newtab:hover{color:var(--primary);}
+  .updated{font-family:var(--mono); font-size:10px; color:var(--muted);}
+
+  .template-modal{
+    position:fixed; inset:0; z-index:900; background:var(--bg);
+    display:none; flex-direction:column;
+  }
+  .template-modal.open{display:flex;}
+  .template-modal-bar{
+    background:var(--primary); color:#fff; padding:12px 18px; display:flex; align-items:center;
+    justify-content:space-between; gap:14px; flex:none;
+  }
+  .template-modal-title{font-family:var(--sans); font-weight:700; font-size:13.5px; white-space:nowrap;}
+  .template-modal-actions{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+  .template-modal-actions a{color:#fff; font-size:12.5px; text-decoration:none; border-bottom:1px solid rgba(255,255,255,.5); margin:0 4px 0 8px;}
+  .template-modal-actions a:hover{border-color:#fff;}
+  .template-modal-actions button{
+    background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3); color:#fff; border-radius:6px;
+    padding:7px 12px; font-family:var(--sans); font-weight:700; font-size:12.5px; cursor:pointer;
+  }
+  .template-modal-actions button:hover{background:rgba(255,255,255,.24);}
+  .template-modal-actions #templateModalClose{background:var(--warn); border-color:var(--warn); margin-left:4px;}
+  .template-modal-actions #templateModalClose:hover{filter:brightness(1.1);}
+  #templateModalFrame{flex:1; border:none; width:100%;}
+
+  .folder.empty{
+    align-items:center; justify-content:center; text-align:center; color:var(--muted);
+    border-style:dashed; border-top-style:dashed; background:transparent; box-shadow:none;
+  }
+  .folder.empty:hover{transform:none; box-shadow:none;}
+  .folder.empty p{font-family:var(--mono); font-size:12px; margin:0;}
+
+  /* ---- How it works ---- */
+  section.how{margin-top:56px; padding:26px 0 6px; border-top:1px solid var(--line);}
+  section.how h2{font-family:var(--serif); color:var(--primary); font-size:19px; margin:0 0 18px;}
+  .steps{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:20px;}
+  .step .num{font-family:var(--mono); font-size:11px; color:var(--accent2); font-weight:700;}
+  .step h3{font-family:var(--sans); font-size:14px; margin:6px 0 5px; color:var(--ink);}
+  .step p{font-size:13px; color:var(--muted); margin:0;}
+
+  @media (max-width:600px){
+    .masthead-row{flex-direction:column; align-items:flex-start;}
+    .proj-code{text-align:left;}
+    .drawer-title{font-size:15px;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    .folder, .drawer-tray, .drawer-chevron{transition:none;}
+    .folder:hover, .folder:focus-within{transform:none;}
+  }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#cabinet">Skip to templates</a>
+
+<nav class="site-nav" aria-label="Main navigation">
+  <div class="site-nav-inner">
+    <a class="site-brand" href="index.html">
+      <span class="brand-mark">S</span>
+      <span class="brand-text">
+        <span class="b1">SURAKKHA PROJECT</span>
+        <span class="b2">FIVDB &middot; DG ECHO 2026/00158</span>
+      </span>
+    </a>
+    <div class="site-links">
+      <a href="index.html">Home</a>
+      <a href="about-project.html">About Project</a>
+      <a href="reporting-channel.html">Reporting Channel</a>
+      <a href="reporting-template.html">Reporting Template</a>
+      <a href="dashboard.html">Dashboard</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+  <header class="masthead">
+    <div class="masthead-row">
+      <div>
+        <div class="eyebrow">SURAKKHA Project · FIVDB</div>
+        <h1>Document Templates</h1>
+        <div class="org-line">Friends in Village Development Bangladesh</div>
+      </div>
+      <div class="proj-code">
+        <strong>DG ECHO 2026/00158</strong>
+        Internal reporting library
+      </div>
+    </div>
+    <p class="lede">Open a template, fill it in your browser, and export a print-ready PDF or Word file — no software to install and nothing you type leaves your device unless you choose to save a draft.</p>
+    <ul class="a11y-strip">
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 12h16M4 6h16M4 18h16"/></svg>Screen-reader labeled fields</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h10M7 13h6"/></svg>Full keyboard navigation</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Visible focus outlines</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9V4h12v5M6 18h12v-5H6v5z"/><rect x="6" y="14" width="12" height="7"/></svg>Print &amp; PDF ready</li>
+    </ul>
+  </header>
+
+  <div class="search-row">
+    <label for="searchInput">Find a template</label>
+    <input type="text" id="searchInput" placeholder="Try “agenda”, “attendance”, or a category like “MEAL”" autocomplete="off">
+  </div>
+
+  <div id="cabinet">
+    <button type="button" class="cabinet-plate" id="cabinetPlateBtn" aria-label="Expand or collapse all drawers">Templates <span class="plate-hint" id="plateHint">— open all</span></button>
+    <div id="drawersHost"></div>
+  </div>
+
+  <section class="how" aria-labelledby="how-heading">
+    <h2 id="how-heading">How the templates work</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="num">01</div>
+        <h3>Open a drawer</h3>
+        <p>Pick a category above — a template opens straight in your browser, laid out as an A4 document.</p>
+      </div>
+      <div class="step">
+        <div class="num">02</div>
+        <h3>Fill it in</h3>
+        <p>Type into the fields, add rows or photos where needed, and upload signatures.</p>
+      </div>
+      <div class="step">
+        <div class="num">03</div>
+        <h3>Preview or print</h3>
+        <p>Use Print Preview to check page breaks, or the browser's own print option at any time.</p>
+      </div>
+      <div class="step">
+        <div class="num">04</div>
+        <h3>Export &amp; save</h3>
+        <p>Export a paginated PDF or Word file, and download a working copy to finish later.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer" style="margin-top:40px; border-top:3px solid var(--primary);">
+    <div class="site-footer-inner">
+      <span>SURAKKHA PROJECT · DG ECHO 2026/00158 — FIVDB internal reporting templates</span>
+      <span>Support: <a href="mailto:mohasan.uddin@fivdb.org">mohasan.uddin@fivdb.org</a></span>
+    </div>
+  </footer>
+</div>
+
+<div class="template-modal" id="templateModal">
+  <div class="template-modal-bar">
+    <span class="template-modal-title" id="templateModalTitle">Template</span>
+    <div class="template-modal-actions">
+      <button type="button" id="templateModalPrint">🖨️ Print</button>
+      <button type="button" id="templateModalSave">💾 Save</button>
+      <button type="button" id="templateModalClear">✕ Clear form</button>
+      <a id="templateModalNewTab" href="#" target="_blank" rel="noopener">Open in new tab ⤢</a>
+      <button type="button" id="templateModalClose" aria-label="Close">Close</button>
+    </div>
+  </div>
+  <iframe id="templateModalFrame" title="Template preview"></iframe>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase-client.js"></script>
+<script src="site-shared.js"></script>
+<script>showStaffOnlyNotice(); enforceStaffGate();</script>
+<script>
+let CATEGORIES = [];
+let TEMPLATES = [];
+
+function loadCabinetData(){
+  return Promise.all([
+    fetchCSV('reporting-categories.csv'),
+    fetchCSV('reporting-templates.csv')
+  ]).then(([catRows, tplRows])=>{
+    CATEGORIES = catRows.map(r => ({ name: r.name, accent: r.accent }));
+    TEMPLATES = tplRows.map(r => {
+      const t = {
+        title: r.title,
+        category: r.category,
+        subcategory: r.subcategory,
+        description: r.description
+      };
+      if(r.code) t.code = r.code;
+      if(r.badges) t.badges = r.badges.split('|').map(b => b.trim()).filter(Boolean);
+      if(r.file){
+        t.file = r.file;
+        t.updated = r.updated || '2026';
+        if(!t.badges) t.badges = [];
+      } else {
+        t.placeholder = true;
+      }
+      return t;
+    });
+  });
+}
+
+function iconArrow(){
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+}
+
+function folderHtml(t, accent){
+  if(t.placeholder){
+    return `
+      <div class="folder empty" data-tab="AWAITING">
+        <h3>${t.title}</h3>
+        <p class="desc">${t.description}</p>
+        <p style="font-family:var(--mono); font-size:10.5px; color:var(--muted); margin:auto 0 0;">Not uploaded yet</p>
+      </div>`;
+  }
+  return `
+    <div class="folder" data-tab="${t.code}" style="--drawer-accent:${accent}">
+      <h3>${t.title}</h3>
+      <p class="desc">${t.description}</p>
+      <ul class="badges">${t.badges.map(b => `<li>${b}</li>`).join('')}</ul>
+      <div class="folder-footer">
+        <a class="open-link" href="${t.file}" onclick="return openTemplateModal(event, '${t.file}', '${t.title.replace(/'/g,"\\'")}')">Open template ${iconArrow()}</a>
+        <a class="open-link-newtab" href="${t.file}" target="_blank" rel="noopener" title="Open in a new tab instead">⤢</a>
+        <span class="updated">Updated ${t.updated}</span>
+      </div>
+    </div>`;
+}
+
+function emptyFolderHtml(category){
+  return `
+    <div class="folder empty">
+      <p>No ${category} templates filed yet.<br>Drop one into this drawer when it's ready.</p>
+    </div>`;
+}
+
+// Groups a category's items in original order — consecutive-or-not items
+// sharing a subcategory collapse into one nested sub-cabinet.
+function groupItems(items){
+  const groups = [];
+  const indexOf = {};
+  items.forEach(t=>{
+    if(t.subcategory){
+      if(indexOf[t.subcategory] === undefined){
+        indexOf[t.subcategory] = groups.length;
+        groups.push({ type:'group', name:t.subcategory, items:[t] });
+      } else {
+        groups[indexOf[t.subcategory]].items.push(t);
+      }
+    } else {
+      groups.push({ type:'single', item:t });
+    }
+  });
+  return groups;
+}
+
+function subdrawerHtml(group, accent){
+  const id = 'sub-' + group.name.replace(/[^a-z0-9]+/gi,'-').toLowerCase();
+  return `
+    <div class="subdrawer" data-open="false">
+      <button type="button" class="subdrawer-face" id="${id}-btn" aria-expanded="false" aria-controls="${id}-tray" style="--drawer-accent:${accent}">
+        <span class="sub-chevron" aria-hidden="true">&#9656;</span>
+        <span class="subdrawer-title">${group.name}</span>
+        <span class="sub-count">${group.items.length} ${group.items.length === 1 ? 'item' : 'items'}</span>
+      </button>
+      <div class="subdrawer-tray" id="${id}-tray" role="region" aria-labelledby="${id}-btn">
+        <div class="subtray-inner">
+          ${group.items.map(t => folderHtml(t, accent)).join('')}
+        </div>
+      </div>
+    </div>`;
+}
+
+// Opens a tray by animating to its measured height, then releases the cap
+// (max-height:none) so nested content can grow later without re-clipping.
+function openTray(tray){
+  tray.style.maxHeight = tray.scrollHeight + 'px';
+  const onEnd = (e)=>{
+    if(e.target === tray && e.propertyName === 'max-height'){
+      tray.style.maxHeight = 'none';
+      tray.removeEventListener('transitionend', onEnd);
+    }
+  };
+  tray.addEventListener('transitionend', onEnd);
+}
+
+// Closes a tray, first pinning it to its current pixel height (in case it's
+// currently 'none') so the browser has something to animate down from.
+function closeTray(tray){
+  if(tray.style.maxHeight === 'none' || tray.style.maxHeight === ''){
+    tray.style.maxHeight = tray.scrollHeight + 'px';
+    tray.getBoundingClientRect();
+  }
+  requestAnimationFrame(()=>{ tray.style.maxHeight = '0px'; });
+}
+
+function wireSubdrawers(root){
+  root.querySelectorAll('.subdrawer-face').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const sub = btn.closest('.subdrawer');
+      const tray = sub.querySelector('.subdrawer-tray');
+      const isOpen = sub.dataset.open === 'true';
+      sub.dataset.open = isOpen ? 'false' : 'true';
+      btn.setAttribute('aria-expanded', String(!isOpen));
+      if(!isOpen){ openTray(tray); } else { closeTray(tray); }
+    });
+  });
+}
+
+function buildDrawers(query){
+  const q = (query || '').trim().toLowerCase();
+  const host = document.getElementById('drawersHost');
+  host.innerHTML = '';
+
+  CATEGORIES.forEach((cat, i) => {
+    let items = TEMPLATES.filter(t => t.category === cat.name);
+    if(q){
+      items = items.filter(t =>
+        t.title.toLowerCase().includes(q) ||
+        t.description.toLowerCase().includes(q) ||
+        (t.code || '').toLowerCase().includes(q) ||
+        t.category.toLowerCase().includes(q) ||
+        (t.subcategory || '').toLowerCase().includes(q) ||
+        (t.badges || []).some(b => b.toLowerCase().includes(q))
+      );
+    }
+    const shouldOpen = !!q && items.length > 0;
+    if(q && items.length === 0 && cat.name.toLowerCase().indexOf(q) === -1) return;
+
+    const drawer = document.createElement('div');
+    drawer.className = 'drawer';
+    drawer.dataset.open = shouldOpen ? 'true' : 'false';
+
+    const groups = groupItems(items);
+    const trayContent = groups.length
+      ? groups.map(g => g.type === 'single' ? folderHtml(g.item, cat.accent) : subdrawerHtml(g, cat.accent)).join('')
+      : emptyFolderHtml(cat.name);
+
+    const drawerId = 'drawer-' + cat.name.toLowerCase().replace(/[^a-z0-9]+/g,'-');
+    drawer.innerHTML = `
+      <button type="button" class="drawer-face" id="${drawerId}-btn" aria-expanded="${shouldOpen}" aria-controls="${drawerId}-tray" style="--drawer-accent:${cat.accent}">
+        <span class="drawer-num">No. ${String(i+1).padStart(2,'0')}</span>
+        <span class="drawer-handle" aria-hidden="true"></span>
+        <span class="drawer-title"><span class="dot" style="--drawer-accent:${cat.accent}"></span>${cat.name} <span class="count">${items.length} ${items.length === 1 ? 'template' : 'templates'}</span></span>
+        <span class="drawer-chevron" aria-hidden="true">&#9656;</span>
+      </button>
+      <div class="drawer-tray" id="${drawerId}-tray" role="region" aria-labelledby="${drawerId}-btn">
+        <div class="tray-inner">
+          ${trayContent}
+        </div>
+      </div>`;
+
+    const tray = drawer.querySelector('.drawer-tray');
+    wireSubdrawers(drawer);
+
+    if(shouldOpen){
+      requestAnimationFrame(()=> openTray(tray));
+    }
+
+    drawer.querySelector('.drawer-face').addEventListener('click', ()=>{
+      const isOpen = drawer.dataset.open === 'true';
+      drawer.dataset.open = isOpen ? 'false' : 'true';
+      drawer.querySelector('.drawer-face').setAttribute('aria-expanded', String(!isOpen));
+      if(!isOpen){ openTray(tray); } else { closeTray(tray); }
+    });
+
+    host.appendChild(drawer);
+  });
+
+  if(q && !host.children.length){
+    host.innerHTML = '<p style="padding:24px 20px; color:var(--muted); font-family:var(--mono); font-size:12.5px;">No templates match “' + query + '”.</p>';
+  }
+}
+
+document.getElementById('searchInput').addEventListener('input', (e)=> buildDrawers(e.target.value));
+
+const drawersHost = document.getElementById('drawersHost');
+drawersHost.innerHTML = '<p style="padding:24px 20px; color:var(--muted); font-family:var(--mono); font-size:12.5px;">Loading templates…</p>';
+
+watchForUpdates(['reporting-categories.csv','reporting-templates.csv']);
+
+loadCabinetData()
+  .then(()=>{
+    buildDrawers('');
+    if(typeof refreshScrollReveal === 'function') refreshScrollReveal();
+  })
+  .catch(err=>{
+    drawersHost.innerHTML = `<p style="padding:24px 20px; color:var(--ink); font-family:var(--mono); font-size:12.5px;">
+      Could not load templates (${err.message}). If you're viewing this file directly on your computer rather
+      than through the published site, browsers block this kind of file loading — it will work correctly once
+      published on GitHub Pages.</p>`;
+  });
+
+// ---------------------------------------------------------------
+// Opens a template inline in an overlay instead of navigating away
+// from the cabinet — closing it returns you to exactly where you
+// were, drawers still open.
+// ---------------------------------------------------------------
+function openTemplateModal(event, file, title){
+  event.preventDefault();
+  const modal = document.getElementById('templateModal');
+  const frame = document.getElementById('templateModalFrame');
+  document.getElementById('templateModalTitle').textContent = title;
+  frame.src = file;
+  document.getElementById('templateModalNewTab').href = file;
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  // Hide the template's own toolbar once it loads — the modal bar now
+  // carries Print/Save/Clear, so showing both would be redundant.
+  frame.onload = ()=>{
+    try{
+      const frameDoc = frame.contentWindow.document;
+      const style = frameDoc.createElement('style');
+      style.textContent = '.toolbar{display:none !important;}';
+      frameDoc.head.appendChild(style);
+
+      const saveBtn = document.getElementById('templateModalSave');
+      const win = frame.contentWindow;
+      if(typeof win.exportEditablePDF === 'function' && typeof win.saveAsHTML !== 'function'){
+        saveBtn.textContent = '📄 Editable PDF';
+      } else {
+        saveBtn.textContent = '💾 Save';
+      }
+    }catch(e){ /* cross-origin fallback: leave the template's own toolbar visible */ }
+  };
+  return false;
+}
+
+function callInFrame(fnName){
+  try{
+    const win = document.getElementById('templateModalFrame').contentWindow;
+    if(typeof win[fnName] === 'function') win[fnName]();
+  }catch(e){ console.error('Could not call ' + fnName + ' in template:', e); }
+}
+document.getElementById('templateModalPrint').addEventListener('click', ()=> callInFrame('print'));
+document.getElementById('templateModalSave').addEventListener('click', ()=>{
+  try{
+    const win = document.getElementById('templateModalFrame').contentWindow;
+    if(typeof win.saveAsHTML === 'function') win.saveAsHTML();
+    else if(typeof win.exportEditablePDF === 'function') win.exportEditablePDF();
+  }catch(e){ console.error('Could not save template:', e); }
+});
+document.getElementById('templateModalClear').addEventListener('click', ()=> callInFrame('clearAll'));
+
+function closeTemplateModal(){
+  const modal = document.getElementById('templateModal');
+  modal.classList.remove('open');
+  document.getElementById('templateModalFrame').src = 'about:blank';
+  document.body.style.overflow = '';
+}
+
+document.getElementById('templateModalClose').addEventListener('click', closeTemplateModal);
+document.addEventListener('keydown', e=>{
+  if(e.key === 'Escape' && document.getElementById('templateModal').classList.contains('open')) closeTemplateModal();
+});
+
+(function(){
+  const btn = document.getElementById('cabinetPlateBtn');
+  const hint = document.getElementById('plateHint');
+  let allOpen = false;
+  btn.addEventListener('click', ()=>{
+    allOpen = !allOpen;
+    document.querySelectorAll('#drawersHost .drawer').forEach(drawer=>{
+      const face = drawer.querySelector('.drawer-face');
+      const tray = drawer.querySelector('.drawer-tray');
+      const isOpen = drawer.dataset.open === 'true';
+      if(allOpen && !isOpen){
+        drawer.dataset.open = 'true';
+        face.setAttribute('aria-expanded', 'true');
+        openTray(tray);
+      } else if(!allOpen && isOpen){
+        drawer.dataset.open = 'false';
+        face.setAttribute('aria-expanded', 'false');
+        closeTray(tray);
+      }
+    });
+    hint.textContent = allOpen ? '— close all' : '— open all';
+  });
+})();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SURAKKHA · Code of Conduct Exam — FIVDB</title>
+<link rel="stylesheet" href="site-shared.css">
+<link rel="stylesheet" href="exam-shared.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<nav class="site-nav" aria-label="Main navigation">
+  <div class="site-nav-inner">
+    <a class="site-brand" href="index.html">
+      <span class="brand-mark">S</span>
+      <span class="brand-text">
+        <span class="b1">SURAKKHA PROJECT</span>
+        <span class="b2">FIVDB &middot; DG ECHO 2026/00158</span>
+      </span>
+    </a>
+    <div class="site-links">
+      <a href="index.html">Home</a>
+      <a href="about-project.html">About Project</a>
+      <a href="reporting-channel.html">Reporting Channel</a>
+      <a href="reporting-template.html">Reporting Template</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="register.html">Register</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+  <div class="page-header">
+    <div class="eyebrow">Capacity Building &middot; 3 of 6</div>
+    <h1>Code of Conduct</h1>
+    <p class="lede">Based on FIVDB's Personnel Policies. Score 75% or higher to receive your certificate.</p>
+  </div>
+
+  <div class="exam-wrap">
+    <p class="exam-intro">Study the module below, then unlock the exam. Score 75% or higher to earn your certificate.</p>
+    <div id="moduleHost"></div>
+    <div class="exam-section" id="examSection">
+      <p class="exam-locked-note">🔒 Complete the study module above to unlock this exam.</p>
+      <div id="examHost"></div>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>SURAKKHA PROJECT · DG ECHO 2026/00158 — FIVDB</span>
+    <span>Support: <a href="mailto:mohasan.uddin@fivdb.org">mohasan.uddin@fivdb.org</a></span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase-client.js"></script>
+<script src="site-shared.js"></script>
+<script>showStaffOnlyNotice(); enforceStaffGate();</script>
+<script src="exam-engine.js"></script>
+<script>
+  const QUESTIONS = [
+    { id:'m1', type:'mcq', text:'By accepting appointment, FIVDB staff pledge to regulate their conduct with:', options:['Their own interests primarily in view', 'The interest of the organisation primarily in view', 'Their supervisor\'s preferences only', 'No specific standard'], correct:1 },
+    { id:'m2', type:'mcq', text:'Staff members should treat colleagues and anyone encountered through FIVDB business with:', options:['Formality only', 'Courtesy, respect, equality, and cultural sensitivity', 'Whatever approach gets results fastest', 'Deference to seniority only'], correct:1 },
+    { id:'m3', type:'mcq', text:'If a staff member has a financial interest in a business concern related to their official duties, they must:', options:['Keep it private', 'Disclose the nature and extent of that interest to the Executive Director', 'Only disclose if asked directly', 'Resign immediately'], correct:1 },
+    { id:'m4', type:'mcq', text:'Information known through your official FIVDB position may be shared externally:', options:['Whenever you personally judge it helpful', 'Only once it\'s already public, or with authorisation', 'Only with family members', 'Freely, since transparency is valued'], correct:1 },
+    { id:'m5', type:'mcq', text:'The confidentiality obligations in the Code of Conduct:', options:['End the moment you leave FIVDB', 'Continue even after separation from the organisation', 'Only apply to senior management', 'Apply only during the probation period'], correct:1 },
+    { id:'m6', type:'mcq', text:'Who specifies the criteria for classifying information as confidential?', options:['Any staff member individually', 'The Executive Director', 'The person who created the document', 'The donor'], correct:1 },
+    { id:'m7', type:'mcq', text:'Materials or work produced by a staff member during their employment for FIVDB:', options:['Belong personally to that staff member', 'Vest in FIVDB, with no personal right or title for the individual', 'Are shared 50/50 with the staff member', 'Belong to whoever funded the specific activity'], correct:1 },
+    { id:'m8', type:'mcq', text:'FIVDB\'s workplace policy on alcohol and drugs requires:', options:['A workplace completely free of alcohol and illegal substances', 'Moderate drinking is acceptable after hours on-site', 'No policy exists', 'Only applies to drivers'], correct:0 },
+    { id:'m9', type:'mcq', text:'FIVDB\'s policy on staff with HIV/AIDS and non-discrimination is grounded in:', options:['Treating affected staff differently for safety', 'Equality of all persons and non-discrimination', 'Mandatory disclosure to all colleagues', 'Automatic reassignment'], correct:1 },
+    { id:'m10', type:'mcq', text:'Public pronouncements by staff members that could adversely reflect on FIVDB\'s integrity or impartiality are:', options:['Encouraged as free expression', 'Something staff should avoid', 'Only restricted for the ED', 'Allowed if done anonymously'], correct:1 },
+
+    { id:'f1', type:'fact', text:'Staff members are subject to the authority of the Executive Director and may be assigned to any activity or office of the organisation.', correct:0 },
+    { id:'f2', type:'fact', text:'Personal visits and calls during working hours are actively encouraged.', correct:1 },
+    { id:'f3', type:'fact', text:'FIVDB promotes diversity and inclusion and prohibits prejudicial behaviour or harassment on grounds like religion, gender, or ethnicity.', correct:0 },
+    { id:'f4', type:'fact', text:'Royalties or payments derived from rights that vest in FIVDB automatically belong to the individual staff member unless FIVDB objects.', correct:1 },
+    { id:'f5', type:'fact', text:'The Child Safeguarding Policy is referenced within the Code of Conduct chapter of the Personnel Policies.', correct:0 },
+    { id:'f6', type:'fact', text:'Staff are free to publish anything based on confidential information as long as they don\'t name FIVDB directly.', correct:1 },
+    { id:'f7', type:'fact', text:'The Code of Conduct applies only to permanent, full-time staff.', correct:1 },
+
+    { id:'n1', type:'narrative', text:'Give an example of a situation where you might need to disclose a financial interest under this policy, and explain why disclosure matters.' },
+    { id:'n2', type:'narrative', text:'Why do you think confidentiality obligations continue even after someone leaves FIVDB?' },
+    { id:'n3', type:'narrative', text:'Describe, in your own words, what "treating everyone with cultural sensitivity" looks like in your day-to-day work.' },
+  ];
+
+  const MODULE_CONTENT = `
+    <h3>Foundation</h3>
+    <p>FIVDB is committed to a safe, healthy, hazard-free workplace. By accepting appointment, staff pledge to discharge their functions with the interest of the organisation primarily in view. Strict adherence to this Code is expected of all staff members.</p>
+
+    <h3>Employment Types &amp; Recruitment</h3>
+    <p>FIVDB classifies employees as <strong>regular employees</strong> (employed in a designated grade specified in their appointment letter) or <strong>contracted employees</strong> (employed for a particular term, paid per their agreement). When a vacancy arises, the Executive Director first attempts to fill it through internal rearrangement or transfer, advertised within the organisation's office locations; any external recruitment requires the ED's authorisation. Field-level posts are advertised in at least one local newspaper or website and displayed on local institutional notice boards; technical and central management posts are advertised in both national and local outlets. Recruitment is conducted by the ED or a committee formed for the purpose, with the final candidate list requiring ED approval before appointment letters are issued.</p>
+    <p><strong>Transfer</strong> implies no change of designation, only place of posting, and requires a no-objection certificate from the applicant's current unit head. <strong>Promotion</strong> fills a vacancy from staff on a lower grade; a no-objection certificate is preferable but not essential. Interview boards for any vacancy — whether filled by transfer or promotion — must include three or four senior staff from the unit or a neighbouring unit, plus the relevant technical Advisory Unit for specialist posts. Interviews must be conducted fairly, giving every applicant an equal chance and consistent treatment. Selected candidates must join on the date specified in their appointment letter, submitting a joining letter at that time; if unable to join as scheduled, they must inform FIVDB of the reason at least 24 hours beforehand.</p>
+
+    <h3>Working Hours &amp; Attendance</h3>
+    <p>Normal weekly working hours for office staff are 40 hours across 5 days — Sunday to Thursday, 9:00 AM to 5:00 PM, with a half-hour lunch break. Field-based programme staff have flexible hours depending on programme requirements. Office hours for drivers and support staff (other than guards) start an hour earlier and finish an hour later than regular office hours; night guards work 6:00 PM to 6:00 AM, day guards 6:00 AM to 6:00 PM, and household support staff work on an on-call basis. No fixed allowance or overtime payment applies where a position's nature of work requires presence beyond normal hours — staff are expected to work flexibly beyond prescribed hours when required.</p>
+    <p>All employees except senior management sign the attendance register maintained at their office. Anyone arriving late a total of three days in a month must surrender one day's leave or one day's salary. The Executive Director or their designate may change an employee's designation, responsibilities, and duties at any time, and may post or transfer employees to any of FIVDB's working locations — employees must be ready to accept a new posting, completing a transfer form for approval when leaving their previous location.</p>
+
+    <h3>Termination &amp; Gross Misconduct</h3>
+    <p>Employment may be terminated on several grounds: closure of the post; an employee's services no longer being considered necessary for the organisation's greater interest; completion of the activity or programme they were appointed for; being found guilty and prosecuted under a court of law; or being found guilty of gross misconduct. <strong>Gross misconduct</strong> specifically includes: stealing from FIVDB or other staff; fraud; misappropriation of funds; taking or offering bribes; assaulting or conspiring to assault another staff member; conspiring to injure another staff member or their family; physical, verbal, media, or other abuse of a colleague or stakeholder; harassment or interference with a person of the opposite sex; and divulging false or confidential information about FIVDB.</p>
+    <p>Before termination, a staff member is normally entitled to at least one documented verbal warning from the ED or their designate, and at least two written warnings from their unit head or HR unit — but these requirements don't apply to gross misconduct cases. A termination decision is communicated by letter, which may not contain the reasons for the termination, and employees are terminated either with one month's notice or one month's gross salary in lieu.</p>
+
+    <h3>Suspension Procedure</h3>
+    <p>Where a project decides to suspend an employee, they must be informed in writing, and during suspension receive 50% of basic pay as a subsistence allowance (no other allowances apply), with the accused given the opportunity to mount a defence. If the enquiry finds the employee innocent, they receive full back pay and allowances as though no suspension had occurred; if found partly guilty, back pay is determined at the ED's discretion; if found entirely guilty, termination is the usual outcome, with no further pay for the suspension period beyond the subsistence allowance already paid — and in cases of misappropriation, the lost funds or assets may be recovered from the employee, potentially forfeiting some or all of their termination benefits. No employee may be suspended for more than 90 days; if the enquiry can't be completed within that period, the employee is reinstated with full pay and allowances while the enquiry continues.</p>
+
+    <h3>Grievance, Retirement &amp; Resignation</h3>
+    <p>A <strong>Grievance Committee</strong> of three senior FIVDB staff members receives grievance applications, reviews them, and recommends appropriate steps to the relevant authority where needed — giving staff a formal channel for concerns about their own treatment, separate from the safeguarding and PSEA reporting channels used for concerns about others.</p>
+    <p><strong>Retirement</strong> age is 60, though an employee may choose to retire from age 57 onward; the organisation may extend someone's retirement age by up to 5 years where doing so benefits FIVDB. A <strong>resigning</strong> employee must serve 30 days' notice, or surrender gross daily salary for each day of notice not served (accrued earned leave may be used to offset the notice period, and the ED may reduce it on special grounds). Staff still in probation are exempt from serving notice, provided they hand over responsibilities, dues, and FIVDB property before leaving. Final benefits are only paid once all FIVDB property is returned, accounts are settled, and clearance certificates obtained — and the resigning employee must sign a statement confirming they have no further claims against FIVDB. Every resigning employee is entitled to a reference letter if they want one.</p>
+    <p>Staff are expected to give their full energy and commitment to FIVDB, and may not accept additional (outside) employment without the Executive Director's specific approval. Staff must also submit monthly, six-monthly, and other periodic activity reports as required by management, on time.</p>
+
+    <h3>Why This Matters for SURAKKHA</h3>
+    <p>The Code of Conduct isn't a separate concern from safeguarding or PSEA — it's the everyday foundation that makes those protections work in practice. A team that treats colleagues, beneficiaries, and camp residents with genuine respect and cultural sensitivity is one where a Rohingya family or a host-community volunteer feels able to raise a concern in the first place. A team that takes confidentiality seriously in small, routine matters is one that will handle a genuinely sensitive safeguarding disclosure correctly when it matters most. And clear, consistently applied rules on discipline, working hours, and leave aren't bureaucracy for its own sake — they're what allows SURAKKHA to run predictably and fairly across camps, host communities, and a large, diverse team, so that everyone's energy stays focused on the people the project exists to serve.</p>
+
+    <h3>Core Expectations</h3>
+    <ul>
+      <li>Avoid actions or public pronouncements that could adversely reflect on the integrity, independence, and impartiality required by your position.</li>
+      <li>Staff are subject to the Executive Director's authority and may be assigned to any activity or office of the organisation.</li>
+      <li>Treat colleagues and everyone encountered through FIVDB business with courtesy, respect, equality, and cultural sensitivity. FIVDB promotes diversity and prohibits prejudicial behaviour or harassment on grounds of religion, gender, race, ethnicity, health, political affiliation, physical ability, or marital status.</li>
+      <li>No staff member may hold a financial interest in a business concern where their official position could promote that concern's interest or benefit them personally — any such interest must be disclosed to the Executive Director immediately.</li>
+    </ul>
+
+    <h3>Non-Discrimination &amp; Harassment</h3>
+    <p>FIVDB investigates every discrimination complaint with a firm commitment to protecting all employees participating in an investigation from retaliation. Any employee found to have engaged in discrimination in violation of policy is subject to disciplinary action, up to and including termination. This obligation extends to supervisors and management too: any supervisor — including the Executive Director — who has knowledge of discriminatory behaviour and fails to act to end it is equally subject to disciplinary action, up to and including termination. This "knew and did nothing" standard means silence or inaction from someone in authority is treated as seriously as the discrimination itself.</p>
+
+    <h3>Political Activity</h3>
+    <p>Staff members may exercise their right to vote but must not engage in political activity that is inconsistent with, or might reflect poorly on, the independence and impartiality required of their role. Membership in a political party is permitted, provided it doesn't entail action or an obligation to act contrary to FIVDB's Rules and Regulations — paying normal membership dues is not, by itself, considered a violation. Where there's any doubt about how this applies to a specific situation, the staff member concerned should request a formal ruling from the Executive Director rather than guessing.</p>
+
+    <h3>Confidentiality, Information &amp; Intellectual Property</h3>
+    <p>Staff must exercise the utmost discretion in official matters. Information known through your position may not be communicated to any outside person, press, or entity unless already public or authorised by the ED — and may never be used for private advantage. <strong>These obligations do not cease upon separation from FIVDB.</strong> The ED specifies what counts as confidential and how it must be handled. Any material or work a staff member produces during their employment — including copyrights and patents — vests in FIVDB; the individual has no personal right or title to it, and any royalties belong to FIVDB unless the ED waives this in writing.</p>
+
+    <h3>Workplace Policies</h3>
+    <ul>
+      <li><strong>Alcohol &amp; drugs:</strong> the workplace must be free of alcohol and illegal substances. Employees impaired at work must leave the premises, and any unlawful manufacture, possession, or use on FIVDB premises is absolutely prohibited. Violations can lead to discharge, and criminal drug-related violations must be reported within 5 days.</li>
+      <li><strong>HIV/AIDS:</strong> FIVDB commits to a non-discriminatory, supportive approach — staff known to be HIV positive continue in service with proper medical precautions, and FIVDB supports referral to treatment.</li>
+      <li><strong>Child Safeguarding:</strong> referenced directly within the Code of Conduct, affirming every child's right to protection from abuse, neglect, exploitation, and violence under the UN CRC (1989).</li>
+    </ul>
+
+    <div class="context-box">
+      <strong>In the SURAKKHA context:</strong> Working across Rohingya camps and host communities means regular contact with camp management, other humanitarian actors, and local authorities. Impartiality matters especially here — decisions about who receives services or referrals must be free from favouritism, and information about specific households or cases must stay confidential regardless of how informally it's requested.
+    </div>
+  `;
+
+  initExam({
+    title: 'Code of Conduct',
+    source: 'FIVDB Code of Conduct',
+    questions: QUESTIONS,
+    moduleContent: MODULE_CONTENT,
+    moduleSource: 'FIVDB Code of Conduct, Personnel Policies Sections 3–3.4'
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SURAKKHA · Reporting Channel — FIVDB</title>
+<link rel="stylesheet" href="site-shared.css">
+<style>
+  .channel-grid{
+    max-width:1140px; margin:0 auto; padding:6px 20px 50px;
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:18px;
+  }
+  .channel-card{
+    background:var(--surface); border:1px solid var(--line); border-radius:6px; overflow:hidden;
+    box-shadow:0 4px 14px rgba(0,0,0,.06); display:flex; flex-direction:column;
+  }
+  .channel-top{padding:18px 20px 14px; border-top:5px solid var(--c, var(--primary));}
+  .channel-num{font-family:var(--mono); font-size:10.5px; color:var(--muted);}
+  .channel-card h2{font-family:var(--serif); font-size:18px; color:var(--primary); margin:6px 0 8px;}
+  .channel-card p{font-size:13px; color:var(--muted); margin:0; line-height:1.55;}
+  .channel-actions{margin-top:auto; padding:14px 20px; border-top:1px solid var(--line); background:var(--paper);}
+  .channel-actions a{
+    font-family:var(--sans); font-weight:700; font-size:12.5px; text-decoration:none; color:#fff;
+    background:var(--c, var(--primary)); padding:8px 14px; border-radius:3px; display:inline-flex; align-items:center; gap:6px;
+  }
+  .channel-actions a:hover{filter:brightness(1.1);}
+  .channel-actions .note{display:block; margin-top:8px; font-size:11px; color:var(--muted); font-style:italic;}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<nav class="site-nav" aria-label="Main navigation">
+  <div class="site-nav-inner">
+    <a class="site-brand" href="index.html">
+      <span class="brand-mark">S</span>
+      <span class="brand-text">
+        <span class="b1">SURAKKHA PROJECT</span>
+        <span class="b2">FIVDB &middot; DG ECHO 2026/00158</span>
+      </span>
+    </a>
+    <div class="site-links">
+      <a href="index.html">Home</a>
+      <a href="about-project.html">About Project</a>
+      <a href="reporting-channel.html">Reporting Channel</a>
+      <a href="reporting-template.html">Reporting Template</a>
+      <a href="dashboard.html">Dashboard</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+  <div class="page-header">
+    <div class="eyebrow">SURAKKHA Project</div>
+    <h1>Reporting Channel</h1>
+    <p class="lede">Report by intervention area. Each channel below is where field teams submit reporting for that theme.</p>
+  </div>
+
+  <div class="channel-grid" id="channelGrid"></div>
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>SURAKKHA PROJECT · DG ECHO 2026/00158 — FIVDB</span>
+    <span>Support: <a href="mailto:mohasan.uddin@fivdb.org">mohasan.uddin@fivdb.org</a></span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase-client.js"></script>
+<script src="site-shared.js"></script>
+<script>showStaffOnlyNotice(); enforceStaffGate();</script>
+<script>
+  // ---------------------------------------------------------------
+  // Reads reporting-channel.csv (same folder). Edit that file and
+  // re-upload to update this page — no changes to this file needed.
+  // Columns: title,description,color,link,link_label,note
+  // ---------------------------------------------------------------
+  function renderChannels(rows){
+    const host = document.getElementById('channelGrid');
+    if(!rows.length){
+      host.innerHTML = '<p style="font-size:13px; color:var(--muted); font-style:italic;">No reporting channels added yet.</p>';
+      return;
+    }
+    host.innerHTML = rows.map((r, i)=>{
+      const num = String(i+1).padStart(2,'0');
+      const hasLink = r.link && r.link.trim() !== '';
+      const linkHtml = hasLink
+        ? `<a href="${r.link}">${r.link_label || 'Open'} →</a>`
+        : `<a href="#" onclick="alert('Link not set up yet — add one in reporting-channel.csv.'); return false;">${r.link_label || 'Open'} →</a>`;
+      return `
+        <div class="channel-card">
+          <div class="channel-top" style="--c:${r.color || 'var(--primary)'}">
+            <span class="channel-num">${num}</span>
+            <h2>${r.title}</h2>
+            <p>${r.description}</p>
+          </div>
+          <div class="channel-actions" style="--c:${r.color || 'var(--primary)'}">
+            ${linkHtml}
+            ${r.note ? `<span class="note">${r.note}</span>` : ''}
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  watchForUpdates(['reporting-channel.csv']);
+
+  fetchCSV('reporting-channel.csv')
+    .then(rows => { renderChannels(rows); refreshScrollReveal(); })
+    .catch(err => csvLoadError(document.getElementById('channelGrid'), err, 'Reporting channels'));
+</script>
+</body>
+</html>

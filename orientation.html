@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SURAKKHA · Orientation &amp; Certification — FIVDB</title>
+<link rel="stylesheet" href="site-shared.css">
+<style>
+  .wrap{max-width:900px; margin:0 auto; padding:0 20px 60px;}
+  .intro-lede{font-size:15px; color:var(--muted); line-height:1.7; max-width:70ch; margin:0 0 30px;}
+  .hub-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:18px;}
+  .progress-summary{display:flex; align-items:center; gap:12px; margin-bottom:20px;}
+  .progress-track{flex:1; height:8px; background:var(--line); border-radius:4px; overflow:hidden;}
+  .progress-fill{height:100%; width:0%; background:var(--accent2); border-radius:4px; transition:width .35s ease;}
+  .progress-label{font-family:var(--mono); font-size:11.5px; color:var(--muted); white-space:nowrap;}
+
+  .hub-card.done{border-top-color:var(--accent2); background:linear-gradient(180deg, rgba(111,162,135,.06), transparent);}
+  .hub-card-check{display:none; color:var(--accent2); font-weight:700; font-size:12px; margin-top:6px;}
+  .hub-card.done .hub-card-check{display:block;}
+
+  .cert-panel{
+    margin:30px 0; padding:28px; border-radius:12px; text-align:center;
+    background:linear-gradient(135deg, var(--primary), var(--primary-dark)); color:#fff;
+    opacity:.4; pointer-events:none; transition:opacity .3s; display:none;
+  }
+  .cert-panel.ready{opacity:1; pointer-events:auto; display:block;}
+  .cert-panel h2{font-family:var(--serif); font-size:20px; margin:0 0 6px;}
+  .cert-panel p{font-size:13px; color:rgba(255,255,255,.85); margin:0 0 18px;}
+  .cert-form{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; max-width:420px; margin:0 auto;}
+  .cert-form input{flex:1; min-width:180px; font:inherit; font-size:14px; padding:11px 14px; border:none; border-radius:6px;}
+  .cert-form button{font-family:var(--sans); font-weight:700; font-size:13.5px; padding:11px 20px; border-radius:6px; border:none; background:var(--gold); color:#3a2e05; cursor:pointer; white-space:nowrap;}
+  .cert-note{font-size:11px; color:rgba(255,255,255,.7); margin-top:12px;}
+
+  .hub-card{
+    display:block; background:var(--surface); border:1px solid var(--line); border-top:4px solid var(--accent2);
+    border-radius:10px; padding:22px 20px; text-decoration:none; transition:transform .18s, box-shadow .18s;
+  }
+  .hub-card:hover{transform:translateY(-4px); box-shadow:var(--shadow-md);}
+  .hub-card-num{
+    display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:50%;
+    background:var(--primary); color:#fff; font-family:var(--serif); font-weight:700; font-size:13px; margin-bottom:10px;
+  }
+  .hub-card h3{font-family:var(--serif); font-size:16px; color:var(--ink); margin:0 0 6px;}
+  .hub-card p{font-size:12.5px; color:var(--muted); line-height:1.55; margin:0 0 10px;}
+  .hub-card-meta{font-family:var(--mono); font-size:10.5px; color:var(--accent2); text-transform:uppercase; letter-spacing:.03em;}
+  .rules-box{
+    margin-top:34px; padding:18px 22px; background:var(--surface); border-left:3px solid var(--gold);
+    border-radius:0 6px 6px 0; font-size:12.5px; color:var(--ink); line-height:1.7;
+  }
+  .rules-box h4{margin:0 0 8px; font-family:var(--sans); font-size:12.5px; text-transform:uppercase; letter-spacing:.03em; color:var(--primary);}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<nav class="site-nav" aria-label="Main navigation">
+  <div class="site-nav-inner">
+    <a class="site-brand" href="index.html">
+      <span class="brand-mark">S</span>
+      <span class="brand-text">
+        <span class="b1">SURAKKHA PROJECT</span>
+        <span class="b2">FIVDB &middot; DG ECHO 2026/00158</span>
+      </span>
+    </a>
+    <div class="site-links">
+      <a href="index.html">Home</a>
+      <a href="about-project.html">About Project</a>
+      <a href="reporting-channel.html">Reporting Channel</a>
+      <a href="reporting-template.html">Reporting Template</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="register.html">Register</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+  <div class="page-header">
+    <div class="eyebrow">SURAKKHA Project</div>
+    <h1>Capacity Building Orientation</h1>
+    <p class="lede">Six independent modules, each based on FIVDB's official policies. Complete each one's exam to earn its certificate.</p>
+  </div>
+
+  <div class="wrap">
+    <p class="intro-lede">
+      Each module below is its own page with its own exam — 10 multiple-choice questions, 7 fact-check questions, and 3 short-answer reflections. You need <strong>75% or higher</strong> on the scored questions to complete a module. Your progress is saved to your account, so you can pick up where you left off. <strong>One certificate is issued once all six modules are complete.</strong>
+    </p>
+
+    <div class="progress-summary" id="progressSummary"></div>
+
+    <div class="hub-grid" id="hubGrid">
+      <a class="hub-card" href="exam-safeguarding.html" data-topic="Child Safeguarding">
+        <div class="hub-card-num">1</div>
+        <h3>Child Safeguarding</h3>
+        <p>FIVDB's commitment to protecting children, and how to report a concern.</p>
+        <div class="hub-card-meta">20 questions · 75% to pass</div>
+      </a>
+      <a class="hub-card" href="exam-psea.html" data-topic="PSEA">
+        <div class="hub-card-num">2</div>
+        <h3>PSEA</h3>
+        <p>Protection from Sexual Exploitation &amp; Abuse — the six core principles.</p>
+        <div class="hub-card-meta">20 questions · 75% to pass</div>
+      </a>
+      <a class="hub-card" href="exam-code-of-conduct.html" data-topic="Code of Conduct">
+        <div class="hub-card-num">3</div>
+        <h3>Code of Conduct</h3>
+        <p>Expected conduct and confidentiality obligations for everyone on the project.</p>
+        <div class="hub-card-meta">20 questions · 75% to pass</div>
+      </a>
+      <a class="hub-card" href="exam-data-protection.html" data-topic="Data Protection">
+        <div class="hub-card-num">4</div>
+        <h3>Data Protection</h3>
+        <p>How personal data is collected, protected, and shared — with approval.</p>
+        <div class="hub-card-meta">20 questions · 75% to pass</div>
+      </a>
+      <a class="hub-card" href="exam-fraud.html" data-topic="Fraud Control & Anti-Corruption">
+        <div class="hub-card-num">5</div>
+        <h3>Fraud Control &amp; Anti-Corruption</h3>
+        <p>What counts as fraud or corruption, and your responsibility to report it.</p>
+        <div class="hub-card-meta">20 questions · 75% to pass</div>
+      </a>
+      <a class="hub-card" href="exam-org-policy.html" data-topic="Organizational Policy & Procedure">
+        <div class="hub-card-num">6</div>
+        <h3>Organizational Policy &amp; Procedure</h3>
+        <p>Recruitment, service conditions, non-discrimination, and political activity.</p>
+        <div class="hub-card-meta">20 questions · 75% to pass</div>
+      </a>
+    </div>
+
+    <div class="cert-panel" id="certPanel">
+      <h2>🎓 All Modules Complete</h2>
+      <p>Enter your name exactly as you'd like it to appear on your certificate.</p>
+      <div class="cert-form">
+        <input type="text" id="certName" placeholder="Full name">
+        <button type="button" id="certBtn">Generate Certificate</button>
+      </div>
+      <p class="cert-note">Downloads as a PDF you can keep, print, or share.</p>
+    </div>
+
+    <div class="rules-box">
+      <h4>How scoring works</h4>
+      <p>Your percentage is based on the 17 multiple-choice and fact-check questions per module. The 3 short-answer questions aren't auto-graded — a simple quiz can't fairly judge written reasoning — but they're required to submit, and are meant for your own reflection. Your progress is saved per module as you complete each one, so logging in later picks up right where you left off.</p>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>SURAKKHA PROJECT · DG ECHO 2026/00158 — FIVDB</span>
+    <span>Support: <a href="mailto:mohasan.uddin@fivdb.org">mohasan.uddin@fivdb.org</a></span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase-client.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="exam-engine.js"></script>
+<script src="site-shared.js"></script>
+<script>showStaffOnlyNotice(); enforceStaffGate();</script>
+<script>
+  const ALL_TOPICS = ['Child Safeguarding', 'PSEA', 'Code of Conduct', 'Data Protection', 'Fraud Control & Anti-Corruption', 'Organizational Policy & Procedure'];
+
+  async function loadProgress(){
+    const client = typeof sb === 'function' ? sb() : null;
+    if(!client) return;
+    const user = await getCurrentUser();
+    if(!user) return;
+
+    const { data: rows, error } = await client.from('progress').select('*').eq('user_id', user.authUser.id);
+    if(error || !rows) return;
+
+    const doneTopics = new Set(rows.map(r => r.topic));
+    document.querySelectorAll('.hub-card').forEach(card=>{
+      if(doneTopics.has(card.dataset.topic)){
+        card.classList.add('done');
+        if(!card.querySelector('.hub-card-check')){
+          const check = document.createElement('div');
+          check.className = 'hub-card-check';
+          check.textContent = '✓ Complete';
+          card.appendChild(check);
+        }
+      }
+    });
+
+    document.getElementById('progressSummary').innerHTML = `
+      <div class="progress-track"><div class="progress-fill" style="width:${(doneTopics.size / ALL_TOPICS.length) * 100}%"></div></div>
+      <div class="progress-label">${doneTopics.size} of ${ALL_TOPICS.length} modules complete</div>
+    `;
+
+    if(doneTopics.size >= ALL_TOPICS.length){
+      document.getElementById('certPanel').classList.add('ready');
+    }
+  }
+
+  document.getElementById('certBtn').addEventListener('click', ()=>{
+    const name = document.getElementById('certName').value.trim();
+    if(!name){ document.getElementById('certName').focus(); return; }
+    buildFinalCertificate(name, ALL_TOPICS).catch(err=>{
+      console.error(err);
+      alert('Could not build the certificate: ' + err.message);
+    });
+  });
+
+  loadProgress();
+</script>
+</body>
+</html>

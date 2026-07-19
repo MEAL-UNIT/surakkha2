@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SURAKKHA · Organizational Policy &amp; Procedure Exam — FIVDB</title>
+<link rel="stylesheet" href="site-shared.css">
+<link rel="stylesheet" href="exam-shared.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<nav class="site-nav" aria-label="Main navigation">
+  <div class="site-nav-inner">
+    <a class="site-brand" href="index.html">
+      <span class="brand-mark">S</span>
+      <span class="brand-text">
+        <span class="b1">SURAKKHA PROJECT</span>
+        <span class="b2">FIVDB &middot; DG ECHO 2026/00158</span>
+      </span>
+    </a>
+    <div class="site-links">
+      <a href="index.html">Home</a>
+      <a href="about-project.html">About Project</a>
+      <a href="reporting-channel.html">Reporting Channel</a>
+      <a href="reporting-template.html">Reporting Template</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="register.html">Register</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+  <div class="page-header">
+    <div class="eyebrow">Capacity Building &middot; 6 of 6</div>
+    <h1>Organizational Policy &amp; Procedure</h1>
+    <p class="lede">Based on FIVDB's Personnel Policies and Procedures Manual. Score 75% or higher to receive your certificate.</p>
+  </div>
+
+  <div class="exam-wrap">
+    <p class="exam-intro">Study the module below, then unlock the exam. Score 75% or higher to earn your certificate.</p>
+    <div id="moduleHost"></div>
+    <div class="exam-section" id="examSection">
+      <p class="exam-locked-note">🔒 Complete the study module above to unlock this exam.</p>
+      <div id="examHost"></div>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>SURAKKHA PROJECT · DG ECHO 2026/00158 — FIVDB</span>
+    <span>Support: <a href="mailto:mohasan.uddin@fivdb.org">mohasan.uddin@fivdb.org</a></span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase-client.js"></script>
+<script src="site-shared.js"></script>
+<script>showStaffOnlyNotice(); enforceStaffGate();</script>
+<script src="exam-engine.js"></script>
+<script>
+  const QUESTIONS = [
+    { id:'m1', type:'mcq', text:'FIVDB was established in:', options:['1975', '1979', '1985', '1991'], correct:1 },
+    { id:'m2', type:'mcq', text:'The standard probationary period for newly recruited staff is:', options:['3 months', '6 months, extendable to 9', '12 months', 'No probation period'], correct:1 },
+    { id:'m3', type:'mcq', text:'A "transfer," as defined in the manual, means:', options:['A change of designation and pay grade', 'No change of designation, only place of posting', 'Automatic promotion', 'Termination and rehire'], correct:1 },
+    { id:'m4', type:'mcq', text:'Under FIVDB\'s non-discrimination policy, staff who witness discrimination against a colleague:', options:['Should mind their own business', 'Are expected to report it', 'Should only intervene if directly asked', 'Have no responsibility to act'], correct:1 },
+    { id:'m5', type:'mcq', text:'FIVDB staff members\' political activity:', options:['Is completely unrestricted', 'Is prohibited entirely, including voting', 'Should not compromise the independence and impartiality expected of them', 'Requires donor approval'], correct:2 },
+    { id:'m6', type:'mcq', text:'Which of these is listed as "gross misconduct" that can bypass the normal warning process before termination?', options:['Being late twice in a month', 'Stealing from FIVDB or other staff', 'Taking unplanned leave', 'Requesting a transfer'], correct:1 },
+    { id:'m7', type:'mcq', text:'Before termination (outside of gross misconduct cases), a staff member is entitled to:', options:['No warning at all', 'At least one verbal and two written warnings', 'A single email notice', 'A public announcement'], correct:1 },
+    { id:'m8', type:'mcq', text:'If a selected candidate cannot join on the date specified in their appointment letter, they must:', options:['Simply not show up', 'Inform the organisation at least 24 hours before the joining date', 'Wait for FIVDB to follow up', 'Reapply from scratch'], correct:1 },
+    { id:'m9', type:'mcq', text:'How many days of Earned/Annual Leave are regular staff entitled to per calendar year?', options:['10 days', '15 days', '24 days', '30 days'], correct:2 },
+    { id:'m10', type:'mcq', text:'FIVDB\'s mission focuses on giving disadvantaged women, men, and children:', options:['Only emergency relief', 'Greater voice, reduced vulnerability, and improved quality of life', 'Only financial support', 'Only educational materials'], correct:1 },
+
+    { id:'f1', type:'fact', text:'FIVDB works in collaboration with communities, civil society, government, and the private sector.', correct:0 },
+    { id:'f2', type:'fact', text:'A no-objection certificate is required for promotion applicants, and this is treated as essential without exception.', correct:1 },
+    { id:'f3', type:'fact', text:'The Executive Director or their designate can change an employee\'s designation and responsibilities.', correct:0 },
+    { id:'f4', type:'fact', text:'Membership in a political party is entirely prohibited for FIVDB staff, with no exceptions.', correct:1 },
+    { id:'f5', type:'fact', text:'Employees found guilty of gross misconduct can be terminated without the standard warning process.', correct:0 },
+    { id:'f6', type:'fact', text:'An employee who becomes aware of discrimination against a colleague but says nothing may face administrative action themselves.', correct:0 },
+    { id:'f7', type:'fact', text:'Sick leave carries over and accumulates from one year to the next if unused.', correct:1 },
+
+    { id:'n1', type:'narrative', text:'Why do you think FIVDB requires interview boards to include multiple senior staff, rather than a single interviewer?' },
+    { id:'n2', type:'narrative', text:'Describe why you think warnings are required before most terminations, but gross misconduct cases skip that process.' },
+    { id:'n3', type:'narrative', text:'In your own words, explain why a staff member\'s political activity is restricted from compromising organisational impartiality, even though they retain the right to vote.' },
+  ];
+
+  const MODULE_CONTENT = `
+    <h3>Purpose, Scope &amp; Background</h3>
+    <p>FIVDB is a non-governmental development organisation established in 1979, implementing development activities since 1981. Its mission is to give disadvantaged women, men, and children greater voice, reduce their vulnerability, increase their use of citizenship rights, and help them enhance their quality of life. To that end, FIVDB pursues educational, economic development, and social-organisation approaches — working to strengthen social protection and safety networks, and participating in national and international outreach and advocacy, in collaboration with communities, civil society, government, and the private sector.</p>
+    <p>The Personnel Policies and Procedures Manual outlines these policies and procedures for all FIVDB staff. It's a set of fundamental rules — any deviation from them should be explainable to management and employees alike. Where national legislation, labour law, or a Senior Management Team decision affects staff, the relevant section of the manual is reviewed as soon as possible by interim order of the Executive Director, before being placed before the Board for final approval. Personnel <em>policy</em> defines the organisation's philosophy and values around how staff should be treated, from which managers derive the principles they act on; personnel <em>procedures</em> state specifically what should be done and how. The manual applies to all FIVDB core staff members, and all staff are expected to familiarise themselves with its contents — where no set policy exists for a significant issue, or where a policy can't be implemented as written, staff are expected to consult the HR Manager or Director of Finance and Administration for guidance.</p>
+    <p>FIVDB abides by the labour laws of the country in which it operates, and no staff member will be required to carry out actions that would conflict with those laws — establishing the legal position in any unfamiliar situation, and informing the Senior Management Team, is the HR Manager's responsibility. All Managers and Administrators keep a copy of this manual, and any staff member may request access to a copy.</p>
+
+    <h3>Recruitment &amp; Service Conditions</h3>
+    <ul>
+      <li><strong>Interview boards</strong> for filling vacancies (whether by transfer or promotion) must include three or four senior staff from the unit or neighbouring units, and interviews must be conducted fairly, giving each applicant an equal chance.</li>
+      <li><strong>Joining:</strong> selected candidates must join on the date in their appointment letter; if unable to, they must inform FIVDB at least 24 hours before that date.</li>
+      <li><strong>Probation:</strong> new staff serve a standard 6-month probationary period, extendable to 9 months if management isn't satisfied with performance. At the end, the appointment must be confirmed in writing or the person terminated.</li>
+      <li><strong>Transfer</strong> implies no change of designation, only place of posting; <strong>promotion</strong> fills a vacancy from staff on a lower grade.</li>
+    </ul>
+
+    <h3>Benefits &amp; Facilities</h3>
+    <p>Beyond salary, FIVDB provides several structured benefits. A <strong>medical allowance</strong> is paid monthly to eligible employees at the rate set in FIVDB's Benefit Package, alongside management and dearness allowances for specified positions. <strong>Transport</strong> for job-related work is provided, including pickups and drops for Central and Dhaka office staff where possible; employees not provided organisational transport (Grades I–VI) receive a monthly conveyance allowance.</p>
+    <p><strong>Gratuity/severance pay</strong> is paid to resigning staff based on length of service: no entitlement under 1 year; 1.5 times the last basic salary per completed year of service for 1–5 years; 1.75 times for 5–10 years; and 2 times for more than 10 years. Terminated staff may also receive gratuity, subject to their unit head's recommendation and the Executive Director's approval. To qualify, staff must have completed 12 months of service excluding probation, and all outstanding property, accounts, and clearance certificates must be settled first — payment is normally made within 3 months.</p>
+    <p>FIVDB also operates a <strong>Provident Fund</strong>, to which employees contribute 10% of their basic salary and FIVDB contributes an equal matching amount, held in a dedicated bank account. Employees may withdraw up to 75% of their total savings, with Executive Director approval, specifically for land purchase or house construction/repair. Staff travelling outside their normal working area for work receive a per-diem allowance covering accommodation, food, and travel, calculated based on departure and arrival times and adjusted where FIVDB directly provides meals or accommodation.</p>
+
+    <h3>Discipline &amp; Termination</h3>
+    <p>Grounds for termination include closure of a post, an employee no longer being necessary for the organisation's interest, completion of the programme they were appointed for, being found guilty under a court of law, or gross misconduct. <strong>Gross misconduct</strong> includes stealing, fraud, misappropriation of funds, bribery, assault, abuse of staff or stakeholders, harassment, or divulging false or confidential information — and bypasses the normal warning process. For other terminations, staff are entitled to at least one verbal warning and two written warnings before termination.</p>
+
+    <h3>Leave &amp; Holidays</h3>
+    <p>FIVDB recognises six types of leave: Earned/Annual Leave, Sick Leave, Study Leave, Maternity/Paternity Leave, Extraordinary Leave, and Compensatory Leave.</p>
+    <ul>
+      <li><strong>Earned/Annual Leave:</strong> regular staff are entitled to 24 days per calendar year, accruing at 2 days per completed month served. Staff in Grades II–VI may submit an annual leave plan at the start of the year, notifying their unit head at least 3 days before taking leave; requests must not be unreasonably refused. Up to 30 days may be carried forward, and unused earned leave is paid out on resignation or termination, up to that same 30-day limit.</li>
+      <li><strong>Sick Leave:</strong> regular employees are entitled to 15 days per year, which does not carry over between years. If sick leave is exhausted, staff may apply earned leave to cover the period; beyond that, unit heads may grant special sick leave at basic pay for up to 2 months, with anything longer requiring the Executive Director's approval. Staff must notify the office when sick, or the absence is treated as unauthorised and salary is deducted accordingly.</li>
+      <li><strong>Study Leave:</strong> regular staff may be granted up to 30 days to prepare for Board/Institution/University examinations, adjusted against accrued earned leave on full pay. Temporary or probationary staff may receive up to 20 days as special leave without pay. All study leave requires the Executive Director's approval via the unit head, along with course details and examination registration.</li>
+      <li><strong>Maternity/Paternity Leave:</strong> a woman employee who has completed 12 months of service (including probation) is entitled to 120 days of paid leave at childbirth, for up to two children. Written notice of the expected date is required six weeks before childbirth where possible. A woman may not be required to work during this leave, nor dismissed during it or shortly before it without sufficient cause.</li>
+    </ul>
+
+    <h3>Expected Workplace Behaviour</h3>
+    <p>Beyond the Code of Conduct's core provisions, staff are expected to maintain punctuality and regular attendance, notify supervisors promptly of any absence, and follow the leave procedures above rather than taking unauthorised time off. Unauthorised absence is treated as a disciplinary matter and can result in salary deductions or, if repeated, formal warnings. Staff are expected to use FIVDB's leave entitlements honestly — for their stated purpose — and to give supervisors reasonable notice wherever the circumstances allow it, recognising that field-based humanitarian work often requires flexible coverage arrangements among team members.</p>
+
+    <h3>Non-Discrimination &amp; Political Activity</h3>
+    <p>FIVDB adheres to a strict non-discrimination policy — no employee may discriminate against another on the basis of ethnicity, religion, gender, or any attribute unrelated to skills and capability. Anyone who experiences or witnesses discrimination is expected to report it to the Director of Finance and Administration, HR Manager, or Executive Director. Staff may exercise their right to vote, but must not engage in political activity that conflicts with the independence and impartiality expected of their role — party membership is permitted as long as it doesn't create an obligation to act against FIVDB's rules.</p>
+
+    <h3>Change of Designation &amp; Posting</h3>
+    <p>The Executive Director or their designate may change an employee's designation and responsibilities at any time, seeking suggestions from the relevant programme coordinator where necessary. Employees may similarly be posted or transferred to any FIVDB working location; a transferring employee must be ready to accept the new posting, and completes a transfer form for approval before leaving their previous location. This flexibility exists because humanitarian programming — including SURAKKHA's work across multiple camps and host-community sites — often requires staff to be deployed where operational needs are greatest, rather than staying fixed to a single location indefinitely.</p>
+
+    <h3>Grievance Procedure</h3>
+    <p>Separately from the safeguarding, PSEA, and fraud reporting channels covered elsewhere in this orientation, FIVDB maintains a <strong>Grievance Committee</strong> of three senior staff members for concerns about an employee's own treatment — disputes over pay, promotion, working conditions, or interpersonal issues that don't rise to the level of a safeguarding or misconduct concern. The Committee receives grievance applications, reviews them, and recommends appropriate steps to the relevant authority. Knowing this channel exists matters — an employee doesn't need to escalate every workplace disagreement to the Executive Director, nor should legitimate grievances go unaddressed simply because there's no obvious channel for them.</p>
+
+    <h3>Why This Matters for SURAKKHA</h3>
+    <p>Organizational policy and procedure can feel like the least urgent part of this orientation compared to safeguarding or fraud — but it's the operational backbone that makes everything else function. Clear recruitment procedures mean SURAKKHA hires people suited to sensitive, camp-based humanitarian work. Predictable leave and working-hour rules mean field teams across Camps 1W, 6, 21, and 24 can plan coverage reliably, rather than activities collapsing when someone is unexpectedly unavailable. A functioning grievance channel means staff frustrations get resolved through proper process rather than either being suppressed or spilling into the kind of workplace conflict that ultimately affects service to beneficiaries. And termination and disciplinary procedures that are followed consistently — rather than applied selectively — are part of what keeps a large, diverse team, drawn from host communities and including Rohingya volunteers, operating fairly and with mutual trust. None of this is abstract HR process for its own sake: it's what allows SURAKKHA's actual mission — protecting and supporting children and families — to run smoothly day after day.</p>
+
+    <div class="context-box">
+      <strong>In the SURAKKHA context:</strong> SURAKKHA staff work alongside colleagues from host communities and Rohingya volunteers, often across cultural and linguistic lines. Non-discrimination applies fully across these teams, and impartiality in a politically sensitive displacement context is essential to maintaining trust with camp authorities, host communities, and refugees alike.
+    </div>
+  `;
+
+  initExam({
+    title: 'Organizational Policy & Procedure',
+    source: 'FIVDB Personnel Policies and Procedures',
+    questions: QUESTIONS,
+    moduleContent: MODULE_CONTENT,
+    moduleSource: 'FIVDB Personnel Policies and Procedures, Sections 1–5'
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SURAKKHA · Immediate Information Share — FIVDB</title>
+<link rel="stylesheet" href="site-shared.css">
+<style>
+  .form-wrap{max-width:640px; margin:0 auto; padding:24px 20px 60px;}
+  .field-group{margin-bottom:16px;}
+  .field-group label{display:block; font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin-bottom:5px;}
+  .field-group input, .field-group select, .field-group textarea{
+    width:100%; font:inherit; font-size:14px; padding:10px 12px; border:1px solid var(--line);
+    background:var(--surface); color:var(--ink); border-radius:6px; font-family:var(--sans);
+  }
+  .field-group input:focus, .field-group select:focus, .field-group textarea:focus{
+    outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(74,122,140,.15);
+  }
+  .field-row{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .actions-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:22px;}
+  .actions-row button, .actions-row a{
+    font-family:var(--sans); font-weight:700; font-size:13.5px; padding:11px 18px; border-radius:6px;
+    cursor:pointer; border:none; text-decoration:none; display:inline-flex; align-items:center; gap:7px;
+  }
+  .btn-primary{background:var(--accent2); color:#fff;}
+  .btn-secondary{background:var(--primary); color:#fff;}
+  .btn-ghost{background:var(--surface); color:var(--ink); border:1px solid var(--line) !important;}
+  .preview-box{
+    margin-top:22px; background:var(--surface); border:1px solid var(--line); border-radius:8px;
+    padding:16px; font-family:var(--mono); font-size:12.5px; color:var(--ink); white-space:pre-wrap; line-height:1.7;
+  }
+  .preview-label{font-family:var(--sans); font-weight:700; font-size:12px; color:var(--muted); margin-bottom:8px; text-transform:uppercase; letter-spacing:.03em;}
+  .copy-note{font-size:12px; color:var(--muted); margin-top:8px;}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<nav class="site-nav" aria-label="Main navigation">
+  <div class="site-nav-inner">
+    <a class="site-brand" href="index.html">
+      <span class="brand-mark">S</span>
+      <span class="brand-text">
+        <span class="b1">SURAKKHA PROJECT</span>
+        <span class="b2">FIVDB &middot; DG ECHO 2026/00158</span>
+      </span>
+    </a>
+    <div class="site-links">
+      <a href="index.html">Home</a>
+      <a href="about-project.html">About Project</a>
+      <a href="reporting-channel.html">Reporting Channel</a>
+      <a href="reporting-template.html">Reporting Template</a>
+      <a href="dashboard.html">Dashboard</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+  <div class="page-header">
+    <div class="eyebrow">Immediate Information Share</div>
+    <h1>Quick Incident Notification</h1>
+    <p class="lede">Fill this in to build a clear, ready-to-send message for MEAL — then send it by WhatsApp, email, or both. Nothing here is sent automatically; you send it yourself from your own WhatsApp or email app.</p>
+  </div>
+
+  <div class="form-wrap">
+    <div class="field-row">
+      <div class="field-group">
+        <label for="f_date">Incident date</label>
+        <input type="date" id="f_date">
+      </div>
+      <div class="field-group">
+        <label for="f_time">Incident time</label>
+        <input type="time" id="f_time">
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label for="f_location">Location</label>
+      <input type="text" id="f_location" placeholder="e.g. Camp 1W, Block C, near the CBLF">
+    </div>
+
+    <div class="field-group">
+      <label for="f_facility">Facility ID</label>
+      <input type="text" id="f_facility" placeholder="e.g. CBLF-014">
+    </div>
+
+    <div class="field-group">
+      <label for="f_type">Type of incident</label>
+      <select id="f_type">
+        <option value="">Select...</option>
+        <option>Safeguarding / PSEA concern</option>
+        <option>Security</option>
+        <option>Accident / Injury</option>
+        <option>Fire</option>
+        <option>Natural disaster</option>
+        <option>Theft / Loss</option>
+        <option>Vehicle accident</option>
+        <option>Property damage</option>
+        <option>Other</option>
+      </select>
+    </div>
+
+    <div class="field-group">
+      <label for="f_info">Available information</label>
+      <textarea id="f_info" rows="4" placeholder="Whatever you know so far — this can be brief. A full report can follow separately."></textarea>
+    </div>
+
+    <div class="field-row">
+      <div class="field-group">
+        <label for="f_name">Your name</label>
+        <input type="text" id="f_name" placeholder="Full name">
+      </div>
+      <div class="field-group">
+        <label for="f_designation">Your designation</label>
+        <input type="text" id="f_designation" placeholder="e.g. Education Officer">
+      </div>
+    </div>
+
+    <div class="actions-row">
+      <button type="button" class="btn-primary" onclick="sendWhatsApp()">Send via WhatsApp</button>
+      <button type="button" class="btn-secondary" onclick="sendEmail()">Send via Email</button>
+      <button type="button" class="btn-ghost" onclick="copyMessage()">Copy message</button>
+    </div>
+    <p class="copy-note" id="copyNote"></p>
+
+    <div class="preview-box">
+      <div class="preview-label">Message preview</div>
+      <div id="previewText">Fill in the form above to see the message here.</div>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>SURAKKHA PROJECT · DG ECHO 2026/00158 — FIVDB</span>
+    <span>Support: <a href="mailto:mohasan.uddin@fivdb.org">mohasan.uddin@fivdb.org</a></span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase-client.js"></script>
+<script src="site-shared.js"></script>
+<script>
+  const MEAL_EMAIL = "mohasan.uddin@fivdb.org";
+  const CC_EMAIL = "shahel.ahmed@fivdb.org";
+  const fields = ['f_date','f_time','f_location','f_facility','f_type','f_info','f_name','f_designation'];
+
+  function buildMessage(){
+    const v = id => document.getElementById(id).value.trim();
+    const lines = [
+      'SURAKKHA — Immediate Information Share',
+      '',
+      `Incident date: ${v('f_date') || '—'}`,
+      `Incident time: ${v('f_time') || '—'}`,
+      `Location: ${v('f_location') || '—'}`,
+      `Facility ID: ${v('f_facility') || '—'}`,
+      `Type of incident: ${v('f_type') || '—'}`,
+      '',
+      'Available information:',
+      v('f_info') || '—',
+      '',
+      `Reported by: ${v('f_name') || '—'}${v('f_designation') ? ' (' + v('f_designation') + ')' : ''}`,
+    ];
+    return lines.join('\n');
+  }
+
+  function updatePreview(){
+    document.getElementById('previewText').textContent = buildMessage();
+  }
+  fields.forEach(id => document.getElementById(id).addEventListener('input', updatePreview));
+  updatePreview();
+
+  function sendWhatsApp(){
+    // This goes to the incident-reporting WhatsApp GROUP, which is a
+    // different destination from the general "Chat with MEAL" button.
+    // Group-invite links can't pre-fill a message, so it's copied to
+    // the clipboard and the group is opened — paste it in once the
+    // chat opens.
+    copyMessage(true);
+    window.open(INCIDENT_WHATSAPP_LINK, '_blank', 'noopener');
+  }
+
+  function sendEmail(){
+    const subject = encodeURIComponent('SURAKKHA PROJECT - Incident Notification');
+    const body = encodeURIComponent(buildMessage());
+    window.location.href = `mailto:${MEAL_EMAIL}?cc=${CC_EMAIL}&subject=${subject}&body=${body}`;
+  }
+
+  function copyMessage(silent){
+    const msg = buildMessage();
+    navigator.clipboard.writeText(msg).then(()=>{
+      const note = document.getElementById('copyNote');
+      note.textContent = silent
+        ? '✓ Message copied — paste it into the WhatsApp chat that just opened.'
+        : '✓ Message copied to your clipboard.';
+      setTimeout(()=>{ if(note.textContent.startsWith('✓')) note.textContent = ''; }, 6000);
+    }).catch(()=>{
+      document.getElementById('copyNote').textContent = 'Could not copy automatically — please select and copy the preview text below manually.';
+    });
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<title>General Incident Report</title>
+<style>
+  :root{
+    --ink:#262626; --paper:#ffffff; --line:#bfbfbf;
+    --accent:#1F3864; --accent-teal:#2E7D6B;
+    --accent-soft:#F2F2F2; --accent-soft2:#EAF1EF; --muted:#595959; --danger:#a5402f;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:#e5e5e5; font-family:"Calibri","Segoe UI",Arial,sans-serif; color:var(--ink);}
+  #sheet p, #sheet li{text-align:justify;}
+  @media print{ *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; color-adjust:exact !important; } }
+  .toolbar{
+    position:sticky; top:0; z-index:50; background:#1a1a1a; color:#f2f1ea;
+    padding:10px 18px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;
+    font-family:"Helvetica Neue",Arial,sans-serif;
+  }
+  .toolbar .brand{font-weight:700; letter-spacing:.04em; margin-right:auto; font-size:13px; text-transform:uppercase; color:#a9c9e8;}
+  .toolbar .status{font-size:11.5px; color:#a9c9e8; min-width:120px;}
+  .toolbar button{
+    background:transparent; color:#f2f1ea; border:1px solid #565656; padding:7px 12px; border-radius:5px;
+    font-size:12.5px; cursor:pointer; font-family:inherit; transition:background .15s;
+  }
+  .toolbar button:hover{background:#333;}
+  .toolbar button.primary{background:var(--accent); border-color:var(--accent);}
+  .toolbar button.primary:hover{background:#16294a;}
+
+  .page-wrap{width:210mm; margin:26px auto 80px; padding:0 16px; box-sizing:border-box;}
+  #sheet{
+    width:210mm; margin:0 auto; box-sizing:border-box; background:var(--paper); border:1px solid var(--line);
+    padding:14mm 16mm; box-shadow:0 2px 18px rgba(0,0,0,.12);
+  }
+  .masthead{display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line); padding-bottom:8px; margin-bottom:14px;}
+  .masthead .proj{font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif;}
+  .masthead .annex-label{font-size:13px; font-weight:700; color:#E8730A; font-family:"Helvetica Neue",Arial,sans-serif;}
+  .title-block{text-align:center; margin-bottom:10px;}
+  .title-block h1{font-family:"Times New Roman",Times,serif; color:var(--accent-teal); font-size:20px; font-weight:700; margin:0 0 2px;}
+  .title-block .org{font-size:13px; color:var(--ink); font-style:italic; font-family:"Times New Roman",Times,serif;}
+
+  .intro-note{
+    font-size:11.5px; color:var(--ink); font-family:"Helvetica Neue",Arial,sans-serif;
+    margin:0 0 16px; padding:9px 12px; background:var(--accent-soft); border-left:3px solid var(--accent); line-height:1.6;
+  }
+
+  .form-table{width:100%; border-collapse:collapse; margin-bottom:16px; font-size:12.5px;}
+  .form-table td, .form-table th{border:1px solid var(--line); padding:6px 8px; vertical-align:top;}
+  .form-table th.group{
+    background:var(--accent); color:#fff; text-align:left; font-family:"Helvetica Neue",Arial,sans-serif;
+    font-size:11px; text-transform:uppercase; letter-spacing:.03em; font-weight:700;
+  }
+  .form-table td.label{background:var(--accent-soft); font-weight:700; font-family:"Helvetica Neue",Arial,sans-serif; font-size:11px; text-transform:uppercase; letter-spacing:.02em; color:var(--accent); width:26%;}
+  .form-table input[type=text], .form-table input[type=date], .form-table input[type=time]{width:100%; border:none; background:transparent; font-size:13px; font-family:inherit; color:var(--ink); padding:2px;}
+  .form-table input:focus{outline:none; background:var(--accent-soft2);}
+  .form-table textarea{width:100%; border:none; background:transparent; font-size:13px; font-family:inherit; color:var(--ink); padding:2px; resize:none; overflow:hidden; line-height:1.4; display:block; min-height:20px;}
+  .form-table textarea:focus{outline:none; background:var(--accent-soft2);}
+
+  .radio-row{display:flex; gap:18px; align-items:center; font-size:13px;}
+  .radio-row label{display:flex; align-items:center; gap:5px; font-weight:400;}
+
+  .sign-block{display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:20px;}
+  .sign-block .sb{border-top:1px solid var(--line); padding-top:8px;}
+  .sign-block .sb label{display:block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.02em; color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif; margin-bottom:16px;}
+  .sign-block .sb input[type=text], .sign-block .sb input[type=date]{width:100%; border:none; border-bottom:1px solid var(--line); background:transparent; font-size:13px; padding:4px 2px; font-family:inherit; color:var(--ink);}
+  .sign-block .sb input:focus{outline:none; border-bottom:1px solid var(--accent);}
+
+  .footer-note{margin-top:24px; text-align:center; font-size:10.5px; color:var(--muted); font-style:italic;}
+  .confidential{text-align:center; font-size:10px; color:var(--danger); font-weight:700; text-transform:uppercase; letter-spacing:.06em; margin-top:6px;}
+
+  @media print{
+    body{background:#fff;}
+    .toolbar{display:none;}
+    .page-wrap{margin:0; padding:0; max-width:none; width:auto;}
+    #sheet{box-shadow:none; border:none; padding:0.5in; width:auto;}
+    .form-table{break-inside:auto;}
+    .form-table tr{break-inside:avoid;}
+  }
+  @page{
+    size: A4; margin: 0.6in 0.55in 0.5in;
+    @bottom-center{ content: "Page " counter(page) " of " counter(pages); font-family:"Helvetica Neue",Arial,sans-serif; font-size:9pt; color:#595959; }
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <span class="brand">FIVDB · General Incident Report</span>
+  <span class="status" id="statusMsg"></span>
+  <button onclick="window.print()">🖨️ Print</button>
+  <button class="primary" onclick="exportEditablePDF()">📄 Editable PDF</button>
+  <button onclick="sendReportEmail()">✉️ Send via Email</button>
+  <button onclick="clearAll()">✕ Clear form</button>
+</div>
+
+<div class="page-wrap">
+<div id="sheet">
+
+  <div class="masthead">
+    <div class="annex-label">General Incident</div>
+    <div class="proj">SURAKKHA PROJECT</div>
+  </div>
+
+  <div class="title-block">
+    <h1>GENERAL INCIDENT REPORT</h1>
+    <div class="org">Friends In Village Development Bangladesh (FIVDB)</div>
+  </div>
+
+  <p class="intro-note">
+    Use this form for any incident <strong>other than</strong> child abuse, sexual exploitation and abuse (SEA), or another safeguarding concern — for example, a security incident, accident or injury, fire, natural disaster, theft or loss, vehicle accident, or property damage. If this <em>is</em> a safeguarding or PSEA concern, please use the <strong>Incident Reporting Form (Annexure A3)</strong> instead.
+  </p>
+
+  <table class="form-table">
+    <tr><th class="group" colspan="4">Reporter Details</th></tr>
+    <tr><td class="label">Name</td><td colspan="3"><input type="text" data-field="p_name"></td></tr>
+    <tr><td class="label">Designation</td><td><input type="text" data-field="p_designation"></td><td class="label">Relationship with FIVDB</td><td><input type="text" data-field="p_relationship"></td></tr>
+    <tr><td class="label">Line Manager / Supervisor</td><td colspan="3"><input type="text" data-field="p_manager"></td></tr>
+    <tr><td class="label">Contact number</td><td><input type="text" data-field="p_contact"></td><td class="label">E-mail</td><td><input type="text" data-field="p_email"></td></tr>
+  </table>
+
+  <table class="form-table">
+    <tr><th class="group" colspan="4">Type of Incident</th></tr>
+    <tr>
+      <td class="label">Category</td>
+      <td colspan="3">
+        <div class="radio-row" style="flex-wrap:wrap; gap:10px 18px;">
+          <label><input type="radio" name="incidentCategory" value="Security" data-field="incidentCategory"> Security</label>
+          <label><input type="radio" name="incidentCategory" value="Accident / Injury" data-field="incidentCategory"> Accident / Injury</label>
+          <label><input type="radio" name="incidentCategory" value="Fire" data-field="incidentCategory"> Fire</label>
+          <label><input type="radio" name="incidentCategory" value="Natural disaster" data-field="incidentCategory"> Natural disaster</label>
+          <label><input type="radio" name="incidentCategory" value="Theft / Loss" data-field="incidentCategory"> Theft / Loss</label>
+          <label><input type="radio" name="incidentCategory" value="Vehicle accident" data-field="incidentCategory"> Vehicle accident</label>
+          <label><input type="radio" name="incidentCategory" value="Property damage" data-field="incidentCategory"> Property damage</label>
+          <label><input type="radio" name="incidentCategory" value="Other" data-field="incidentCategory"> Other</label>
+        </div>
+      </td>
+    </tr>
+    <tr><td class="label">People involved / affected</td><td colspan="3"><textarea rows="1" data-field="peopleInvolved" oninput="autoGrow(this)" placeholder="Names and roles, if known"></textarea></td></tr>
+  </table>
+
+  <table class="form-table">
+    <tr><th class="group" colspan="4">Incident Details</th></tr>
+    <tr><td class="label">Date of incident</td><td><input type="date" data-field="incidentDate"></td><td class="label">Time of incident</td><td><input type="time" data-field="incidentTime"></td></tr>
+    <tr><td class="label">Location of incident</td><td colspan="3"><input type="text" data-field="incidentLocation"></td></tr>
+    <tr><td class="label">Description of incident</td><td colspan="3"><textarea rows="4" data-field="incidentDescription" oninput="autoGrow(this)"></textarea></td></tr>
+    <tr><td class="label">Any witness? If so, who?</td><td colspan="3"><textarea rows="1" data-field="witness" oninput="autoGrow(this)"></textarea></td></tr>
+  </table>
+
+  <table class="form-table">
+    <tr><th class="group" colspan="4">Impact</th></tr>
+    <tr><td class="label">Any injuries?</td><td colspan="3"><textarea rows="1" data-field="injuries" oninput="autoGrow(this)" placeholder="Describe, or write 'None'"></textarea></td></tr>
+    <tr><td class="label">Property / financial loss</td><td colspan="3"><textarea rows="1" data-field="loss" oninput="autoGrow(this)" placeholder="Describe, or write 'None'"></textarea></td></tr>
+  </table>
+
+  <table class="form-table">
+    <tr><td class="label">Immediate action taken</td><td><textarea rows="3" data-field="actionTaken" oninput="autoGrow(this)"></textarea></td></tr>
+    <tr><td class="label">Reported to (name / role)</td><td><input type="text" data-field="reportedTo"></td></tr>
+    <tr><td class="label">Further follow-up needed?</td><td><textarea rows="2" data-field="followUp" oninput="autoGrow(this)" placeholder="Describe, or write 'None'"></textarea></td></tr>
+  </table>
+
+  <div class="sign-block">
+    <div class="sb">
+      <label>Signature</label>
+      <input type="text" data-field="reporterSignature" placeholder="Name / signature">
+    </div>
+    <div class="sb">
+      <label>Date</label>
+      <input type="date" data-field="reportDate">
+    </div>
+  </div>
+
+  <div class="confidential">Strictly confidential</div>
+  <div class="footer-note">SURAKKHA PROJECT — General Incident Report</div>
+
+</div>
+</div>
+
+<script>
+function autoGrow(el){ el.style.height='auto'; el.style.height=(el.scrollHeight)+'px'; }
+
+function collectData(){
+  const data = {};
+  document.querySelectorAll('#sheet [data-field]').forEach(el=>{
+    if(el.type === 'radio'){
+      if(el.checked) data[el.dataset.field] = el.value;
+    } else {
+      data[el.dataset.field] = el.value;
+    }
+  });
+  return data;
+}
+
+function populateData(data){
+  data = data || {};
+  document.querySelectorAll('#sheet [data-field]').forEach(el=>{
+    if(el.type === 'radio'){
+      el.checked = (data[el.dataset.field] === el.value);
+    } else {
+      el.value = data[el.dataset.field] !== undefined ? data[el.dataset.field] : '';
+    }
+  });
+  document.querySelectorAll('#sheet textarea[data-field]').forEach(autoGrow);
+}
+
+function setStatus(msg){
+  const s = document.getElementById('statusMsg');
+  s.textContent = msg;
+  setTimeout(()=>{ if(s.textContent===msg) s.textContent=''; }, 3500);
+}
+
+function clearAll(){
+  if(!confirm('Clear the whole general incident report? This cannot be undone.')) return;
+  populateData({});
+  setStatus('Form cleared');
+}
+
+
+const FORM_SECTIONS = [
+  { heading: "Reporter Details", fields: [
+    { field: "p_name", label: "Name", width: 1 },
+    { field: "p_designation", label: "Designation", width: 0.5 },
+    { field: "p_relationship", label: "Relationship with FIVDB", width: 0.5 },
+    { field: "p_manager", label: "Line Manager / Supervisor", width: 1 },
+    { field: "p_contact", label: "Contact number", width: 0.5 },
+    { field: "p_email", label: "E-mail", width: 0.5 },
+  ]},
+  { heading: "Type of Incident", fields: [
+    { field: "incidentCategory", label: "Category", type: "radio", options: ["Security","Accident / Injury","Fire","Natural disaster","Theft / Loss","Vehicle accident","Property damage","Other"], width: 1, optionWidth: 130 },
+    { field: "peopleInvolved", label: "People involved / affected", width: 1, type: "textarea" },
+  ]},
+  { heading: "Incident Details", fields: [
+    { field: "incidentDate", label: "Date of incident", width: 0.5 },
+    { field: "incidentTime", label: "Time of incident", width: 0.5 },
+    { field: "incidentLocation", label: "Location of incident", width: 1 },
+    { field: "incidentDescription", label: "Description of incident", width: 1, type: "textarea", rows: 4 },
+    { field: "witness", label: "Any witness? If so, who?", width: 1, type: "textarea" },
+  ]},
+  { heading: "Impact", fields: [
+    { field: "injuries", label: "Any injuries?", width: 1, type: "textarea" },
+    { field: "loss", label: "Property / financial loss", width: 1, type: "textarea" },
+  ]},
+  { heading: "Action & Follow-up", fields: [
+    { field: "actionTaken", label: "Immediate action taken", width: 1, type: "textarea", rows: 3 },
+    { field: "reportedTo", label: "Reported to (name / role)", width: 1 },
+    { field: "followUp", label: "Further follow-up needed?", width: 1, type: "textarea", rows: 2 },
+  ]},
+  { heading: "Sign-off", fields: [
+    { field: "reporterSignature", label: "Signature (type name)", width: 0.5 },
+    { field: "reportDate", label: "Date", width: 0.5 },
+  ]},
+];
+
+const PDF_DOC_TITLE = "General Incident Report";
+const PDF_DOC_SUBTITLE = "SURAKKHA Project — Friends In Village Development Bangladesh (FIVDB)";
+const PDF_FILENAME_PREFIX = "FIVDB_General_Incident_Report_Editable";
+
+async function buildEditablePDF(sections, docTitle, docSubtitle, filenamePrefix, currentData){
+  const { PDFDocument, StandardFonts, rgb } = PDFLib;
+  const pdfDoc = await PDFDocument.create();
+  const form = pdfDoc.getForm();
+  const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+  const PAGE_W = 595.28, PAGE_H = 841.89;
+  const MARGIN = 44;
+  const CONTENT_W = PAGE_W - MARGIN * 2;
+  const NAVY = rgb(0.122, 0.220, 0.392);    // --accent
+  const TEAL = rgb(0.180, 0.490, 0.420);    // --accent-teal
+  const ORANGE = rgb(0.910, 0.451, 0.039);  // annex-label orange
+  const INK = rgb(0.145, 0.145, 0.145);     // --ink
+  const MUTED = rgb(0.349, 0.349, 0.349);   // --muted
+  const LINE = rgb(0.75, 0.75, 0.75);       // --line
+  const LABEL_BG = rgb(0.949, 0.949, 0.949); // --accent-soft
+
+  let page = pdfDoc.addPage([PAGE_W, PAGE_H]);
+  let y = PAGE_H - MARGIN;
+  let fieldIndex = 0;
+
+  const drawHeader = ()=>{
+    // Masthead row: annex label (orange, left) + project name (navy, right)
+    page.drawText("Annexure A3", { x: MARGIN, y: y, size: 10, font: boldFont, color: ORANGE });
+    const projLabel = "SURAKKHA PROJECT · SAFEGUARDING";
+    const projWidth = boldFont.widthOfTextAtSize(projLabel, 8);
+    page.drawText(projLabel, { x: PAGE_W - MARGIN - projWidth, y: y + 1, size: 8, font: boldFont, color: NAVY });
+    y -= 12;
+    page.drawLine({ start: {x: MARGIN, y}, end: {x: PAGE_W - MARGIN, y}, thickness: 1, color: LINE });
+    y -= 22;
+
+    // Title block: centered, teal title + italic org line
+    const titleWidth = boldFont.widthOfTextAtSize(docTitle, 18);
+    page.drawText(docTitle, { x: (PAGE_W - titleWidth) / 2, y: y, size: 18, font: boldFont, color: TEAL });
+    y -= 16;
+    const orgLine = "Friends In Village Development Bangladesh (FIVDB)";
+    const orgWidth = font.widthOfTextAtSize(orgLine, 10.5);
+    page.drawText(orgLine, { x: (PAGE_W - orgWidth) / 2, y: y, size: 10.5, font, color: MUTED });
+    y -= 18;
+    page.drawLine({ start: {x: MARGIN, y}, end: {x: PAGE_W - MARGIN, y}, thickness: 1, color: LINE });
+    y -= 22;
+  };
+  drawHeader();
+
+  const ensureSpace = (needed)=>{
+    if(y - needed < MARGIN + 20){
+      page = pdfDoc.addPage([PAGE_W, PAGE_H]);
+      y = PAGE_H - MARGIN;
+    }
+  };
+
+  sections.forEach(section=>{
+    if(section.type === 'table'){
+      ensureSpace(40);
+      const barH = 18;
+      const slW = 22;
+      const colWidths = section.columns.map(c => (CONTENT_W - slW) * c.width);
+      page.drawRectangle({ x: MARGIN, y: y - barH + 4, width: CONTENT_W, height: barH, color: NAVY });
+      page.drawText('SL#', { x: MARGIN + 3, y: y - barH + 9, size: 7, font: boldFont, color: rgb(1,1,1) });
+      let cx = MARGIN + slW;
+      section.columns.forEach((c,i)=>{
+        page.drawText(c.label, { x: cx + 3, y: y - barH + 9, size: 6.5, font: boldFont, color: rgb(1,1,1) });
+        cx += colWidths[i];
+      });
+      y -= barH + 2;
+
+      const rowH = section.rowHeight || 20;
+      for(let r = 1; r <= section.rowCount; r++){
+        ensureSpace(rowH + 12);
+        // Redraw column header if we just started a new page
+        if(y === PAGE_H - MARGIN){
+          page.drawRectangle({ x: MARGIN, y: y - barH + 4, width: CONTENT_W, height: barH, color: NAVY });
+          page.drawText('SL#', { x: MARGIN + 3, y: y - barH + 9, size: 7, font: boldFont, color: rgb(1,1,1) });
+          let cx2h = MARGIN + slW;
+          section.columns.forEach((c,i)=>{
+            page.drawText(c.label, { x: cx2h + 3, y: y - barH + 9, size: 6.5, font: boldFont, color: rgb(1,1,1) });
+            cx2h += colWidths[i];
+          });
+          y -= barH + 2;
+        }
+        let cx2 = MARGIN;
+        page.drawRectangle({ x: cx2, y: y - rowH, width: slW, height: rowH, borderColor: LINE, borderWidth: 0.5, color: rgb(1,1,1) });
+        page.drawText(String(r), { x: cx2 + 6, y: y - rowH + rowH/2 - 3, size: 7.5, font, color: INK });
+        cx2 += slW;
+        section.columns.forEach((c,i)=>{
+          const w = colWidths[i];
+          page.drawRectangle({ x: cx2, y: y - rowH, width: w, height: rowH, borderColor: LINE, borderWidth: 0.5, color: rgb(1,1,1) });
+          const tf = form.createTextField(`field_${fieldIndex++}_${c.field}_r${r}`);
+          if(section.rowHeight && section.rowHeight > 22) tf.enableMultiline();
+          const existing = currentData && currentData.rows && currentData.rows[r-1] ? currentData.rows[r-1][c.field] : '';
+          tf.setText(existing || '');
+          tf.addToPage(page, { x: cx2 + 2, y: y - rowH + 2, width: w - 4, height: rowH - 4, font, textColor: INK, borderWidth: 0 });
+          tf.setFontSize(7.5);
+          tf.updateAppearances(font);
+          cx2 += w;
+        });
+        y -= rowH;
+      }
+      y -= 12;
+      return;
+    }
+
+    ensureSpace(34);
+    // Section header bar — filled navy background, white bold text (matches th.group in the HTML)
+    const barH = 20;
+    page.drawRectangle({ x: MARGIN, y: y - barH + 6, width: CONTENT_W, height: barH, color: NAVY });
+    page.drawText(section.heading.toUpperCase(), { x: MARGIN + 8, y: y - barH + 12, size: 9.5, font: boldFont, color: rgb(1,1,1) });
+    y -= barH + 12;
+
+    let col = 0; // 0 = left slot free, tracks half-width pairing
+    section.fields.forEach(f=>{
+      const boxW = f.width === 1 ? CONTENT_W : (CONTENT_W - 10) / 2;
+      const x = (f.width === 1 || col === 0) ? MARGIN : MARGIN + boxW + 10;
+
+      if(f.type === 'checkbox'){
+        const lineH = 13;
+        ensureSpace(lineH + 4);
+        const cb = form.createCheckBox(`field_${fieldIndex++}_${f.field}`);
+        cb.addToPage(page, { x: MARGIN, y: y - 8, width: 10, height: 10 });
+        if(currentData && currentData[f.field]) { try{ cb.check(); }catch(e){} }
+        page.drawText(f.label, { x: MARGIN + 14, y: y - 6, size: 8.5, font, color: INK });
+        y -= lineH;
+        col = 0;
+        return;
+      }
+
+      if(f.type === 'radio'){
+        const optW = f.optionWidth || 90;
+        const perRow = Math.max(1, Math.floor(CONTENT_W / optW));
+        const rowsNeeded = Math.ceil(f.options.length / perRow);
+        ensureSpace(14 + rowsNeeded * 16 + 6);
+        page.drawText(f.label, { x: MARGIN, y: y, size: 9.5, font, color: INK });
+        y -= 14;
+        const rg = form.createRadioGroup(`field_${fieldIndex++}_${f.field}`);
+        f.options.forEach((opt,i)=>{
+          const rx = MARGIN + (i % perRow) * optW;
+          const ry = y - Math.floor(i / perRow) * 16;
+          rg.addOptionToPage(opt, page, { x: rx, y: ry - 2, width: 10, height: 10 });
+          page.drawText(opt, { x: rx + 14, y: ry, size: 8.5, font, color: INK });
+        });
+        if(currentData && currentData[f.field]) { try{ rg.select(currentData[f.field]); }catch(e){} }
+        y -= rowsNeeded * 16 + 8;
+        col = 0;
+        return;
+      }
+
+      const isTextarea = f.type === 'textarea';
+      const boxH = isTextarea ? (14 * (f.rows || 2)) : 16;
+
+      ensureSpace(boxH + 20);
+      if(f.width === 1) col = 0;
+      if(col === 0 && f.width !== 1){
+        // starting a new half-width row
+      }
+
+      const labelH = 13;
+      page.drawRectangle({ x: x, y: y - labelH + 3, width: boxW, height: labelH, color: LABEL_BG });
+      page.drawText(f.label, { x: x + 4, y: y - labelH + 7, size: 8, font: boldFont, color: NAVY });
+      const boxY = y - labelH - 3 - boxH;
+      page.drawRectangle({ x: x, y: boxY, width: boxW, height: boxH, borderColor: LINE, borderWidth: 0.75, color: rgb(1,1,1) });
+
+      const tf = form.createTextField(`field_${fieldIndex++}_${f.field}`);
+      if(isTextarea) tf.enableMultiline();
+      tf.setText((currentData && currentData[f.field]) || '');
+      tf.addToPage(page, { x: x + 2, y: boxY + 2, width: boxW - 4, height: boxH - 4, font, textColor: INK, borderWidth: 0 });
+      tf.setFontSize(9);
+      tf.updateAppearances(font);
+
+      if(f.width === 1){
+        y = boxY - 14;
+        col = 0;
+      } else {
+        if(col === 0){
+          col = 1; // wait for pair on same row before dropping y
+        } else {
+          y = boxY - 14;
+          col = 0;
+        }
+      }
+    });
+    y -= 10;
+  });
+
+  // Ask viewers to regenerate field appearances live as the user types —
+  // without this, some PDF readers (not all) only show correct word-wrap
+  // for the text baked in at export time, not text typed in afterward.
+  form.acroForm.dict.set(PDFLib.PDFName.of('NeedAppearances'), PDFLib.PDFBool.True);
+
+  const bytes = await pdfDoc.save();
+  const blob = new Blob([bytes], { type: 'application/pdf' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  const stamp = new Date().toISOString().slice(0,10);
+  link.download = `${filenamePrefix}_${stamp}.pdf`;
+  link.click();
+}
+
+
+
+const MEAL_EMAIL = "mohasan.uddin@fivdb.org";
+
+function buildEmailBody(sections, data){
+  const lines = [];
+  sections.forEach(section=>{
+    if(section.type === "table") return;
+    lines.push("--- " + section.heading.toUpperCase() + " ---");
+    section.fields.forEach(f=>{
+      if(f.type === "checkbox"){
+        lines.push(f.label + ": " + (data[f.field] ? "Yes" : "No"));
+      } else {
+        lines.push(f.label + ": " + (data[f.field] || "—"));
+      }
+    });
+    lines.push("");
+  });
+  return lines.join("\n");
+}
+
+function sendReportEmail(){
+  const data = collectData();
+  const body = buildEmailBody(FORM_SECTIONS, data);
+  const nameGuess = data.p_name || data.s_name || "Unnamed";
+  const subject = encodeURIComponent(PDF_DOC_TITLE + " — " + nameGuess);
+  window.location.href = `mailto:${MEAL_EMAIL}?subject=${subject}&body=${encodeURIComponent(body)}`;
+  setStatus("Opening email...");
+}
+
+function exportEditablePDF(){
+  setStatus('Building editable PDF…');
+  const data = collectData();
+  buildEditablePDF(FORM_SECTIONS, PDF_DOC_TITLE, PDF_DOC_SUBTITLE, PDF_FILENAME_PREFIX, data)
+    .then(()=> setStatus('✓ Editable PDF downloaded'))
+    .catch(err=>{
+      console.error(err);
+      alert('Could not build the editable PDF: ' + err.message);
+    });
+}
+
+(function(){
+  const embedded = document.getElementById('embedded-data');
+  if(embedded){
+    try{ populateData(JSON.parse(embedded.textContent)); return; }catch(e){ /* fall through */ }
+  }
+  populateData({});
+})();
+</script>
+
+</body>
+</html>

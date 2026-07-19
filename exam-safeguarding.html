@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SURAKKHA · Child Safeguarding Exam — FIVDB</title>
+<link rel="stylesheet" href="site-shared.css">
+<link rel="stylesheet" href="exam-shared.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<nav class="site-nav" aria-label="Main navigation">
+  <div class="site-nav-inner">
+    <a class="site-brand" href="index.html">
+      <span class="brand-mark">S</span>
+      <span class="brand-text">
+        <span class="b1">SURAKKHA PROJECT</span>
+        <span class="b2">FIVDB &middot; DG ECHO 2026/00158</span>
+      </span>
+    </a>
+    <div class="site-links">
+      <a href="index.html">Home</a>
+      <a href="about-project.html">About Project</a>
+      <a href="reporting-channel.html">Reporting Channel</a>
+      <a href="reporting-template.html">Reporting Template</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="register.html">Register</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+  <div class="page-header">
+    <div class="eyebrow">Capacity Building &middot; 1 of 6</div>
+    <h1>Child Safeguarding</h1>
+    <p class="lede">Based on FIVDB's Child Safeguarding Policy. Score 75% or higher to receive your certificate.</p>
+  </div>
+
+  <div class="exam-wrap">
+    <p class="exam-intro">Study the module below, then unlock the exam. Score 75% or higher to earn your certificate.</p>
+    <div id="moduleHost"></div>
+    <div class="exam-section" id="examSection">
+      <p class="exam-locked-note">🔒 Complete the study module above to unlock this exam.</p>
+      <div id="examHost"></div>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>SURAKKHA PROJECT · DG ECHO 2026/00158 — FIVDB</span>
+    <span>Support: <a href="mailto:mohasan.uddin@fivdb.org">mohasan.uddin@fivdb.org</a></span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase-client.js"></script>
+<script src="site-shared.js"></script>
+<script>showStaffOnlyNotice(); enforceStaffGate();</script>
+<script src="exam-engine.js"></script>
+<script>
+  const QUESTIONS = [
+    { id:'m1', type:'mcq', text:'What UN convention is FIVDB\'s Child Safeguarding Policy based on?', options:['UN Convention on the Rights of the Child (1989)','UN Charter','Geneva Convention','ILO Convention'], correct:0 },
+    { id:'m2', type:'mcq', text:'Who does the Child Safeguarding Policy apply to?', options:['Only paid staff','All personnel and associates, regardless of compensation','Only field staff','Only management'], correct:1 },
+    { id:'m3', type:'mcq', text:'Under this policy, a "child" is defined as anyone under the age of:', options:['15','16','18','21'], correct:2 },
+    { id:'m4', type:'mcq', text:'Which of these is explicitly named as a form of child abuse in the policy?', options:['Financial abuse','Neglect','Academic pressure','Peer pressure'], correct:1 },
+    { id:'m5', type:'mcq', text:'Before photographing or filming a child for FIVDB work, staff must:', options:['Take the photo first, ask permission later','Obtain informed consent from the child and parent/guardian','Only ask the child, not the parent','No consent is needed for project work'], correct:1 },
+    { id:'m6', type:'mcq', text:'Can FIVDB staff visit a child\'s home alone?', options:['Yes, always', 'Never, under any circumstance', 'Generally no, except if the child is at immediate risk', 'Only with the donor\'s permission'], correct:2 },
+    { id:'m7', type:'mcq', text:'As part of recruitment, new staff must:', options:['Nothing extra beyond the standard contract', 'Sign the Child Safeguarding Policy to confirm understanding', 'Only complete this after 1 year of service', 'Pay a refundable deposit'], correct:1 },
+    { id:'m8', type:'mcq', text:'Who is responsible for receiving safeguarding complaints and initiating follow-up?', options:['Any random staff member', 'The Child Safeguarding Focal Person', 'The donor', 'The beneficiary\'s family'], correct:1 },
+    { id:'m9', type:'mcq', text:'Which kind of images are prohibited under the policy?', options:['Group photos of activities', 'Images that are vulnerable, submissive, or sexually suggestive', 'Photos with the FIVDB logo visible', 'Black-and-white photos'], correct:1 },
+    { id:'m10', type:'mcq', text:'When FIVDB enters a partnership or sub-grant agreement, it must:', options:['Nothing special is required', 'Incorporate the Safeguarding Policy and require Code of Conduct adherence', 'Only inform the partner verbally', 'Share the policy only if specifically asked'], correct:1 },
+
+    { id:'f1', type:'fact', text:'A child is defined as anyone under the age of 18, irrespective of other legal definitions of adulthood.', correct:0 },
+    { id:'f2', type:'fact', text:'It is acceptable to use physical punishment on a child if it is meant as discipline.', correct:1 },
+    { id:'f3', type:'fact', text:'FIVDB personnel may report a safeguarding concern up to 7 days after becoming aware of it.', correct:1 },
+    { id:'f4', type:'fact', text:'Failure to report a safeguarding concern is itself considered a breach of the policy.', correct:0 },
+    { id:'f5', type:'fact', text:'FIVDB applies its highest recruitment and verification standards especially to roles with direct or indirect contact with children.', correct:0 },
+    { id:'f6', type:'fact', text:'Grooming, under this policy, refers only to physical contact with a child.', correct:1 },
+    { id:'f7', type:'fact', text:'Beneficiaries may report incidents or concerns to any FIVDB employee they feel comfortable with.', correct:0 },
+
+    { id:'n1', type:'narrative', text:'Describe the steps you would take if a child confided in you about being harmed by another staff member.' },
+    { id:'n2', type:'narrative', text:'Why is it important to have another adult present when working near children, even when it feels unnecessary in the moment?' },
+    { id:'n3', type:'narrative', text:'In your own words, explain why "failure to report" is treated as seriously as the incident itself under this policy.' },
+  ];
+
+  const MODULE_CONTENT = `
+    <h3>Introduction &amp; Purpose</h3>
+    <p>FIVDB is committed to creating and maintaining a safe and protective environment for children irrespective of sex, race, ethnicity, or disability. The policy was developed in accordance with the UN Convention for Child Rights (1989) to uphold children's rights and protect them from all forms of violence, including abuse and exploitation by FIVDB employees, volunteers, partners, and associates who come into direct or indirect contact with children.</p>
+    <p>The policy provides a practical guide to prevent child exploitation and abuse and enhance child safeguarding within FIVDB's work. Its aim is to create an open and aware environment where concerns for a child's safety and wellbeing can be raised and managed fairly and justly. To promote children's best interests, it includes both <strong>preventive actions</strong> — to minimise the chance of harm occurring — and <strong>responsive actions</strong> — to ensure that incidents which do happen are appropriately handled. These range from human resource development actions such as training and counselling, through to disciplinary measures such as suspension, dismissal, and legal action.</p>
+
+    <h3>Scope</h3>
+    <p>This policy applies to all FIVDB Personnel and Associates. "FIVDB Personnel" refers to all individuals who have entered into an employment or collaboration contract with FIVDB — including the governing body, employees, volunteers, community committee members, interns, and consultants — regardless of whether they are compensated monetarily, and regardless of the type or duration of their contract. "FIVDB Associates" refers to personnel of other entities or individuals who have entered into a cooperative arrangement with FIVDB, including contractors, partners, and visitors.</p>
+
+    <h3>Key Definitions</h3>
+    <ul>
+      <li><strong>Child</strong> — any individual under the age of 18, irrespective of any other definition of when a person reaches adulthood.</li>
+      <li><strong>Child abuse</strong> — anything which individuals, institutions, or processes do or fail to do which directly or indirectly harms children or damages their prospect of safe, healthy development into adulthood.</li>
+      <li><strong>Physical abuse</strong> — purposefully injuring or threatening to injure a child. This may take the form of slapping, punching, shaking, kicking, burning, shoving, or grabbing, or any other form of physical violence — the injury may appear as bruises, cuts, burns, or fractures.</li>
+      <li><strong>Emotional abuse</strong> — inappropriate verbal or symbolic acts toward a child, or a pattern of failing over time to provide a child with adequate non-physical nurture and emotional availability. Such acts have a high probability of damaging a child's self-esteem or social competence.</li>
+      <li><strong>Neglect</strong> — the failure to provide (where one is in a position to do so) a child with the conditions that are culturally accepted as essential for their physical and emotional development and wellbeing.</li>
+      <li><strong>Child sexual abuse</strong> — involving a child in sexual activity they do not fully comprehend, cannot give informed consent to, are not developmentally prepared for, or that violates the laws or social norms of society. It is evidenced by activity between a child and an adult (or another child, where a relationship of responsibility, trust, or power exists), intended to gratify the other person, and includes coercing a child into unlawful sexual activity, prostitution, or exploitative use in pornographic material.</li>
+      <li><strong>Grooming</strong> — behaviour that makes it easier for an offender to procure a child for sexual activity, often by building the trust of children and/or their carers to gain access to the child. This includes encouraging romantic feelings or exposing a child to sexual concepts through pornography.</li>
+      <li><strong>Exploitation</strong> — the abuse of children who are forced, tricked, coerced, or trafficked into exploitative activities; a form of child sexual abuse occurring when an individual or group takes advantage of a power imbalance to coerce, manipulate, or deceive someone under 18 into sexual activity, either in exchange for something the victim needs or wants, or for the perpetrator's financial advantage or increased status.</li>
+      <li><strong>Child labour</strong> — work that deprives children of their childhood, their potential, and their dignity, and that is harmful to physical and mental development — work that is mentally, physically, socially, or morally dangerous and interferes with schooling and recreation. In its most extreme forms it involves children being enslaved, separated from their families, and exposed to serious hazards and illnesses.</li>
+    </ul>
+
+    <h3>FIVDB's Commitment</h3>
+    <ul>
+      <li>Listening to, valuing, and respecting all children and young people regardless of race, colour, gender, language, religion, opinion, nationality, ethnicity, social origin, property, disability, sexual orientation, or other status.</li>
+      <li>Ensuring all personnel and associates directly connected to FIVDB's work understand this policy and their personal responsibility to prevent harm and report any form of exploitation or abuse.</li>
+      <li>Undertaking risk assessments to identify areas of risk and documenting steps taken to remove or reduce them.</li>
+      <li>Taking all safeguarding actions and decisions in the best interest of the child, putting the child's safety and welfare first.</li>
+      <li>Treating any concern raised by a child, personnel, or associate with immediate importance.</li>
+      <li>Ensuring that partnership, consortium, or sub-grant agreements incorporate this policy, require partners to abide by an equivalent Code of Conduct, and state that failure to take preventive measures or investigate allegations is grounds for FIVDB to terminate the agreement.</li>
+    </ul>
+
+    <h3>Rules for Contact with Children</h3>
+    <p>All FIVDB Personnel and Associates must adhere to the following conditions (this is not an exhaustive list — staff should at all times avoid actions that could be misrepresented or constitute poor or potentially abusive practice):</p>
+    <ul>
+      <li>Conduct yourself consistently with FIVDB's values, principles, and this policy; treat all children with respect regardless of their background or status.</li>
+      <li>Never hit, physically assault, or otherwise physically abuse a child, and never use physical or humiliating punishment.</li>
+      <li>Never use language or behaviour toward children that is inappropriate, harassing, abusive, sexually provocative, humiliating, or culturally inappropriate.</li>
+      <li>Never engage a child in sexual intercourse or activity of any kind, including paying for sexual services or engaging in transactional sex with anyone under 18 — mistaken belief about a child's age is not a defence.</li>
+      <li>Never engage in any form of child abuse — sexual, physical, emotional, neglect, grooming, harassment, or exploitation via digital or other means — and never engage in family violence including child marriage, trafficking, or child labour.</li>
+      <li>Wherever possible, ensure another adult is present when working near children; do not visit a child's home alone or invite an unaccompanied child to your own home, unless the child is at immediate risk of injury or danger.</li>
+      <li>Comply with all relevant labour legislation regarding child labour.</li>
+      <li>Never abuse your position to withhold professional assistance, or offer preferential treatment, gifts, or payment to solicit any advantage or sexual favour from a child or someone connected to a child.</li>
+      <li>Never engage in physical contact with a child that is unprofessional, unnecessary, excessive, or that makes the child feel uncomfortable or unsafe.</li>
+      <li>Never use computers, phones, cameras, or social media to exploit or harass children, or to access child sexual exploitation material through any medium.</li>
+      <li>Obtain informed consent from parents/guardians before any activity that takes a child outside their community or involves an overnight stay.</li>
+      <li>When photographing or filming children: assess local traditions or restrictions first; obtain informed consent from the child and parent/guardian, explaining how the image will be used; ensure images present children with dignity, not in vulnerable or submissive poses, adequately clothed and never sexually suggestive; and ensure images are honest representations of the context and facts.</li>
+    </ul>
+
+    <h3>Awareness &amp; Prevention</h3>
+    <p>FIVDB ensures all personnel and associates are fully aware of this policy, the Code of Conduct, and reporting mechanisms — made accessible to children, caregivers, staff, volunteers, and stakeholders in a language and format they understand. All newly recruited personnel receive guidance on the policy and their responsibilities, and all personnel receive regular updates, formally (training, supervision) or informally. The highest standards of recruitment and verification apply particularly to roles with direct or indirect contact with children, including background and reference checks and behavioural-based interview questions. As part of recruitment, this policy is included with the appointment letter and signed by the staff member to confirm their understanding and commitment. Child safeguarding is integrated into project planning and the full management cycle, including monitoring, evaluation, accountability, and learning.</p>
+
+    <h3>Reporting &amp; Response</h3>
+    <p>FIVDB is committed to a robust, timely, and confidential reporting and investigation procedure. It is the obligation of all personnel to report complaints, concerns, or suspicions — actual or perceived — as a matter of urgency, and always <strong>within 24 hours</strong> of becoming aware of the incident. Failure to report is itself a breach of this policy. Reporting options include: a project-level focal person (beneficiaries may also report to any employee they feel comfortable with); raising a concern internally to a senior manager; the Child Safeguarding Focal Person, who is responsible for receiving complaints and initiating follow-up; the mechanisms outlined in FIVDB's Whistleblowing Policy; the Executive Director; or the Executive Board.</p>
+    <p>When made aware of a possible breach, FIVDB will: act to protect complainants from retaliation; offer guidance on necessary support to the survivor (counselling, medical support — the survivor chooses if and when to take up these options, and FIVDB will involve law enforcement if necessary); maintain confidentiality at all times, sharing information strictly on a need-to-know basis; and take swift, appropriate action, including suspension pending investigation (which does not imply guilt, but protects all parties) and legal action where required. Making a report that is intentionally false or misleading is gross misconduct in itself. The Child Safeguarding Committee leads investigations in a timely, confidential manner. Consequences depend on the person's role: staff face disciplinary action or termination, volunteers face severance from FIVDB, partner organisations face dissolution of the partnership, and contractors face termination of their agreement. Written records of all reports are kept securely and confidentially by the Child Safeguarding Focal Person, and donors, regulators, or legal authorities are informed where required.</p>
+
+    <h3>Roles &amp; Responsibilities</h3>
+    <p>All FIVDB personnel share an obligation to prevent and respond to child exploitation and abuse, and to uphold the Core Principles and Commitments of this policy alongside the Code of Conduct. Personnel working directly with communities also contribute to regular monitoring by seeking feedback from beneficiaries.</p>
+    <p><strong>Executive Management</strong> (the Executive Board and Executive Director) hold ultimate accountability, and commit to: creating a positive organisational culture supporting safeguarding; reviewing and updating this policy every two years; monitoring implementation at a senior level, including an Annual Policy Implementation Review; ensuring sufficient resources for implementation; protecting FIVDB's credibility through effective oversight; agreeing protocols with donors and regulators for handling safeguarding cases; and role-modelling the standards of conduct required.</p>
+    <p><strong>The Senior Management Team</strong> — the Executive Director, other SMT members, Focal Persons, Coordinators, and the HR Manager — are responsible for implementation and adherence across the organisation, including robust recruitment, induction, and training. Managers and supervisors at all levels support implementation by ensuring personnel understand and comply with the policy, fostering a culture that prevents abuse, maintaining supervision and awareness-raising systems, and role-modelling appropriate conduct.</p>
+    <p><strong>Technical Support</strong> comes from a Child Safeguarding Committee, renewed every three years by the Senior Management Team, which monitors and reports on implementation to the Executive Director. It is led by a Child Safeguarding Focal Person, who coordinates the Committee's work and leads the development of training and awareness materials on the policy and related standards of behaviour.</p>
+
+    <div class="context-box">
+      <strong>In the SURAKKHA context:</strong> Community-Based Learning Facilities (CBLFs) in Camps 1W, 6, 21, and 24, and in host communities, bring staff and volunteers into daily contact with Rohingya refugee and host-community children. Crowded camp conditions make "another adult present" rules especially important, and cultural and language differences mean concerns may be raised informally, in Rohingya or Bangla — staff must be ready to recognise and escalate these promptly regardless of how they're first raised.
+    </div>
+  `;
+
+  initExam({
+    title: 'Child Safeguarding',
+    source: 'FIVDB Child Safeguarding Policy',
+    questions: QUESTIONS,
+    moduleContent: MODULE_CONTENT,
+    moduleSource: 'FIVDB Child Safeguarding Policy — Introduction, Scope, Definitions, Sections 4–7'
+  });
+</script>
+</body>
+</html>

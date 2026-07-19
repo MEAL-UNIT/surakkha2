@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SURAKKHA · Dashboard — FIVDB</title>
+<link rel="stylesheet" href="site-shared.css">
+<style>
+  .dash-wrap{max-width:1140px; margin:0 auto; padding:10px 20px 60px;}
+  .dash-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin-bottom:26px;}
+  .stat-card{
+    background:var(--surface); border:1px solid var(--line); border-top:4px solid var(--c, var(--primary)); border-radius:5px; padding:18px;
+  }
+  .stat-card .stat-label{font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted);}
+  .stat-card .stat-value{font-family:var(--serif); font-size:30px; color:var(--primary); margin:6px 0 2px;}
+  .stat-card .stat-note{font-size:11px; color:var(--muted);}
+
+  .coming-soon{
+    background:var(--surface); border:1px dashed var(--line); border-radius:8px; padding:50px 30px; text-align:center;
+  }
+  .coming-soon svg{width:52px; height:52px; color:var(--primary-dark); margin-bottom:14px;}
+  .coming-soon h2{font-family:var(--serif); font-size:22px; color:var(--primary); margin:0 0 8px;}
+  .coming-soon p{max-width:52ch; margin:0 auto; color:var(--muted); font-size:14px; line-height:1.6;}
+
+  .activities-panel{background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:20px; box-shadow:var(--shadow-sm);}
+  .activities-head{display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:14px; margin-bottom:16px;}
+  .activities-controls{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .activities-controls label{font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted);}
+  .activities-controls select{
+    font:inherit; font-size:13px; padding:8px 10px; border:1px solid var(--line); border-radius:5px;
+    background:var(--bg); color:var(--ink); font-family:var(--sans);
+  }
+  .activities-controls button{
+    font-family:var(--sans); font-weight:700; font-size:12.5px; padding:9px 14px; border-radius:5px;
+    border:none; background:var(--accent2); color:#fff; cursor:pointer;
+  }
+  .table-scroll{overflow-x:auto;}
+  .activities-table{width:100%; border-collapse:collapse; font-size:12.5px; min-width:920px;}
+  .activities-table th{
+    background:var(--primary); color:#fff; text-align:left; padding:9px 10px; font-family:var(--sans);
+    font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:.02em; white-space:nowrap;
+  }
+  .activities-table td{padding:8px 10px; border-bottom:1px solid var(--line); color:var(--ink); vertical-align:top;}
+  .activities-table tbody tr:hover{background:var(--bg);}
+  .activities-table td.num{text-align:right; font-family:var(--mono);}
+  .activities-empty{padding:24px; text-align:center; color:var(--muted); font-family:var(--mono); font-size:12.5px;}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<nav class="site-nav" aria-label="Main navigation">
+  <div class="site-nav-inner">
+    <a class="site-brand" href="index.html">
+      <span class="brand-mark">S</span>
+      <span class="brand-text">
+        <span class="b1">SURAKKHA PROJECT</span>
+        <span class="b2">FIVDB &middot; DG ECHO 2026/00158</span>
+      </span>
+    </a>
+    <div class="site-links">
+      <a href="index.html">Home</a>
+      <a href="about-project.html">About Project</a>
+      <a href="reporting-channel.html">Reporting Channel</a>
+      <a href="reporting-template.html">Reporting Template</a>
+      <a href="dashboard.html">Dashboard</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+  <div class="page-header">
+    <div class="eyebrow">SURAKKHA Project</div>
+    <h1>Dashboard</h1>
+    <p class="lede">A snapshot of project reach and reporting activity. Figures below are placeholders until a data source is connected.</p>
+  </div>
+
+  <div class="dash-wrap">
+    <div class="dash-grid">
+      <div class="stat-card" style="--c:var(--accent2)">
+        <span class="stat-label">Participants reached</span>
+        <div class="stat-value">—</div>
+        <span class="stat-note">Awaiting data source</span>
+      </div>
+      <div class="stat-card" style="--c:var(--primary)">
+        <span class="stat-label">Activities reported</span>
+        <div class="stat-value">—</div>
+        <span class="stat-note">Awaiting data source</span>
+      </div>
+      <div class="stat-card" style="--c:var(--accent)">
+        <span class="stat-label">Distributions completed</span>
+        <div class="stat-value">—</div>
+        <span class="stat-note">Awaiting data source</span>
+      </div>
+      <div class="stat-card" style="--c:var(--warn)">
+        <span class="stat-label">Incidents logged</span>
+        <div class="stat-value">—</div>
+        <span class="stat-note">Awaiting data source</span>
+      </div>
+    </div>
+
+    <div class="activities-panel">
+      <div class="activities-head">
+        <div>
+          <h2 class="section-title">Activities</h2>
+          <p class="section-sub">By quarter and month — targeted reach by sex, and budget status.</p>
+        </div>
+        <div class="activities-controls">
+          <label for="monthFilter">Filter by month</label>
+          <select id="monthFilter">
+            <option value="">All months</option>
+          </select>
+          <button type="button" id="downloadBtn">⬇ Download CSV</button>
+        </div>
+      </div>
+      <div class="table-scroll">
+        <table class="activities-table" id="activitiesTable">
+          <thead>
+            <tr>
+              <th>Quarter</th><th>Month</th><th>Activity Code</th><th>Activity Name</th>
+              <th>Targeted Group</th><th>Girls</th><th>Boys</th><th>Female</th><th>Male</th>
+              <th>Total</th><th>Budget Status</th><th>Description</th>
+            </tr>
+          </thead>
+          <tbody id="activitiesBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>SURAKKHA PROJECT · DG ECHO 2026/00158 — FIVDB</span>
+    <span>Support: <a href="mailto:mohasan.uddin@fivdb.org">mohasan.uddin@fivdb.org</a></span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase-client.js"></script>
+<script src="site-shared.js"></script>
+<script>showStaffOnlyNotice(); enforceStaffGate();</script>
+<script>
+  // ---------------------------------------------------------------
+  // Reads dashboard-activities.csv (same folder). Add a row per
+  // activity — columns: quarter, month, activity_code, activity_name,
+  // targeted_group, girls, boys, female, male, total, budget_status,
+  // description. No changes to this file needed.
+  // ---------------------------------------------------------------
+  let ALL_ACTIVITIES = [];
+
+  function renderActivities(rows){
+    const body = document.getElementById('activitiesBody');
+    if(!rows.length){
+      body.innerHTML = '<tr><td colspan="12" class="activities-empty">No activities added yet.</td></tr>';
+      return;
+    }
+    body.innerHTML = rows.map(r => `
+      <tr>
+        <td>${r.quarter || ''}</td>
+        <td>${r.month || ''}</td>
+        <td>${r.activity_code || ''}</td>
+        <td>${r.activity_name || ''}</td>
+        <td>${r.targeted_group || ''}</td>
+        <td class="num">${r.girls || 0}</td>
+        <td class="num">${r.boys || 0}</td>
+        <td class="num">${r.female || 0}</td>
+        <td class="num">${r.male || 0}</td>
+        <td class="num">${r.total || 0}</td>
+        <td>${r.budget_status || ''}</td>
+        <td>${r.description || ''}</td>
+      </tr>`).join('');
+  }
+
+  function populateMonthFilter(rows){
+    const select = document.getElementById('monthFilter');
+    const months = [...new Set(rows.map(r => r.month).filter(Boolean))];
+    months.forEach(m=>{
+      const opt = document.createElement('option');
+      opt.value = m;
+      opt.textContent = m;
+      select.appendChild(opt);
+    });
+  }
+
+  function toCSV(rows){
+    const headers = ['quarter','month','activity_code','activity_name','targeted_group','girls','boys','female','male','total','budget_status','description'];
+    const escape = v => {
+      v = String(v ?? '');
+      return /[",\n]/.test(v) ? '"' + v.replace(/"/g,'""') + '"' : v;
+    };
+    const lines = [headers.join(',')];
+    rows.forEach(r => lines.push(headers.map(h => escape(r[h])).join(',')));
+    return lines.join('\n');
+  }
+
+  document.getElementById('monthFilter').addEventListener('change', (e)=>{
+    const month = e.target.value;
+    const filtered = month ? ALL_ACTIVITIES.filter(r => r.month === month) : ALL_ACTIVITIES;
+    renderActivities(filtered);
+  });
+
+  document.getElementById('downloadBtn').addEventListener('click', ()=>{
+    const month = document.getElementById('monthFilter').value;
+    const filtered = month ? ALL_ACTIVITIES.filter(r => r.month === month) : ALL_ACTIVITIES;
+    const csv = toCSV(filtered);
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    const label = month ? month.replace(/\s+/g,'_') : 'all_months';
+    link.download = `SURAKKHA_Activities_${label}.csv`;
+    link.click();
+  });
+
+  async function loadDashboardData(){
+    const client = sb();
+    if(client){
+      const approved = await isApprovedUser();
+      if(approved){
+        const { data, error } = await client.from('dashboard_activities').select('*').order('created_at', { ascending: false });
+        if(!error && data){
+          ALL_ACTIVITIES = data;
+          populateMonthFilter(data);
+          renderActivities(data);
+          refreshScrollReveal();
+          return;
+        }
+      }
+    }
+    // Fallback: static CSV (used if Supabase isn't configured yet, or user isn't logged in)
+    watchForUpdates(['dashboard-activities.csv']);
+    fetchCSV('dashboard-activities.csv')
+      .then(rows=>{
+        ALL_ACTIVITIES = rows;
+        populateMonthFilter(rows);
+        renderActivities(rows);
+        refreshScrollReveal();
+      })
+      .catch(err => csvLoadError(document.getElementById('activitiesBody').closest('table').parentElement, err, 'Activities'));
+  }
+
+  loadDashboardData();
+</script>
+</body>
+</html>

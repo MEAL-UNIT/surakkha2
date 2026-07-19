@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Event Agenda</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+  :root{
+    --ink:#262626;
+    --paper:#ffffff;
+    --line:#bfbfbf;
+    --accent:#0072CE;
+    --accent-soft:#DBE5F1;
+    --muted:#595959;
+    --danger:#a5402f;
+  }
+  *{box-sizing:border-box;}
+  #sheet p, #sheet li{text-align:justify;}
+  @media print{
+    *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; color-adjust:exact !important; }
+  }
+  body{
+    margin:0;
+    background:#e5e5e5;
+    font-family:"Calibri","Segoe UI",Arial,sans-serif;
+    color:var(--ink);
+  }
+  .toolbar{
+    position:sticky; top:0; z-index:50;
+    background:#1a1a1a; color:#f2f1ea;
+    padding:10px 18px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;
+    font-family:"Helvetica Neue",Arial,sans-serif;
+  }
+  .toolbar .brand{font-weight:700; letter-spacing:.04em; margin-right:auto; font-size:13px; text-transform:uppercase; color:#a9c9e8;}
+  .toolbar button{
+    background:transparent; color:#f2f1ea; border:1px solid #565656;
+    padding:7px 12px; border-radius:5px; font-size:12.5px; cursor:pointer;
+    font-family:inherit; transition:background .15s;
+  }
+  .toolbar button:hover{background:#333;}
+  .toolbar button.primary{background:var(--accent); border-color:var(--accent);}
+  .toolbar button.primary:hover{background:#005ba6;}
+  .toolbar .status{font-size:11.5px; color:#a9c9e8; min-width:120px;}
+
+  .page-wrap{width:210mm; margin:26px auto 80px; padding:0 16px; box-sizing:border-box;}
+  #sheet{
+    width:210mm; margin:0 auto; box-sizing:border-box;
+    background:var(--paper); border:1px solid var(--line); padding:18mm 15mm;
+    box-shadow:0 2px 18px rgba(0,0,0,.12);
+  }
+
+  .title-block{margin-bottom:16px; display:flex; flex-direction:column; align-items:center; gap:2px;}
+  .masthead{display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line); padding-bottom:10px; margin-bottom:20px;}
+  .masthead .proj{font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif;}
+  .masthead .annex-label{font-size:14px; font-weight:700; color:#E8730A; font-family:"Helvetica Neue",Arial,sans-serif;}
+  .title-block textarea{
+    width:100%; min-width:0; border:none; background:transparent; text-align:center;
+    font-family:Arial,sans-serif; font-size:20px; font-weight:700; color:var(--accent);
+    padding:4px 2px; text-transform:uppercase; resize:none; overflow:hidden; line-height:1.25;
+  }
+  .title-block textarea:focus{outline:none;}
+  .title-fixed{font-family:Arial,sans-serif; font-size:20px; font-weight:700; color:var(--accent); text-align:center;}
+
+  .org-row{background:var(--accent); color:#fff; padding:10px 14px; font-weight:700; font-size:16px; font-family:Arial,sans-serif; letter-spacing:.02em; text-align:center;}
+
+  .meta-table{width:100%; border-collapse:collapse; margin-bottom:0;}
+  .meta-table td{border:1px solid var(--line); padding:8px 10px; vertical-align:top; width:50%;}
+  .meta-table label{display:block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif; margin-bottom:4px;}
+  .meta-table input[type=text]{width:100%; border:none; border-bottom:1px solid var(--line); background:transparent; font-size:13px; padding:4px 2px; font-family:inherit; color:var(--ink);}
+  .meta-table input[type=text]:focus{outline:none; border-bottom:1px solid var(--accent);}
+  .meta-table textarea{width:100%; border:none; border-bottom:1px solid var(--line); background:transparent; font-size:13px; padding:4px 2px; font-family:inherit; color:var(--ink); resize:none; overflow:hidden; line-height:1.35; display:block;}
+  .meta-table textarea:focus{outline:none; border-bottom:1px solid var(--accent);}
+  .date-range{display:flex; align-items:center; gap:6px;}
+  .date-range input[type=date]{flex:1; min-width:0; border:none; border-bottom:1px solid var(--line); background:transparent; font-size:13px; padding:4px 2px; font-family:inherit; color:var(--ink);}
+  .date-range input[type=date]:focus{outline:none; border-bottom:1px solid var(--accent);}
+  .date-range .date-sep{flex:none; font-size:11px; color:var(--muted); font-family:"Helvetica Neue",Arial,sans-serif;}
+
+  .bullet-block h4{font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif; margin:10px 0 4px;}
+  ul.dyn-list{list-style:none; margin:0; padding:0;}
+  ul.dyn-list li{display:flex; align-items:flex-start; gap:6px; margin-bottom:4px;}
+  ul.dyn-list li::before{content:"•"; color:var(--accent); flex:none; padding-top:3px;}
+  ul.dyn-list textarea{
+    flex:1; border:none; border-bottom:1px solid var(--line); background:transparent;
+    font-family:inherit; font-size:13px; padding:3px 2px; color:var(--ink);
+    line-height:1.4; resize:none; overflow:hidden; min-height:24px; text-align:justify;
+  }
+  ul.dyn-list textarea:focus{outline:none; border-bottom:1px solid var(--accent);}
+  .row-del{border:none; background:none; color:var(--danger); cursor:pointer; font-size:13px; padding:2px 4px; flex:none;}
+  table.grid td:last-child{position:relative; padding-right:20px;}
+  table.grid td:last-child .row-del{position:absolute; top:3px; right:2px;}
+  .add-row{
+    border:1px dashed var(--line); background:none; color:var(--accent); cursor:pointer;
+    font-size:11px; padding:4px 8px; border-radius:4px; font-family:"Helvetica Neue",Arial,sans-serif; margin-top:2px;
+  }
+  .add-row:hover{background:var(--accent-soft);}
+
+  h2.section{font-size:14px; color:var(--accent); font-weight:700; margin:24px 0 8px; font-family:Arial,sans-serif;}
+
+  .day-block{margin-bottom:22px;}
+  .day-header{display:flex; align-items:center; gap:8px; margin-bottom:6px; background:var(--accent); border-radius:3px; padding:6px 10px; break-after:avoid; page-break-after:avoid;}
+  .day-header .day-num{font-family:Arial,sans-serif; font-weight:700; color:#fff; font-size:13px; flex:none;}
+  .day-header .day-sep{color:#fff; opacity:.7; flex:none;}
+  .day-header input[type=text]{
+    font-family:Arial,sans-serif; font-weight:700; color:#fff; font-size:13px;
+    background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.4); border-radius:3px;
+    padding:5px 8px;
+  }
+  .day-header input[type=text]::placeholder{color:rgba(255,255,255,.75);}
+  .day-header .day-date{flex:0 0 155px; color-scheme:dark;}
+  .day-header .day-weekday{flex:0 0 120px; cursor:default; opacity:.9;}
+  .day-del{border:none; background:none; color:var(--danger); cursor:pointer; font-size:11px; font-family:"Helvetica Neue",Arial,sans-serif; flex:none;}
+
+  table.grid{width:100%; table-layout:fixed; border-collapse:collapse; font-size:12.5px;}
+  table.grid th, table.grid td{border:1px solid var(--line); padding:6px; text-align:justify; vertical-align:top; word-wrap:break-word; overflow-wrap:break-word;}
+  table.grid th{background:var(--accent-soft); font-family:Arial,sans-serif; font-weight:700; font-size:11px; color:var(--accent); text-align:center;}
+  table.grid td textarea{
+    border:none; background:transparent; width:100%; font-size:12.5px; font-family:inherit;
+    text-align:justify; line-height:1.4; resize:none; overflow:hidden; min-height:30px; padding:2px;
+    white-space:normal; word-wrap:break-word;
+  }
+  table.grid td textarea:focus{outline:none; background:var(--accent-soft);}
+  td.time-cell{padding:6px 4px;}
+  tr.break-row{background:var(--accent-soft);}
+  table.grid td.break-cell{text-align:center; vertical-align:middle;}
+  .break-wrap{display:block;}
+  table.grid td.break-cell textarea{
+    text-align:center; font-style:italic; font-weight:700; color:var(--accent);
+    font-family:Arial,sans-serif; background:transparent;
+  }
+  td.time-cell .time-row{display:flex; align-items:center; gap:4px; margin-bottom:3px;}
+  td.time-cell .time-row-label{font-size:9px; text-transform:uppercase; color:var(--muted); font-family:"Helvetica Neue",Arial,sans-serif; flex:none; width:22px;}
+  td.time-cell select.time-select{
+    flex:1; min-width:0; border:none; border-bottom:1px solid var(--line); background:transparent;
+    font-family:inherit; font-size:12.5px; padding:3px 2px; color:var(--ink);
+  }
+  td.time-cell select.time-select:focus{outline:none; border-bottom:1px solid var(--accent);}
+  td.time-cell .time-label{display:none;}
+  .facilitator-picker{position:relative; font-size:12.5px; font-family:inherit;}
+  .facilitator-display{
+    min-height:26px; padding:4px 20px 4px 4px; cursor:pointer; color:var(--ink);
+    white-space:normal; word-wrap:break-word; line-height:1.35; position:relative;
+  }
+  .facilitator-display:empty::before, .facilitator-display.placeholder::before{
+    content:"Select facilitator"; color:var(--muted); font-style:italic; font-size:11.5px;
+  }
+  .facilitator-display::after{
+    content:"▾"; position:absolute; right:2px; top:4px; color:var(--accent); font-size:11px;
+  }
+  .facilitator-menu{
+    display:none; position:absolute; top:100%; left:0; right:0; z-index:20;
+    background:#fff; border:1px solid var(--line); box-shadow:0 4px 12px rgba(0,0,0,.15);
+    max-height:180px; overflow-y:auto;
+  }
+  .facilitator-menu.open{display:block;}
+  .facilitator-menu div{padding:6px 8px; font-size:12.5px; cursor:pointer; white-space:normal; line-height:1.3;}
+  .facilitator-menu div:hover{background:var(--accent-soft);}
+  .facilitator-menu .empty-opt{color:var(--muted); font-style:italic;}
+  table.grid tr{break-inside:avoid; page-break-inside:avoid;}
+
+  .table-actions{margin-top:6px; text-align:center; display:flex; justify-content:center; gap:8px; flex-wrap:wrap;}
+
+  .footer-note{margin-top:30px; text-align:center; font-size:11px; color:var(--muted); font-style:italic;}
+
+  @media print{
+    body{background:#fff;}
+    .toolbar{display:none;}
+    .page-wrap{margin:0; padding:0; max-width:none; width:auto;}
+    #sheet{box-shadow:none; border:none; padding:0.4in; width:auto;}
+    .add-row, .row-del, .day-del{display:none;}
+    input[type=text], textarea{border-bottom:1px solid #999 !important;}
+    table.grid th{background:#fff !important; color:#000 !important;}
+    .day-header{background:#fff !important; border:1px solid #000 !important;}
+    .day-header .day-num, .day-header .day-sep{color:#000 !important;}
+    .day-header input[type=text]{background:#fff !important; color:#000 !important; border:1px solid #999 !important;}
+    td.time-cell select.time-select{border:1px solid #999 !important; background:#fff !important; color:#000 !important; -webkit-appearance:none; appearance:none;}
+  }
+  @page{
+    size: A4; margin: 0.75in; margin-top: 0.75in;
+    @bottom-center{
+      content: "Page " counter(page) " of " counter(pages);
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      font-size: 9pt;
+      color: #595959;
+      padding-top: 0;
+      padding-bottom: 60pt;
+    }
+  }
+
+  .pdf-export .toolbar{display:none !important;}
+  .pdf-export body{background:#fff !important;}
+  .pdf-export .page-wrap{margin:0 !important; padding:0 !important;}
+  .pdf-export #sheet{box-shadow:none !important; border:none !important;}
+  .pdf-export .add-row, .pdf-export .row-del, .pdf-export .day-del{display:none !important;}
+  .pdf-export table.grid th{background:#fff !important; color:#000 !important;}
+  .pdf-export .day-header{background:#fff !important; border:1px solid #000 !important;}
+  .pdf-export .day-header .day-num, .pdf-export .day-header .day-sep{color:#000 !important;}
+  .pdf-export .day-header input[type=text]{background:#fff !important; color:#000 !important; border:1px solid #999 !important;}
+  .pdf-export td.time-cell select.time-select{border:1px solid #999 !important; background:#fff !important; color:#000 !important;}
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <span class="brand">FIVDB · Agenda Template</span>
+  <span class="status" id="statusMsg"></span>
+  <button onclick="window.print()">🖨️ Print</button>
+  <button class="primary" onclick="saveAsHTML()">💾 Save</button>
+  <button onclick="addDay()">＋ Add day</button>
+  <button onclick="clearAll()">✕ Clear form</button>
+</div>
+
+<div class="page-wrap">
+<div id="sheet">
+
+  <div class="masthead">
+    <div class="annex-label">Annexes (3): Schedule</div>
+    <div class="proj">SURAKKHA PROJECT · DG ECHO 2026/00158</div>
+  </div>
+
+  <div class="title-block">
+    <textarea id="titleTextInput" data-field="titleText" rows="1" placeholder="(TITLE OF EVENT)" oninput="this.value = this.value.toUpperCase(); autoGrow(this);"></textarea>
+    <span class="title-fixed">AGENDA</span>
+  </div>
+
+  <div class="org-row">FRIENDS IN VILLAGE DEVELOPMENT BANGLADESH (FIVDB)</div>
+
+  <table class="meta-table">
+    <tr>
+      <td><label>Event Venue</label><textarea data-field="venue" rows="1" placeholder="Enter the event venue" oninput="autoGrow(this)"></textarea></td>
+      <td><label>Event Dates</label>
+        <div class="date-range">
+          <input type="date" data-field="dateStart">
+          <span class="date-sep">to</span>
+          <input type="date" data-field="dateEnd">
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <div class="bullet-block">
+          <label>Event Objectives</label>
+          <ul class="dyn-list" id="objectivesList"></ul>
+          <button class="add-row" onclick="addListItem('objectivesList','Objective')">+ Add objective</button>
+        </div>
+      </td>
+      <td>
+        <div class="bullet-block">
+          <label>Participants</label>
+          <ul class="dyn-list" id="participantsList"></ul>
+          <button class="add-row" onclick="addListItem('participantsList','Participant group')">+ Add</button>
+        </div>
+        <div class="bullet-block">
+          <h4>Facilitators</h4>
+          <ul class="dyn-list" id="facilitatorsList"></ul>
+          <button class="add-row" onclick="addListItem('facilitatorsList','Facilitator')">+ Add</button>
+        </div>
+      </td>
+    </tr>
+  </table>
+
+  <h2 class="section">Agenda</h2>
+  <div id="daysContainer"></div>
+  <div class="table-actions"><button class="add-row" onclick="addDay()">＋ Add another day</button></div>
+
+  <div class="footer-note">SURAKKHA PROJECT · DG ECHO 2026/00158 — Event Agenda Template<br>For technical support, please contact <a href="mailto:mohasan.uddin@fivdb.org" style="color:inherit;">mohasan.uddin@fivdb.org</a></div>
+
+</div>
+</div>
+
+<script>
+function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function escapeAttr(s){ return (s||'').replace(/"/g,'&quot;'); }
+function autoGrow(el){ el.style.height='auto'; el.style.height=(el.scrollHeight)+'px'; }
+
+// ---------- generic bullet lists (objectives / participants / facilitators) ----------
+function addListItem(listId, placeholder, value){
+  const ul = document.getElementById(listId);
+  const li = document.createElement('li');
+  li.innerHTML = `<textarea rows="1" placeholder="${placeholder}" oninput="autoGrow(this); if('${listId}'==='facilitatorsList') refreshFacilitatorDropdowns();">${escapeHtml(value)}</textarea><button class="row-del" onclick="this.closest('li').remove(); if('${listId}'==='facilitatorsList') refreshFacilitatorDropdowns();">✕</button>`;
+  ul.appendChild(li);
+  autoGrow(li.querySelector('textarea'));
+  if(listId === 'facilitatorsList') refreshFacilitatorDropdowns();
+}
+
+// ---------- facilitator dropdown sync ----------
+function getFacilitatorNames(){
+  return [...document.querySelectorAll('#facilitatorsList textarea')]
+    .map(t => t.value.trim())
+    .filter(v => v.length > 0);
+}
+function refreshFacilitatorDropdowns(){
+  document.querySelectorAll('.facilitator-picker').forEach(picker=>{
+    setFacilitatorDisplay(picker, picker.dataset.value || '');
+  });
+}
+function setFacilitatorDisplay(picker, value){
+  picker.dataset.value = value;
+  const display = picker.querySelector('.facilitator-display');
+  display.textContent = value;
+  display.classList.toggle('placeholder', !value);
+}
+function buildFacilitatorMenu(picker){
+  const names = getFacilitatorNames();
+  const menu = picker.querySelector('.facilitator-menu');
+  const current = picker.dataset.value || '';
+  let html = '';
+  if(names.length === 0){
+    html = '<div class="empty-opt">No facilitators added yet — add names above</div>';
+  } else {
+    html = names.map(n => `<div onclick="selectFacilitator(this)">${escapeHtml(n)}</div>`).join('');
+  }
+  if(current) html += `<div onclick="selectFacilitator(this)" style="color:var(--danger);">— Clear —</div>`;
+  menu.innerHTML = html;
+}
+function toggleFacilitatorMenu(displayEl){
+  const picker = displayEl.closest('.facilitator-picker');
+  const menu = picker.querySelector('.facilitator-menu');
+  const isOpen = menu.classList.contains('open');
+  document.querySelectorAll('.facilitator-menu.open').forEach(m => m.classList.remove('open'));
+  if(!isOpen){
+    buildFacilitatorMenu(picker);
+    menu.classList.add('open');
+  }
+}
+function selectFacilitator(optionEl){
+  const picker = optionEl.closest('.facilitator-picker');
+  const text = optionEl.textContent === '— Clear —' ? '' : optionEl.textContent;
+  setFacilitatorDisplay(picker, text);
+  picker.querySelector('.facilitator-menu').classList.remove('open');
+}
+document.addEventListener('click', e=>{
+  if(!e.target.closest('.facilitator-picker')){
+    document.querySelectorAll('.facilitator-menu.open').forEach(m => m.classList.remove('open'));
+  }
+});
+
+// ---------- day blocks ----------
+let dayCount = 0;
+function addDay(meta, rows){
+  dayCount++;
+  const id = 'day' + dayCount;
+  meta = meta || {};
+  const container = document.getElementById('daysContainer');
+  const block = document.createElement('div');
+  block.className = 'day-block';
+  block.id = id;
+  block.innerHTML = `
+    <div class="day-header">
+      <span class="day-num">Day ${dayCount}</span>
+      <span class="day-sep">:</span>
+      <input type="date" class="day-date" oninput="updateWeekday(this)" value="${escapeAttr(meta.date||'')}">
+      <input type="text" class="day-weekday" placeholder="Day of week" value="${escapeAttr(meta.weekday||'')}" readonly>
+      <button class="day-del" onclick="removeDay('${id}')" style="margin-left:auto;">✕ Remove day</button>
+    </div>
+    <table class="grid">
+      <colgroup><col style="width:19%"><col style="width:22%"><col style="width:14%"><col style="width:20%"><col style="width:25%"></colgroup>
+      <thead><tr><th>Time</th><th>Session</th><th>Method</th><th>Resources/Materials</th><th>Facilitator</th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <div class="table-actions">
+      <button class="add-row" onclick="addSessionRow('${id}')">+ Add session row</button>
+      <button class="add-row" onclick="addBreakRow('${id}', 'Health Break')">+ Health Break</button>
+      <button class="add-row" onclick="addBreakRow('${id}', 'Lunch &amp; Prayer Break')">+ Lunch &amp; Prayer Break</button>
+    </div>
+  `;
+  container.appendChild(block);
+  const dateInput = block.querySelector('.day-date');
+  if(dateInput.value) updateWeekday(dateInput);
+  renumberDays();
+  const initialRows = (rows && rows.length) ? rows : [{}, {}, {}, {}];
+  initialRows.forEach(r => {
+    if(r.isBreak) addBreakRow(id, r.breakLabel, r);
+    else addSessionRow(id, r);
+  });
+}
+
+function updateWeekday(dateInput){
+  const weekdayInput = dateInput.parentElement.querySelector('.day-weekday');
+  if(!dateInput.value){ weekdayInput.value = ''; return; }
+  const d = new Date(dateInput.value + 'T00:00:00');
+  weekdayInput.value = d.toLocaleDateString('en-US', { weekday: 'long' });
+}
+
+function removeDay(id){
+  document.getElementById(id).remove();
+  renumberDays();
+}
+function renumberDays(){
+  document.querySelectorAll('.day-block .day-num').forEach((el, i)=>{
+    el.textContent = 'Day ' + (i+1);
+  });
+}
+
+function addSessionRow(dayId, data){
+  const tbody = document.querySelector('#' + dayId + ' tbody');
+  const tr = document.createElement('tr');
+  data = data || {};
+  const timeStart = data.timeStart || '';
+  const timeEnd = data.timeEnd || '';
+  tr.innerHTML = `<td class="time-cell">
+      <div class="time-row"><span class="time-row-label">From</span><select class="time-select time-start" onchange="updateTimeLabel(this)"></select></div>
+      <div class="time-row"><span class="time-row-label">To</span><select class="time-select time-end" onchange="updateTimeLabel(this)"></select></div>
+      <div class="time-label"></div>
+    </td>
+    <td><textarea rows="1" data-col="session" oninput="autoGrow(this)">${escapeHtml(data.session||'')}</textarea></td>
+    <td><textarea rows="1" data-col="method" oninput="autoGrow(this)">${escapeHtml(data.method||'')}</textarea></td>
+    <td><textarea rows="1" data-col="resources" oninput="autoGrow(this)">${escapeHtml(data.resources||'')}</textarea></td>
+    <td><div class="facilitator-picker" data-value="${escapeAttr(data.facilitator||'')}">
+        <div class="facilitator-display" onclick="toggleFacilitatorMenu(this)"></div>
+        <div class="facilitator-menu"></div>
+      </div></td>`;
+  tbody.appendChild(tr);
+  const delBtn = document.createElement('button');
+  delBtn.className = 'row-del';
+  delBtn.textContent = '✕';
+  delBtn.onclick = () => tr.remove();
+  tr.lastElementChild.style.position = 'relative';
+  tr.lastElementChild.appendChild(delBtn);
+  tr.querySelectorAll('textarea').forEach(autoGrow);
+  const startSel = tr.querySelector('.time-start');
+  const endSel = tr.querySelector('.time-end');
+  startSel.innerHTML = TIME_OPTIONS_HTML;
+  endSel.innerHTML = TIME_OPTIONS_HTML;
+  startSel.value = timeStart;
+  endSel.value = timeEnd;
+  tr.querySelectorAll('.time-start, .time-end').forEach(inp => updateTimeLabel(inp));
+  setFacilitatorDisplay(tr.querySelector('.facilitator-picker'), data.facilitator || '');
+}
+
+function addBreakRow(dayId, label, data){
+  const tbody = document.querySelector('#' + dayId + ' tbody');
+  const tr = document.createElement('tr');
+  tr.className = 'break-row';
+  tr.dataset.break = 'true';
+  data = data || {};
+  const timeStart = data.timeStart || '';
+  const timeEnd = data.timeEnd || '';
+  tr.innerHTML = `<td class="time-cell">
+      <div class="time-row"><span class="time-row-label">From</span><select class="time-select time-start" onchange="updateTimeLabel(this)"></select></div>
+      <div class="time-row"><span class="time-row-label">To</span><select class="time-select time-end" onchange="updateTimeLabel(this)"></select></div>
+      <div class="time-label"></div>
+    </td>
+    <td colspan="4" class="break-cell"><div class="break-wrap"><textarea rows="1" data-col="breakLabel" oninput="autoGrow(this)">${escapeHtml(data.breakLabel || label)}</textarea></div></td>`;
+  tbody.appendChild(tr);
+  const delBtn = document.createElement('button');
+  delBtn.className = 'row-del';
+  delBtn.textContent = '✕';
+  delBtn.onclick = () => tr.remove();
+  tr.lastElementChild.style.position = 'relative';
+  tr.lastElementChild.appendChild(delBtn);
+  tr.querySelectorAll('textarea').forEach(autoGrow);
+  const startSel = tr.querySelector('.time-start');
+  const endSel = tr.querySelector('.time-end');
+  startSel.innerHTML = TIME_OPTIONS_HTML;
+  endSel.innerHTML = TIME_OPTIONS_HTML;
+  startSel.value = timeStart;
+  endSel.value = timeEnd;
+  tr.querySelectorAll('.time-start, .time-end').forEach(inp => updateTimeLabel(inp));
+}
+
+function formatTime12h(t){
+  if(!t) return '';
+  const [h, m] = t.split(':').map(Number);
+  const period = h >= 12 ? 'PM' : 'AM';
+  let h12 = h % 12; if(h12 === 0) h12 = 12;
+  return String(h12).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ' ' + period;
+}
+function buildTimeOptionsHtml(){
+  let html = '<option value="">— Select —</option>';
+  for(let h=6; h<=21; h++){
+    for(let m=0; m<60; m+=15){
+      if(h===21 && m>0) break; // stop at 9:00 PM
+      const val = String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0');
+      html += `<option value="${val}">${formatTime12h(val)}</option>`;
+    }
+  }
+  return html;
+}
+const TIME_OPTIONS_HTML = buildTimeOptionsHtml();
+function updateTimeLabel(inp){
+  const cell = inp.closest('.time-cell');
+  const start = cell.querySelector('.time-start').value;
+  const end = cell.querySelector('.time-end').value;
+  const label = cell.querySelector('.time-label');
+  if(!start && !end){ label.textContent = ''; return; }
+  label.textContent = (start ? formatTime12h(start) : '—') + ' to ' + (end ? formatTime12h(end) : '—');
+}
+
+// ---------- data ----------
+function collectData(){
+  const data = {};
+  document.querySelectorAll('#sheet [data-field]').forEach(el => data[el.dataset.field] = el.value);
+  ['objectivesList','participantsList','facilitatorsList'].forEach(id=>{
+    data[id] = [...document.querySelectorAll('#'+id+' textarea')].map(t=>t.value);
+  });
+  data.days = [...document.querySelectorAll('.day-block')].map(block=>{
+    const date = block.querySelector('.day-date').value;
+    const weekday = block.querySelector('.day-weekday').value;
+    const rows = [...block.querySelectorAll('tbody tr')].map(tr=>{
+      const o = {};
+      tr.querySelectorAll('textarea').forEach(t => o[t.dataset.col] = t.value);
+      if(tr.dataset.break === 'true') o.isBreak = true;
+      const facPicker = tr.querySelector('.facilitator-picker');
+      if(facPicker) o.facilitator = facPicker.dataset.value || '';
+      o.timeStart = tr.querySelector('.time-start') ? tr.querySelector('.time-start').value : '';
+      o.timeEnd = tr.querySelector('.time-end') ? tr.querySelector('.time-end').value : '';
+      return o;
+    });
+    return { date, weekday, rows };
+  });
+  return data;
+}
+
+function populateData(data){
+  data = data || {};
+  document.querySelectorAll('#sheet [data-field]').forEach(el=>{
+    el.value = data[el.dataset.field] || '';
+  });
+  autoGrow(document.getElementById('titleTextInput'));
+  document.querySelectorAll('.meta-table textarea[data-field]').forEach(autoGrow);
+  ['objectivesList','participantsList','facilitatorsList'].forEach(id=>{
+    document.getElementById(id).innerHTML = '';
+    const vals = (data && data[id] && data[id].length) ? data[id] : ['','',''];
+    const ph = id==='objectivesList' ? 'Objective' : (id==='participantsList' ? 'Participant group' : 'Facilitator');
+    vals.forEach(v => addListItem(id, ph, v));
+  });
+  document.getElementById('daysContainer').innerHTML = '';
+  dayCount = 0;
+  const days = (data && data.days && data.days.length) ? data.days : [{date:'', weekday:'', rows:[{},{},{},{}]}];
+  days.forEach(d => addDay({date:d.date, weekday:d.weekday}, d.rows));
+}
+
+function setStatus(msg){
+  const s = document.getElementById('statusMsg');
+  s.textContent = msg;
+  setTimeout(()=>{ if(s.textContent===msg) s.textContent=''; }, 3500);
+}
+
+function printWithHeaderFooter(){
+  const el = document.getElementById('sheet');
+  const opt = {
+    margin: [0.75, 0.4, 0.75, 0.4],
+    filename: 'Event_Agenda.pdf',
+    image: { type: 'jpeg', quality: 0.95 },
+    html2canvas: {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      onclone: (clonedDoc)=>{
+        clonedDoc.documentElement.classList.add('pdf-export');
+      }
+    },
+    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait', compress: true },
+    pagebreak: { mode: ['css','legacy'], avoid: ['table.grid tr', '.day-block', '.meta-table tr'] }
+  };
+  setStatus('Preparing print view…');
+  html2pdf().set(opt).from(el).toPdf().get('pdf').then(pdf=>{
+    const total = pdf.internal.getNumberOfPages();
+    const pageW = pdf.internal.pageSize.getWidth();
+    const pageH = pdf.internal.pageSize.getHeight();
+    for(let i=1;i<=total;i++){
+      pdf.setPage(i);
+      pdf.setFont('helvetica','normal');
+      pdf.setFontSize(9);
+      pdf.setTextColor(89,89,89);
+      const label = String(i).padStart(2,'0') + ' of ' + String(total).padStart(2,'0');
+      pdf.text(label, pageW/2, pageH-0.4, {align:'center'});
+    }
+    const blobUrl = pdf.output('bloburl');
+    const win = window.open(blobUrl, '_blank');
+    setStatus('✓ Ready — print from the new tab');
+    if(!win) setStatus('Pop-up blocked — allow pop-ups to print');
+  }).catch(err=>{
+    console.error(err);
+    setStatus('Falling back to browser print');
+    window.print();
+  });
+}
+
+function clearAll(){
+  if(!confirm('Clear the whole agenda? This cannot be undone.')) return;
+  populateData({});
+  setStatus('Form cleared');
+}
+
+function saveAsHTML(){
+  const data = collectData();
+  const clone = document.documentElement.cloneNode(true);
+  const old = clone.querySelector('#embedded-data');
+  if(old) old.remove();
+  const script = clone.ownerDocument.createElement('script');
+  script.id = 'embedded-data';
+  script.type = 'application/json';
+  script.textContent = JSON.stringify(data);
+  clone.querySelector('head').appendChild(script);
+  const html = '<!DOCTYPE html>\n' + clone.outerHTML;
+  const blob = new Blob([html], { type: 'text/html' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  const stamp = new Date().toISOString().slice(0,10);
+  link.download = `Event_Agenda_${stamp}.html`;
+  link.click();
+  setStatus('✓ Downloaded');
+}
+
+// ---------- Init ----------
+(function(){
+  const embedded = document.getElementById('embedded-data');
+  if(embedded){
+    try{ populateData(JSON.parse(embedded.textContent)); return; }catch(e){ /* fall through */ }
+  }
+  populateData({});
+})();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase-client.js"></script>
+<script>
+  // This standalone form has no site nav, so it doesn't load all of
+  // site-shared.js — just enough to enforce the same login gate as
+  // the rest of the site.
+  (async function(){
+    const user = await getCurrentUser();
+    if(user && user.profile.status === 'approved') return;
+    showLoginPromptStandalone();
+  })();
+
+  function showLoginPromptStandalone(){
+    const overlay = document.createElement('div');
+    overlay.className = 'staff-gate-overlay';
+    overlay.innerHTML = `
+      <div class="staff-gate-card">
+        <button type="button" class="staff-gate-close" id="staffGateCancel" aria-label="Close">✕</button>
+        <h2>Staff Access</h2>
+        <p>This section is for registered SURAKKHA staff. Log in with the access name and access code you registered with.</p>
+        <input type="email" id="staffGateUser" placeholder="Access Name" autocomplete="username">
+        <input type="password" id="staffGateInput" placeholder="Access Code" autocomplete="current-password">
+        <div class="staff-gate-actions">
+          <button type="button" id="staffGateSubmit">Log in</button>
+          <a href="register.html">Not registered yet?</a>
+        </div>
+        <p class="staff-gate-error" id="staffGateError"></p>
+      </div>`;
+    document.body.appendChild(overlay);
+    document.body.classList.add('staff-gate-blurred');
+
+    document.getElementById('staffGateCancel').addEventListener('click', ()=>{ location.href = 'index.html'; });
+
+    const submit = async ()=>{
+      const email = document.getElementById('staffGateUser').value.trim();
+      const password = document.getElementById('staffGateInput').value;
+      const errEl = document.getElementById('staffGateError');
+      const btn = document.getElementById('staffGateSubmit');
+      btn.disabled = true; btn.textContent = 'Checking…';
+      try{
+        await loginAccount(email, password);
+        const user = await getCurrentUser();
+        if(user && user.profile.status === 'approved'){ location.reload(); return; }
+        errEl.textContent = user ? 'Your account hasn\'t been approved yet — check with MEAL.' : 'Login succeeded, but your profile could not be loaded.';
+        await logoutAccount();
+      }catch(err){
+        errEl.textContent = err.message || 'That access name or access code isn\'t right.';
+      }
+      btn.disabled = false; btn.textContent = 'Log in';
+    };
+    document.getElementById('staffGateSubmit').addEventListener('click', submit);
+    document.getElementById('staffGateInput').addEventListener('keydown', e=>{ if(e.key === 'Enter') submit(); });
+  }
+</script>
+<style>
+  body.staff-gate-blurred > *:not(.staff-gate-overlay){filter:blur(6px); pointer-events:none; user-select:none;}
+  .staff-gate-overlay{position:fixed; inset:0; z-index:1000; background:rgba(28,33,36,.55); display:flex; align-items:center; justify-content:center; padding:20px;}
+  .staff-gate-card{background:#fff; border-radius:12px; padding:30px 28px; max-width:380px; width:100%; box-shadow:0 20px 50px rgba(0,0,0,.3); text-align:center; position:relative; font-family:"Helvetica Neue",Arial,sans-serif;}
+  .staff-gate-close{position:absolute; top:12px; right:12px; background:none; border:none; cursor:pointer; width:28px; height:28px; border-radius:50%; color:#888; font-size:15px; font-weight:700;}
+  .staff-gate-close:hover{background:#f2f2f2;}
+  .staff-gate-card h2{font-family:Georgia,serif; color:#1F3864; font-size:21px; margin:0 0 10px;}
+  .staff-gate-card p{font-size:13px; color:#666; line-height:1.6; margin:0 0 16px;}
+  .staff-gate-card input{width:100%; font-size:15px; padding:11px 14px; border:1px solid #ccc; border-radius:6px; margin-bottom:14px; text-align:center; box-sizing:border-box;}
+  .staff-gate-actions{display:flex; flex-direction:column; gap:10px; align-items:center;}
+  .staff-gate-actions button{width:100%; font-weight:700; font-size:14px; padding:11px; border-radius:6px; border:none; background:#1F3864; color:#fff; cursor:pointer;}
+  .staff-gate-actions a{font-size:12.5px; color:#2E7D6B;}
+  .staff-gate-error{color:#a5402f; font-size:12px; min-height:16px; margin:10px 0 0;}
+</style>
+</body>
+</html>

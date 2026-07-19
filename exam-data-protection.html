@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SURAKKHA · Data Protection Exam — FIVDB</title>
+<link rel="stylesheet" href="site-shared.css">
+<link rel="stylesheet" href="exam-shared.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<nav class="site-nav" aria-label="Main navigation">
+  <div class="site-nav-inner">
+    <a class="site-brand" href="index.html">
+      <span class="brand-mark">S</span>
+      <span class="brand-text">
+        <span class="b1">SURAKKHA PROJECT</span>
+        <span class="b2">FIVDB &middot; DG ECHO 2026/00158</span>
+      </span>
+    </a>
+    <div class="site-links">
+      <a href="index.html">Home</a>
+      <a href="about-project.html">About Project</a>
+      <a href="reporting-channel.html">Reporting Channel</a>
+      <a href="reporting-template.html">Reporting Template</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="register.html">Register</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+  <div class="page-header">
+    <div class="eyebrow">Capacity Building &middot; 4 of 6</div>
+    <h1>Data Protection</h1>
+    <p class="lede">Based on FIVDB's data handling practice and confidentiality principles. Score 75% or higher to receive your certificate.</p>
+  </div>
+
+  <div class="exam-wrap">
+    <p class="exam-intro">Study the module below, then unlock the exam. Score 75% or higher to earn your certificate.</p>
+    <div id="moduleHost"></div>
+    <div class="exam-section" id="examSection">
+      <p class="exam-locked-note">🔒 Complete the study module above to unlock this exam.</p>
+      <div id="examHost"></div>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>SURAKKHA PROJECT · DG ECHO 2026/00158 — FIVDB</span>
+    <span>Support: <a href="mailto:mohasan.uddin@fivdb.org">mohasan.uddin@fivdb.org</a></span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase-client.js"></script>
+<script src="site-shared.js"></script>
+<script>showStaffOnlyNotice(); enforceStaffGate();</script>
+<script src="exam-engine.js"></script>
+<script>
+  const QUESTIONS = [
+    { id:'m1', type:'mcq', text:'How much personal data should be collected from a beneficiary or participant?', options:['As much as possible, "just in case"', 'Only what is actually needed for the stated purpose', 'Whatever the form template happens to include', 'A fixed amount regardless of activity'], correct:1 },
+    { id:'m2', type:'mcq', text:'Photos, videos, or personal stories may be used in FIVDB materials:', options:['Anytime they support the project narrative', 'Only with documented, informed consent', 'If the person doesn\'t object within a week', 'At the photographer\'s discretion'], correct:1 },
+    { id:'m3', type:'mcq', text:'Sensitive records like incident reports and case details should be shared:', options:['With the whole team, for awareness', 'Only with people who need them to respond appropriately', 'Publicly, for accountability', 'Only with the donor'], correct:1 },
+    { id:'m4', type:'mcq', text:'Before sharing project data with a donor or partner outside the immediate team, you need:', options:['Nothing special', 'A stated purpose, Project Lead approval, and MEAL Focal verification', 'Just a verbal okay from a colleague', 'Approval from the beneficiary only'], correct:1 },
+    { id:'m5', type:'mcq', text:'When data must be shared externally, how much should be shared?', options:['The complete record, for context', 'Only the minimum necessary for that stated purpose', 'Whatever is easiest to export', 'All records from that activity'], correct:1 },
+    { id:'m6', type:'mcq', text:'What should happen after a data-sharing request is approved?', options:['Nothing further is needed', 'The request and approval should be documented', 'The requester should keep it verbal for speed', 'It should be forgotten once shared'], correct:1 },
+    { id:'m7', type:'mcq', text:'Can a person withdraw their consent for their data or photos to be used?', options:['No, once given consent is permanent', 'Yes, at any time, per the Consent Form', 'Only within 24 hours of signing', 'Only with a lawyer present'], correct:1 },
+    { id:'m8', type:'mcq', text:'How long should personal data be kept?', options:['Indefinitely, for historical record', 'Only as long as needed for the project, then removed', 'Exactly one year in all cases', 'Until the person requests deletion, and not before'], correct:1 },
+    { id:'m9', type:'mcq', text:'Who should you ask if you\'re unsure whether you can share a piece of data?', options:['Guess and proceed', 'The Project Lead or MEAL Focal Person, before sharing', 'A colleague not involved in the project', 'No one — just don\'t share it, ever'], correct:1 },
+    { id:'m10', type:'mcq', text:'Does the data-sharing approval process apply to sharing between team members internally?', options:['Yes, identically, with full sign-off required every time', 'The full process is for external sharing; internally the same spirit of minimal necessary sharing applies', 'No rules apply internally at all', 'Only for finance data'], correct:1 },
+
+    { id:'f1', type:'fact', text:'FIVDB collects only the personal data needed for the purpose at hand, not extra data "just in case."', correct:0 },
+    { id:'f2', type:'fact', text:'A person\'s consent to use their photo, once given, can never be withdrawn.', correct:1 },
+    { id:'f3', type:'fact', text:'Data sharing outside the team requires a stated purpose and Project Lead approval.', correct:0 },
+    { id:'f4', type:'fact', text:'The MEAL Focal Person\'s role in data sharing is to verify the sharing is consistent with what people actually consented to.', correct:0 },
+    { id:'f5', type:'fact', text:'It is acceptable to share a beneficiary\'s full case file with a partner organisation without checking the purpose first.', correct:1 },
+    { id:'f6', type:'fact', text:'Requests to delete personal data should be raised with the MEAL Focal Person.', correct:0 },
+    { id:'f7', type:'fact', text:'Confidential records may be shared with anyone on the team, regardless of whether they need it for their role.', correct:1 },
+
+    { id:'n1', type:'narrative', text:'Describe a real or hypothetical situation where you had to decide whether a piece of data was okay to share, and how you decided.' },
+    { id:'n2', type:'narrative', text:'Why does "share the minimum necessary" matter, even when the person requesting the data has good intentions?' },
+    { id:'n3', type:'narrative', text:'In your own words, explain why documenting a data-sharing approval is important, beyond just getting the approval itself.' },
+  ];
+
+  const MODULE_CONTENT = `
+    <h3>Why Data Protection Matters</h3>
+    <p>Personal information — names, contact details, photos, household locations, case details — is collected throughout SURAKKHA's forms and activities. Handling it carelessly can expose people to real risk, especially in a displacement context where confidentiality can be a matter of physical safety, not just privacy. Unlike FIVDB's other policies covered in this orientation, there isn't a single standalone "Data Protection Policy" chapter in the organisation's policy manual — this module draws together the data-handling principles embedded in the Code of Conduct's confidentiality provisions, the project's Consent Form, and established SURAKKHA practice, so it can be treated as a coherent whole.</p>
+
+    <h3>What Personal Data SURAKKHA Actually Collects</h3>
+    <p>Across SURAKKHA's own templates and forms, the categories of personal data collected include: participant names, ages, and sex on Attendance Sheets and Participant Lists; household names, Camp/Block/Sub-block locations, and Progress IDs on Distribution Master Rolls; contact details (phone numbers, WhatsApp numbers, emails) on the Registration form; incident and case details, including names of survivors, alleged perpetrators, and witnesses, on the Incident Reporting Form and General Incident Report; and photographs, videos, and personal stories collected for Case Stories, Success Stories, and general project documentation. Each of these categories carries a different level of sensitivity — a name on an attendance sheet is far less sensitive on its own than a survivor's name on a safeguarding incident report, and they should be handled with correspondingly different levels of care.</p>
+
+    <h3>Collection Principles</h3>
+    <ul>
+      <li><strong>Data minimisation</strong> — collect only what's actually needed for the stated purpose, not extra data "just in case."</li>
+      <li><strong>Purpose limitation</strong> — data collected for one purpose (e.g. participant registration) shouldn't be repurposed for something unrelated without fresh consent.</li>
+      <li><strong>Informed consent</strong> — photos, videos, and personal stories are used only with documented consent from the person (and parent/guardian, for children).</li>
+      <li><strong>Right to withdraw</strong> — anyone can revoke consent at any time, with future effect.</li>
+    </ul>
+
+    <h3>Consent, by Age</h3>
+    <p>The Consent Form for Using Pictures, Images or Stories sets out age-based guidance for who can give valid consent:</p>
+    <ul>
+      <li><strong>Children aged 0–16:</strong> consent must come from a parent, legal guardian, or caregiver. Staff should still observe for the child's own willingness to participate, even though they can't legally give consent themselves.</li>
+      <li><strong>Adolescents aged 16–18:</strong> both the young person and their parent/guardian can consent — ideally, both are asked.</li>
+      <li><strong>Adults:</strong> can consent on their own, though assisted decision-making may be needed in some cases (for example, where a disability affects understanding of what's being agreed to).</li>
+    </ul>
+    <p>The consent form itself specifies exactly what someone is agreeing to — separate checkboxes exist for speaking to and recording someone's words, making a video, taking photographs, using their name, using photographs or videos of them, using information to form stories, and (separately, given its sensitivity) using information about their medical treatment, impairment, or disability. Consent for one of these doesn't imply consent for the others — each must be actively agreed to.</p>
+    <p>The form's legal text explains: the information, photos, or videos will be used on a voluntary basis (no payment is made) for fundraising, awareness-raising, advocacy, and communication with sponsors, media, or the public — in print, electronically, online, or broadcast. Critically, it also states that consent can be revoked at any time with future effect: after revocation, the information is deleted from FIVDB's own database, though it may continue to be accessible if it has already been used or shared by other parties before the revocation — which is exactly why minimising sharing in the first place matters so much.</p>
+
+    <h3>Storage &amp; Sharing</h3>
+    <p>Sensitive records — incident reports, case files — are shared only with people who need them to respond appropriately, never broadly "for awareness." Personal data is retained only as long as needed for the project, then removed. Any sharing of project data outside the immediate team follows a five-step approval process: state the purpose, get sign-off from the Project Lead, have it verified by the MEAL Focal Person, share only the minimum necessary, and keep a documented record of the approval.</p>
+
+    <h3>Data Security in Practice</h3>
+    <p>Beyond the approval process for sharing, everyday data security depends on individual habits: keeping physical forms (attendance sheets, distribution rolls, incident reports) in a location that isn't accessible to unauthorised people; not leaving completed forms with names and personal details visible on shared desks or in vehicles; using the editable PDF and digital form tools provided rather than informal channels like personal messaging apps to move sensitive data between colleagues; and being as careful discussing a case verbally — in an office, in a vehicle, in a crowded camp setting — as you would be with the written record, since overheard conversations are also a data protection risk.</p>
+
+    <h3>If Something Goes Wrong</h3>
+    <p>Mistakes happen — a form left somewhere it shouldn't be, a message sent to the wrong person, a device lost with photos still on it. The single most important thing to do when a data protection mistake occurs is to report it immediately to the MEAL Focal Person, rather than trying to quietly fix it or hoping it goes unnoticed. An unreported small mistake can turn into a much larger problem if the exposed data is misused before anyone realises what happened; a reported mistake can often be contained quickly — informing the affected person, retrieving or securing the material, and adjusting the process so it doesn't happen again. This mirrors the reporting culture built into every other policy in this orientation: raising a concern early, even about your own error, is always the right call, and is treated very differently from concealing one.</p>
+
+    <h3>Roles in Practice</h3>
+    <p>Three roles matter most in SURAKKHA's day-to-day data protection: the <strong>Project Lead</strong>, who approves any sharing of data outside the immediate team and is accountable for the project's overall data-handling standards; the <strong>MEAL Focal Person</strong>, who verifies that any sharing is consistent with what people actually consented to, receives reports of mistakes or breaches, and processes requests from individuals to have their data corrected or deleted; and <strong>every individual staff member or volunteer</strong>, who is responsible for the data they personally collect, store, or handle day to day — filling in only what's needed on a form, keeping physical and digital records secure, and asking before assuming it's fine to share something.</p>
+
+    <h3>Common Situations</h3>
+    <p>A few recurring situations are worth thinking through in advance. If a journalist or researcher asks to see beneficiary data or speak with a specific family: this is external sharing, and needs the full five-step approval process — it cannot be agreed to informally, however well-intentioned the request seems. If a colleague from a different FIVDB project (not SURAKKHA) asks for a copy of a Distribution Master Roll "just to compare notes": this still counts as sharing outside the immediate team and needs the same approval, since "different project, same organisation" doesn't automatically make sharing appropriate. If a beneficiary asks what information FIVDB holds about them, or asks for it to be deleted: this is a legitimate request under the Consent Form's terms, and should be routed to the MEAL Focal Person rather than handled informally or refused outright.</p>
+
+    <h3>Broader Humanitarian Data Protection Principles</h3>
+    <p>SURAKKHA's practice reflects principles used across the humanitarian sector more broadly, most notably articulated in resources like the ICRC's Handbook on Data Protection in Humanitarian Action. These include: <strong>lawfulness and fairness</strong> — data should be collected and used in ways people would reasonably expect, not through deception; <strong>transparency</strong> — people should be told what data is being collected and why, in a language and format they understand, which is why the Consent Form explains its purpose in plain terms rather than legal jargon; <strong>accuracy</strong> — records should be kept up to date and corrected when wrong, since outdated information (an old phone number, an incorrect household location) can itself cause harm if acted on; and <strong>accountability</strong> — someone must always be responsible for how a given set of data is handled, which in SURAKKHA's case means the Project Lead and MEAL Focal Person rather than data protection being "everyone's job and therefore no one's."</p>
+    <p>A particularly important humanitarian-sector principle is the idea of <strong>"do no harm" applied to data</strong> — the recognition that in a displacement or conflict-affected context, the same data that helps deliver assistance can, if it falls into the wrong hands, be used to target, discriminate against, or harm the very people it describes. This is why household location data, disability status, or details about a specific safeguarding case are treated with more caution than a simple attendance count — the potential harm from misuse is much greater.</p>
+
+    <h3>Why This Matters for SURAKKHA</h3>
+    <p>Every family that provides a phone number for the registration form, every child whose name appears on a CBLF attendance sheet, and every survivor who trusts a staff member with details of an incident is extending trust that FIVDB will handle that information responsibly. In a displacement context specifically, that trust is not abstract — Rohingya households have well-founded reasons to be cautious about who holds information about them and how it might be used or shared onward, given their history and ongoing vulnerability. Treating data protection as a real, everyday discipline — not just a form to sign once — is part of how SURAKKHA earns and keeps that trust over the life of the project. It costs very little to pause and ask "does this person actually need this information, in this form, right now?" before sharing something — and that small habit, repeated consistently across a large team, is what makes the difference between a project that protects the people it serves and one that only says it does.</p>
+
+    <div class="context-box">
+      <strong>In the SURAKKHA context:</strong> Household registration data, Progress IDs, and camp/block/sub-block location details collected in Rohingya camps are especially sensitive — for a displaced population, this information can carry real safety implications if mishandled or shared inappropriately with unauthorised parties.
+    </div>
+  `;
+
+  initExam({
+    title: 'Data Protection',
+    source: 'FIVDB Data Protection practice',
+    questions: QUESTIONS,
+    moduleContent: MODULE_CONTENT,
+    moduleSource: 'FIVDB Data Protection practice, derived from the Code of Conduct and Consent Form'
+  });
+</script>
+</body>
+</html>

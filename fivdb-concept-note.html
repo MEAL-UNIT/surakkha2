@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<title>Concept Note</title>
+<style>
+  :root{
+    --ink:#262626; --paper:#ffffff; --line:#bfbfbf;
+    --accent:#1F3864; --accent-teal:#2E7D6B;
+    --accent-soft:#F2F2F2; --accent-soft2:#EAF1EF; --muted:#595959; --danger:#a5402f;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:#e5e5e5; font-family:"Calibri","Segoe UI",Arial,sans-serif; color:var(--ink);}
+  #sheet p, #sheet li{text-align:justify;}
+  @media print{ *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; color-adjust:exact !important; } }
+  .toolbar{
+    position:sticky; top:0; z-index:50; background:#1a1a1a; color:#f2f1ea;
+    padding:10px 18px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;
+    font-family:"Helvetica Neue",Arial,sans-serif;
+  }
+  .toolbar .brand{font-weight:700; letter-spacing:.04em; margin-right:auto; font-size:13px; text-transform:uppercase; color:#a9c9e8;}
+  .toolbar .status{font-size:11.5px; color:#a9c9e8; min-width:120px;}
+  .toolbar button{
+    background:transparent; color:#f2f1ea; border:1px solid #565656; padding:7px 12px; border-radius:5px;
+    font-size:12.5px; cursor:pointer; font-family:inherit; transition:background .15s;
+  }
+  .toolbar button:hover{background:#333;}
+  .toolbar button.primary{background:var(--accent); border-color:var(--accent);}
+  .toolbar button.primary:hover{background:#16294a;}
+
+  .page-wrap{width:210mm; margin:26px auto 80px; padding:0 16px; box-sizing:border-box;}
+  #sheet{
+    width:210mm; margin:0 auto; box-sizing:border-box; background:var(--paper); border:1px solid var(--line);
+    padding:14mm 16mm; box-shadow:0 2px 18px rgba(0,0,0,.12);
+  }
+  .masthead{display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line); padding-bottom:8px; margin-bottom:14px;}
+  .masthead .proj{font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif;}
+  .masthead .annex-label{font-size:13px; font-weight:700; color:#E8730A; font-family:"Helvetica Neue",Arial,sans-serif;}
+  .title-block{text-align:center; margin-bottom:14px;}
+  .title-block h1{font-family:"Times New Roman",Times,serif; color:var(--accent-teal); font-size:22px; font-weight:700; margin:0 0 2px;}
+  .title-block .org{font-size:14px; color:var(--ink); font-style:italic; font-family:"Times New Roman",Times,serif;}
+
+  .meta-table{width:100%; border-collapse:collapse; margin-bottom:16px; font-size:12.5px;}
+  .meta-table td{border:1px solid var(--line); padding:6px 8px; vertical-align:middle;}
+  .meta-table td.label{background:var(--accent-soft); font-weight:700; width:20%; font-family:"Helvetica Neue",Arial,sans-serif; font-size:11px; text-transform:uppercase; letter-spacing:.02em; color:var(--accent);}
+  .meta-table input[type=text]{width:100%; border:none; background:transparent; font-size:13px; font-family:inherit; color:var(--ink); padding:2px;}
+  .meta-table input[type=text]:focus{outline:none; background:var(--accent-soft2);}
+  .meta-table textarea{width:100%; border:none; background:transparent; font-size:13px; font-family:inherit; color:var(--ink); padding:2px; resize:none; overflow:hidden; line-height:1.35; display:block;}
+  .meta-table textarea:focus{outline:none; background:var(--accent-soft2);}
+
+  .section{margin-top:22px;}
+  .section-label{
+    font-size:12.5px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--accent);
+    font-family:"Helvetica Neue",Arial,sans-serif; margin:0 0 8px; display:flex; align-items:center; gap:8px;
+  }
+  .section-label .n{
+    display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:50%;
+    background:var(--accent); color:#fff; font-size:11px; font-weight:700; flex:none;
+  }
+  .section-hint{font-size:11px; color:var(--muted); font-family:"Helvetica Neue",Arial,sans-serif; margin:0 0 6px;}
+  .free-text{
+    width:100%; border:1px solid var(--line); background:transparent; font-family:inherit; font-size:13px;
+    color:var(--ink); padding:8px 10px; resize:none; overflow:hidden; line-height:1.55; min-height:70px; display:block;
+  }
+  .free-text:focus{outline:none; border-color:var(--accent); background:var(--accent-soft2);}
+
+  .target-row{display:flex; gap:18px; margin:6px 0 4px; font-size:12px; font-family:"Helvetica Neue",Arial,sans-serif; flex-wrap:wrap; align-items:center;}
+  .target-row label{font-weight:700; color:var(--accent); text-transform:uppercase; font-size:11px; letter-spacing:.02em; margin-right:4px;}
+  .target-row .tf{display:inline-flex; align-items:center; gap:4px;}
+  .target-row input[type=text]{width:56px; border:none; border-bottom:1px solid var(--line); background:transparent; font-size:13px; padding:3px 2px; text-align:center; font-family:inherit; color:var(--ink);}
+  .target-row input[type=text]:focus{outline:none; border-bottom:1px solid var(--accent);}
+
+  .sign-block{display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:26px;}
+  .sign-block .sb{border-top:1px solid var(--line); padding-top:8px;}
+  .sign-block .sb label{display:block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.02em; color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif; margin-bottom:16px;}
+  .sign-block .sb input[type=text]{width:100%; border:none; border-bottom:1px solid var(--line); background:transparent; font-size:13px; padding:4px 2px; font-family:inherit; color:var(--ink);}
+  .sign-block .sb input[type=text]:focus{outline:none; border-bottom:1px solid var(--accent);}
+
+  .footer-note{margin-top:24px; text-align:center; font-size:10.5px; color:var(--muted); font-style:italic;}
+
+  @media print{
+    body{background:#fff;}
+    .toolbar{display:none;}
+    .page-wrap{margin:0; padding:0; max-width:none; width:auto;}
+    #sheet{box-shadow:none; border:none; padding:0.5in; width:auto;}
+    .section{break-inside:avoid;}
+  }
+  @page{
+    size: A4; margin: 0.6in 0.55in 0.5in;
+    @bottom-center{ content: "Page " counter(page) " of " counter(pages); font-family:"Helvetica Neue",Arial,sans-serif; font-size:9pt; color:#595959; }
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <span class="brand">FIVDB · Concept Note</span>
+  <span class="status" id="statusMsg"></span>
+  <button onclick="window.print()">🖨️ Print</button>
+  <button class="primary" onclick="exportEditablePDF()">📄 Editable PDF</button>
+  <button onclick="clearAll()">✕ Clear form</button>
+</div>
+
+<div class="page-wrap">
+<div id="sheet">
+
+  <div class="masthead">
+    <div class="annex-label">Annexes (1): Concept Note</div>
+    <div class="proj">SURAKKHA PROJECT</div>
+  </div>
+
+  <div class="title-block">
+    <h1>CONCEPT NOTE</h1>
+    <div class="org">Friends In Village Development Bangladesh (FIVDB)</div>
+  </div>
+
+  <table class="meta-table">
+    <tr>
+      <td class="label">Project / Action</td>
+      <td colspan="3"><input type="text" data-field="projectAction" value="SURAKKHA - DG ECHO 2026/00158/RQ/01/03"></td>
+    </tr>
+    <tr>
+      <td class="label">Activity title</td>
+      <td><textarea data-field="activityTitle" rows="1" placeholder="Enter the activity title" oninput="autoGrow(this)"></textarea></td>
+      <td class="label">Activity code</td>
+      <td><input type="text" data-field="activityCode" placeholder="R1Ax / R2Ax"></td>
+    </tr>
+    <tr>
+      <td class="label">Proposed date(s)</td>
+      <td><input type="text" data-field="proposedDates" placeholder="e.g. 12–14 August 2026"></td>
+      <td class="label">Venue / camp</td>
+      <td><input type="text" data-field="venue" placeholder="Enter the venue or camp"></td>
+    </tr>
+  </table>
+
+  <div class="section">
+    <div class="section-label"><span class="n">1</span>Background &amp; Rationale</div>
+    <p class="section-hint">Why is this activity needed? What situation or gap does it respond to?</p>
+    <textarea class="free-text" rows="3" data-field="background" placeholder="Describe the background and rationale for this activity..." oninput="autoGrow(this)"></textarea>
+  </div>
+
+  <div class="section">
+    <div class="section-label"><span class="n">2</span>Objectives</div>
+    <p class="section-hint">What is this activity meant to achieve?</p>
+    <textarea class="free-text" rows="3" data-field="objectives" placeholder="List the objective(s) of this activity..." oninput="autoGrow(this)"></textarea>
+  </div>
+
+  <div class="section">
+    <div class="section-label"><span class="n">3</span>Target Participants</div>
+    <p class="section-hint">Who is this activity for, and how many are expected?</p>
+    <textarea class="free-text" rows="2" data-field="targetDescription" placeholder="Describe the target group (e.g. adolescent girls, camp residents, teaching volunteers)..." oninput="autoGrow(this)"></textarea>
+    <div class="target-row">
+      <span><label>Expected participants</label>(by sex)</span>
+      <span class="tf">Male: <input type="text" data-field="target_male"></span>
+      <span class="tf">Female: <input type="text" data-field="target_female"></span>
+      <span class="tf">With disability: <input type="text" data-field="target_disability"></span>
+      <span class="tf">Total: <input type="text" data-field="target_total"></span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label"><span class="n">4</span>Methodology / Approach</div>
+    <p class="section-hint">How will this activity be delivered? What methods, sessions, or steps are planned?</p>
+    <textarea class="free-text" rows="4" data-field="methodology" placeholder="Describe the approach and methodology..." oninput="autoGrow(this)"></textarea>
+  </div>
+
+  <div class="section">
+    <div class="section-label"><span class="n">5</span>Expected Outcomes</div>
+    <p class="section-hint">What change or result is expected from this activity?</p>
+    <textarea class="free-text" rows="3" data-field="outcomes" placeholder="Describe the expected outcomes..." oninput="autoGrow(this)"></textarea>
+  </div>
+
+  <div class="section">
+    <div class="section-label"><span class="n">6</span>Budget Summary <span style="font-weight:400; text-transform:none; color:var(--muted); font-size:11px;">(optional)</span></div>
+    <p class="section-hint">A brief note on estimated cost or budget line reference, if applicable.</p>
+    <textarea class="free-text" rows="2" data-field="budgetSummary" placeholder="e.g. Estimated cost: BDT 25,000 — under budget line R1A2..." oninput="autoGrow(this)"></textarea>
+  </div>
+
+  <div class="sign-block">
+    <div class="sb">
+      <label>Prepared by</label>
+      <input type="text" data-field="preparedBy" placeholder="Name &amp; designation">
+    </div>
+    <div class="sb">
+      <label>Approved by</label>
+      <input type="text" data-field="approvedBy" placeholder="Name &amp; designation">
+    </div>
+  </div>
+
+  <div class="footer-note">SURAKKHA PROJECT — Concept Note</div>
+
+</div>
+</div>
+
+<script>
+function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function autoGrow(el){ el.style.height='auto'; el.style.height=(el.scrollHeight)+'px'; }
+
+function collectData(){
+  const data = {};
+  document.querySelectorAll('#sheet [data-field]').forEach(el => data[el.dataset.field] = el.value);
+  return data;
+}
+
+function populateData(data){
+  data = data || {};
+  document.querySelectorAll('#sheet [data-field]').forEach(el=>{
+    el.value = (data[el.dataset.field] !== undefined) ? data[el.dataset.field] : (el.dataset.field==='projectAction' ? 'SURAKKHA - DG ECHO 2026/00158/RQ/01/03' : '');
+  });
+  document.querySelectorAll('#sheet textarea[data-field]').forEach(autoGrow);
+}
+
+function setStatus(msg){
+  const s = document.getElementById('statusMsg');
+  s.textContent = msg;
+  setTimeout(()=>{ if(s.textContent===msg) s.textContent=''; }, 3500);
+}
+
+function clearAll(){
+  if(!confirm('Clear the whole concept note? This cannot be undone.')) return;
+  populateData({});
+  setStatus('Form cleared');
+}
+
+
+const FORM_SECTIONS = [
+  { heading: "Activity Details", fields: [
+    { field: "projectAction", label: "Project / Action", width: 1 },
+    { field: "activityTitle", label: "Activity title", width: 0.5 },
+    { field: "activityCode", label: "Activity code", width: 0.5 },
+    { field: "proposedDates", label: "Proposed date(s)", width: 0.5 },
+    { field: "venue", label: "Venue / camp", width: 0.5 },
+  ]},
+  { heading: "1. Background & Rationale", fields: [
+    { field: "background", label: "Why is this activity needed?", width: 1, type: "textarea", rows: 3 },
+  ]},
+  { heading: "2. Objectives", fields: [
+    { field: "objectives", label: "What is this activity meant to achieve?", width: 1, type: "textarea", rows: 3 },
+  ]},
+  { heading: "3. Target Participants", fields: [
+    { field: "targetDescription", label: "Target group description", width: 1, type: "textarea", rows: 2 },
+    { field: "target_male", label: "Expected participants — Male", width: 0.5 },
+    { field: "target_female", label: "Expected participants — Female", width: 0.5 },
+    { field: "target_disability", label: "With disability", width: 0.5 },
+    { field: "target_total", label: "Total", width: 0.5 },
+  ]},
+  { heading: "4. Methodology / Approach", fields: [
+    { field: "methodology", label: "How will this activity be delivered?", width: 1, type: "textarea", rows: 4 },
+  ]},
+  { heading: "5. Expected Outcomes", fields: [
+    { field: "outcomes", label: "What change or result is expected?", width: 1, type: "textarea", rows: 3 },
+  ]},
+  { heading: "6. Budget Summary (optional)", fields: [
+    { field: "budgetSummary", label: "Estimated cost or budget line reference", width: 1, type: "textarea", rows: 2 },
+  ]},
+  { heading: "Sign-off", fields: [
+    { field: "preparedBy", label: "Prepared by (name & designation)", width: 0.5 },
+    { field: "approvedBy", label: "Approved by (name & designation)", width: 0.5 },
+  ]},
+];
+
+const PDF_DOC_TITLE = "Concept Note";
+const PDF_DOC_SUBTITLE = "SURAKKHA Project — Friends In Village Development Bangladesh (FIVDB)";
+const PDF_FILENAME_PREFIX = "FIVDB_Concept_Note_Editable";
+
+async function buildEditablePDF(sections, docTitle, docSubtitle, filenamePrefix, currentData){
+  const { PDFDocument, StandardFonts, rgb } = PDFLib;
+  const pdfDoc = await PDFDocument.create();
+  const form = pdfDoc.getForm();
+  const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+  const PAGE_W = 595.28, PAGE_H = 841.89;
+  const MARGIN = 44;
+  const CONTENT_W = PAGE_W - MARGIN * 2;
+  const NAVY = rgb(0.122, 0.220, 0.392);    // --accent
+  const TEAL = rgb(0.180, 0.490, 0.420);    // --accent-teal
+  const ORANGE = rgb(0.910, 0.451, 0.039);  // annex-label orange
+  const INK = rgb(0.145, 0.145, 0.145);     // --ink
+  const MUTED = rgb(0.349, 0.349, 0.349);   // --muted
+  const LINE = rgb(0.75, 0.75, 0.75);       // --line
+  const LABEL_BG = rgb(0.949, 0.949, 0.949); // --accent-soft
+
+  let page = pdfDoc.addPage([PAGE_W, PAGE_H]);
+  let y = PAGE_H - MARGIN;
+  let fieldIndex = 0;
+
+  const drawHeader = ()=>{
+    // Masthead row: annex label (orange, left) + project name (navy, right)
+    page.drawText("Annexure A3", { x: MARGIN, y: y, size: 10, font: boldFont, color: ORANGE });
+    const projLabel = "SURAKKHA PROJECT · SAFEGUARDING";
+    const projWidth = boldFont.widthOfTextAtSize(projLabel, 8);
+    page.drawText(projLabel, { x: PAGE_W - MARGIN - projWidth, y: y + 1, size: 8, font: boldFont, color: NAVY });
+    y -= 12;
+    page.drawLine({ start: {x: MARGIN, y}, end: {x: PAGE_W - MARGIN, y}, thickness: 1, color: LINE });
+    y -= 22;
+
+    // Title block: centered, teal title + italic org line
+    const titleWidth = boldFont.widthOfTextAtSize(docTitle, 18);
+    page.drawText(docTitle, { x: (PAGE_W - titleWidth) / 2, y: y, size: 18, font: boldFont, color: TEAL });
+    y -= 16;
+    const orgLine = "Friends In Village Development Bangladesh (FIVDB)";
+    const orgWidth = font.widthOfTextAtSize(orgLine, 10.5);
+    page.drawText(orgLine, { x: (PAGE_W - orgWidth) / 2, y: y, size: 10.5, font, color: MUTED });
+    y -= 18;
+    page.drawLine({ start: {x: MARGIN, y}, end: {x: PAGE_W - MARGIN, y}, thickness: 1, color: LINE });
+    y -= 22;
+  };
+  drawHeader();
+
+  const ensureSpace = (needed)=>{
+    if(y - needed < MARGIN + 20){
+      page = pdfDoc.addPage([PAGE_W, PAGE_H]);
+      y = PAGE_H - MARGIN;
+    }
+  };
+
+  sections.forEach(section=>{
+    if(section.type === 'table'){
+      ensureSpace(40);
+      const barH = 18;
+      const slW = 22;
+      const colWidths = section.columns.map(c => (CONTENT_W - slW) * c.width);
+      page.drawRectangle({ x: MARGIN, y: y - barH + 4, width: CONTENT_W, height: barH, color: NAVY });
+      page.drawText('SL#', { x: MARGIN + 3, y: y - barH + 9, size: 7, font: boldFont, color: rgb(1,1,1) });
+      let cx = MARGIN + slW;
+      section.columns.forEach((c,i)=>{
+        page.drawText(c.label, { x: cx + 3, y: y - barH + 9, size: 6.5, font: boldFont, color: rgb(1,1,1) });
+        cx += colWidths[i];
+      });
+      y -= barH + 2;
+
+      const rowH = section.rowHeight || 20;
+      for(let r = 1; r <= section.rowCount; r++){
+        ensureSpace(rowH + 12);
+        // Redraw column header if we just started a new page
+        if(y === PAGE_H - MARGIN){
+          page.drawRectangle({ x: MARGIN, y: y - barH + 4, width: CONTENT_W, height: barH, color: NAVY });
+          page.drawText('SL#', { x: MARGIN + 3, y: y - barH + 9, size: 7, font: boldFont, color: rgb(1,1,1) });
+          let cx2h = MARGIN + slW;
+          section.columns.forEach((c,i)=>{
+            page.drawText(c.label, { x: cx2h + 3, y: y - barH + 9, size: 6.5, font: boldFont, color: rgb(1,1,1) });
+            cx2h += colWidths[i];
+          });
+          y -= barH + 2;
+        }
+        let cx2 = MARGIN;
+        page.drawRectangle({ x: cx2, y: y - rowH, width: slW, height: rowH, borderColor: LINE, borderWidth: 0.5, color: rgb(1,1,1) });
+        page.drawText(String(r), { x: cx2 + 6, y: y - rowH + rowH/2 - 3, size: 7.5, font, color: INK });
+        cx2 += slW;
+        section.columns.forEach((c,i)=>{
+          const w = colWidths[i];
+          page.drawRectangle({ x: cx2, y: y - rowH, width: w, height: rowH, borderColor: LINE, borderWidth: 0.5, color: rgb(1,1,1) });
+          const tf = form.createTextField(`field_${fieldIndex++}_${c.field}_r${r}`);
+          if(section.rowHeight && section.rowHeight > 22) tf.enableMultiline();
+          const existing = currentData && currentData.rows && currentData.rows[r-1] ? currentData.rows[r-1][c.field] : '';
+          tf.setText(existing || '');
+          tf.addToPage(page, { x: cx2 + 2, y: y - rowH + 2, width: w - 4, height: rowH - 4, font, textColor: INK, borderWidth: 0 });
+          tf.setFontSize(7.5);
+          tf.updateAppearances(font);
+          cx2 += w;
+        });
+        y -= rowH;
+      }
+      y -= 12;
+      return;
+    }
+
+    ensureSpace(34);
+    // Section header bar — filled navy background, white bold text (matches th.group in the HTML)
+    const barH = 20;
+    page.drawRectangle({ x: MARGIN, y: y - barH + 6, width: CONTENT_W, height: barH, color: NAVY });
+    page.drawText(section.heading.toUpperCase(), { x: MARGIN + 8, y: y - barH + 12, size: 9.5, font: boldFont, color: rgb(1,1,1) });
+    y -= barH + 12;
+
+    let col = 0; // 0 = left slot free, tracks half-width pairing
+    section.fields.forEach(f=>{
+      const boxW = f.width === 1 ? CONTENT_W : (CONTENT_W - 10) / 2;
+      const x = (f.width === 1 || col === 0) ? MARGIN : MARGIN + boxW + 10;
+
+      if(f.type === 'checkbox'){
+        const lineH = 13;
+        ensureSpace(lineH + 4);
+        const cb = form.createCheckBox(`field_${fieldIndex++}_${f.field}`);
+        cb.addToPage(page, { x: MARGIN, y: y - 8, width: 10, height: 10 });
+        if(currentData && currentData[f.field]) { try{ cb.check(); }catch(e){} }
+        page.drawText(f.label, { x: MARGIN + 14, y: y - 6, size: 8.5, font, color: INK });
+        y -= lineH;
+        col = 0;
+        return;
+      }
+
+      if(f.type === 'radio'){
+        const optW = f.optionWidth || 90;
+        const perRow = Math.max(1, Math.floor(CONTENT_W / optW));
+        const rowsNeeded = Math.ceil(f.options.length / perRow);
+        ensureSpace(14 + rowsNeeded * 16 + 6);
+        page.drawText(f.label, { x: MARGIN, y: y, size: 9.5, font, color: INK });
+        y -= 14;
+        const rg = form.createRadioGroup(`field_${fieldIndex++}_${f.field}`);
+        f.options.forEach((opt,i)=>{
+          const rx = MARGIN + (i % perRow) * optW;
+          const ry = y - Math.floor(i / perRow) * 16;
+          rg.addOptionToPage(opt, page, { x: rx, y: ry - 2, width: 10, height: 10 });
+          page.drawText(opt, { x: rx + 14, y: ry, size: 8.5, font, color: INK });
+        });
+        if(currentData && currentData[f.field]) { try{ rg.select(currentData[f.field]); }catch(e){} }
+        y -= rowsNeeded * 16 + 8;
+        col = 0;
+        return;
+      }
+
+      const isTextarea = f.type === 'textarea';
+      const boxH = isTextarea ? (14 * (f.rows || 2)) : 16;
+
+      ensureSpace(boxH + 20);
+      if(f.width === 1) col = 0;
+      if(col === 0 && f.width !== 1){
+        // starting a new half-width row
+      }
+
+      const labelH = 13;
+      page.drawRectangle({ x: x, y: y - labelH + 3, width: boxW, height: labelH, color: LABEL_BG });
+      page.drawText(f.label, { x: x + 4, y: y - labelH + 7, size: 8, font: boldFont, color: NAVY });
+      const boxY = y - labelH - 3 - boxH;
+      page.drawRectangle({ x: x, y: boxY, width: boxW, height: boxH, borderColor: LINE, borderWidth: 0.75, color: rgb(1,1,1) });
+
+      const tf = form.createTextField(`field_${fieldIndex++}_${f.field}`);
+      if(isTextarea) tf.enableMultiline();
+      tf.setText((currentData && currentData[f.field]) || '');
+      tf.addToPage(page, { x: x + 2, y: boxY + 2, width: boxW - 4, height: boxH - 4, font, textColor: INK, borderWidth: 0 });
+      tf.setFontSize(9);
+      tf.updateAppearances(font);
+
+      if(f.width === 1){
+        y = boxY - 14;
+        col = 0;
+      } else {
+        if(col === 0){
+          col = 1; // wait for pair on same row before dropping y
+        } else {
+          y = boxY - 14;
+          col = 0;
+        }
+      }
+    });
+    y -= 10;
+  });
+
+  // Ask viewers to regenerate field appearances live as the user types —
+  // without this, some PDF readers (not all) only show correct word-wrap
+  // for the text baked in at export time, not text typed in afterward.
+  form.acroForm.dict.set(PDFLib.PDFName.of('NeedAppearances'), PDFLib.PDFBool.True);
+
+  const bytes = await pdfDoc.save();
+  const blob = new Blob([bytes], { type: 'application/pdf' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  const stamp = new Date().toISOString().slice(0,10);
+  link.download = `${filenamePrefix}_${stamp}.pdf`;
+  link.click();
+}
+
+
+
+function exportEditablePDF(){
+  setStatus('Building editable PDF…');
+  const data = collectData();
+  buildEditablePDF(FORM_SECTIONS, PDF_DOC_TITLE, PDF_DOC_SUBTITLE, PDF_FILENAME_PREFIX, data)
+    .then(()=> setStatus('✓ Editable PDF downloaded'))
+    .catch(err=>{
+      console.error(err);
+      alert('Could not build the editable PDF: ' + err.message);
+    });
+}
+
+(function(){
+  const embedded = document.getElementById('embedded-data');
+  if(embedded){
+    try{ populateData(JSON.parse(embedded.textContent)); return; }catch(e){ /* fall through */ }
+  }
+  populateData({});
+})();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase-client.js"></script>
+<script>
+  // This standalone form has no site nav, so it doesn't load all of
+  // site-shared.js — just enough to enforce the same login gate as
+  // the rest of the site.
+  (async function(){
+    const user = await getCurrentUser();
+    if(user && user.profile.status === 'approved') return;
+    showLoginPromptStandalone();
+  })();
+
+  function showLoginPromptStandalone(){
+    const overlay = document.createElement('div');
+    overlay.className = 'staff-gate-overlay';
+    overlay.innerHTML = `
+      <div class="staff-gate-card">
+        <button type="button" class="staff-gate-close" id="staffGateCancel" aria-label="Close">✕</button>
+        <h2>Staff Access</h2>
+        <p>This section is for registered SURAKKHA staff. Log in with the access name and access code you registered with.</p>
+        <input type="email" id="staffGateUser" placeholder="Access Name" autocomplete="username">
+        <input type="password" id="staffGateInput" placeholder="Access Code" autocomplete="current-password">
+        <div class="staff-gate-actions">
+          <button type="button" id="staffGateSubmit">Log in</button>
+          <a href="register.html">Not registered yet?</a>
+        </div>
+        <p class="staff-gate-error" id="staffGateError"></p>
+      </div>`;
+    document.body.appendChild(overlay);
+    document.body.classList.add('staff-gate-blurred');
+
+    document.getElementById('staffGateCancel').addEventListener('click', ()=>{ location.href = 'index.html'; });
+
+    const submit = async ()=>{
+      const email = document.getElementById('staffGateUser').value.trim();
+      const password = document.getElementById('staffGateInput').value;
+      const errEl = document.getElementById('staffGateError');
+      const btn = document.getElementById('staffGateSubmit');
+      btn.disabled = true; btn.textContent = 'Checking…';
+      try{
+        await loginAccount(email, password);
+        const user = await getCurrentUser();
+        if(user && user.profile.status === 'approved'){ location.reload(); return; }
+        errEl.textContent = user ? 'Your account hasn\'t been approved yet — check with MEAL.' : 'Login succeeded, but your profile could not be loaded.';
+        await logoutAccount();
+      }catch(err){
+        errEl.textContent = err.message || 'That access name or access code isn\'t right.';
+      }
+      btn.disabled = false; btn.textContent = 'Log in';
+    };
+    document.getElementById('staffGateSubmit').addEventListener('click', submit);
+    document.getElementById('staffGateInput').addEventListener('keydown', e=>{ if(e.key === 'Enter') submit(); });
+  }
+</script>
+<style>
+  body.staff-gate-blurred > *:not(.staff-gate-overlay){filter:blur(6px); pointer-events:none; user-select:none;}
+  .staff-gate-overlay{position:fixed; inset:0; z-index:1000; background:rgba(28,33,36,.55); display:flex; align-items:center; justify-content:center; padding:20px;}
+  .staff-gate-card{background:#fff; border-radius:12px; padding:30px 28px; max-width:380px; width:100%; box-shadow:0 20px 50px rgba(0,0,0,.3); text-align:center; position:relative; font-family:"Helvetica Neue",Arial,sans-serif;}
+  .staff-gate-close{position:absolute; top:12px; right:12px; background:none; border:none; cursor:pointer; width:28px; height:28px; border-radius:50%; color:#888; font-size:15px; font-weight:700;}
+  .staff-gate-close:hover{background:#f2f2f2;}
+  .staff-gate-card h2{font-family:Georgia,serif; color:#1F3864; font-size:21px; margin:0 0 10px;}
+  .staff-gate-card p{font-size:13px; color:#666; line-height:1.6; margin:0 0 16px;}
+  .staff-gate-card input{width:100%; font-size:15px; padding:11px 14px; border:1px solid #ccc; border-radius:6px; margin-bottom:14px; text-align:center; box-sizing:border-box;}
+  .staff-gate-actions{display:flex; flex-direction:column; gap:10px; align-items:center;}
+  .staff-gate-actions button{width:100%; font-weight:700; font-size:14px; padding:11px; border-radius:6px; border:none; background:#1F3864; color:#fff; cursor:pointer;}
+  .staff-gate-actions a{font-size:12.5px; color:#2E7D6B;}
+  .staff-gate-error{color:#a5402f; font-size:12px; min-height:16px; margin:10px 0 0;}
+</style>
+</body>
+</html>

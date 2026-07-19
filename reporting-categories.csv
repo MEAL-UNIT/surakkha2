@@ -1,0 +1,6 @@
+name,accent
+Planning Preparation,var(--primary)
+Reporting Template & Evidence Generation,var(--accent2)
+Human Interest History,var(--accent2-light)
+Accountability,var(--warn)
+Communication and Branding Promoting Template,var(--primary-dark)

@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SURAKKHA · About the Project — FIVDB</title>
+<link rel="stylesheet" href="site-shared.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+  .info-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; margin:20px 0 10px;}
+  .info-card{background:var(--surface); border:1px solid var(--line); border-radius:5px; padding:16px 18px;}
+  .info-card .lbl{font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--accent2); font-weight:700; margin-bottom:6px; display:flex; align-items:center; gap:6px;}
+  .info-card .lbl svg{width:13px; height:13px; flex:none;}
+  .info-card .val{font-size:14px; color:var(--ink); line-height:1.5;}
+  .info-card .val.placeholder{color:var(--muted); font-style:italic;}
+
+  .stats-strip{
+    max-width:1140px; margin:26px auto 0; padding:0 20px;
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px;
+  }
+  .stat-block{
+    background:linear-gradient(155deg, var(--primary), var(--primary-dark));
+    border-radius:10px; padding:22px 20px; text-align:center; color:#fff;
+    box-shadow:var(--shadow-md); position:relative; overflow:hidden;
+  }
+  .stat-block::before{
+    content:""; position:absolute; inset:0;
+    background:repeating-linear-gradient(135deg, rgba(255,255,255,.05) 0px, rgba(255,255,255,.05) 2px, transparent 2px, transparent 12px);
+  }
+  .stat-block .stat-num{
+    font-family:var(--serif); font-size:38px; font-weight:700; line-height:1; position:relative;
+  }
+  .stat-block .stat-label{
+    font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.06em;
+    color:rgba(255,255,255,.85); margin-top:6px; position:relative;
+  }
+  .stat-block:nth-child(2){background:linear-gradient(155deg, var(--accent2), #0A5C52);}
+  .stat-block:nth-child(3){background:linear-gradient(155deg, var(--accent), #A9622F);}
+
+  .section-tabs{
+    display:flex; gap:8px; flex-wrap:wrap; margin:24px 0 0;
+  }
+  .section-tab{
+    background:var(--surface); border:1px solid var(--line); color:var(--muted);
+    font-family:var(--sans); font-size:12.5px; font-weight:600; padding:9px 16px; border-radius:20px;
+    cursor:pointer; transition:background .18s, color .18s, border-color .18s, transform .15s;
+  }
+  .section-tab:hover{transform:translateY(-1px); border-color:var(--primary);}
+  .section-tab.active{background:var(--primary); border-color:var(--primary); color:#fff;}
+
+  .prose{background:var(--surface); border:1px solid var(--line); border-radius:5px; padding:22px 24px; margin-top:8px;}
+  .prose p{font-size:14.5px; color:var(--ink); line-height:1.7; margin:0 0 14px;}
+  .prose p:last-child{margin-bottom:0;}
+  .prose p.placeholder{color:var(--muted); font-style:italic;}
+  .about-section{margin-bottom:22px;}
+  .about-section:last-child{margin-bottom:0;}
+  .about-section h3{
+    font-family:var(--serif); font-size:16.5px; color:var(--primary); margin:0 0 8px;
+    padding-bottom:6px; border-bottom:1px solid var(--line);
+  }
+  .about-section p{font-size:14.5px; color:var(--ink); line-height:1.7; margin:0; white-space:pre-line;}
+  .about-section p.placeholder{color:var(--muted); font-style:italic;}
+
+  /* ---- Bookshelf ---- */
+  .shelf-unit{margin-top:10px;}
+  .shelf-row{
+    display:flex; align-items:flex-end; gap:6px; padding:0 18px 0; overflow-x:auto; min-height:200px;
+  }
+  .book{
+    flex:none; width:46px; height:180px; border-radius:3px 6px 6px 3px; cursor:pointer; text-decoration:none;
+    display:flex; align-items:flex-end; justify-content:center; padding:14px 0; position:relative;
+    box-shadow:inset -4px 0 8px rgba(0,0,0,.15), 0 4px 8px rgba(0,0,0,.15);
+    transition:transform .15s;
+  }
+  .book:hover{transform:translateY(-8px);}
+  .book .spine-title{
+    writing-mode:vertical-rl; transform:rotate(180deg); font-family:var(--sans); font-weight:700;
+    font-size:11px; color:#fff; letter-spacing:.02em; max-height:150px; overflow:hidden; text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .book.empty{
+    background:repeating-linear-gradient(135deg, rgba(0,0,0,.03) 0px, rgba(0,0,0,.03) 3px, transparent 3px, transparent 10px);
+    border:1px dashed var(--line); box-shadow:none; cursor:default;
+  }
+  .book.empty .spine-title{color:var(--muted); font-weight:400; font-style:italic;}
+  .shelf-board{
+    height:16px; background:linear-gradient(180deg, #A8895A, #7A5C34); border-radius:2px;
+    box-shadow:0 6px 10px rgba(0,0,0,.25); margin:0 18px 30px;
+  }
+  .shelf-caption{font-size:11px; color:var(--muted); text-align:center; margin:-18px 18px 34px; font-family:var(--mono);}
+
+  .facility-map{
+    height:360px; border-radius:8px; border:1px solid var(--line); overflow:hidden;
+    box-shadow:var(--shadow-sm); display:none;
+  }
+  .facility-map-empty{
+    padding:40px 20px; text-align:center; background:var(--surface); border:1px dashed var(--line);
+    border-radius:8px; color:var(--muted); font-size:13px; font-family:var(--mono);
+  }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<nav class="site-nav" aria-label="Main navigation">
+  <div class="site-nav-inner">
+    <a class="site-brand" href="index.html">
+      <span class="brand-mark">S</span>
+      <span class="brand-text">
+        <span class="b1">SURAKKHA PROJECT</span>
+        <span class="b2">FIVDB &middot; DG ECHO 2026/00158</span>
+      </span>
+    </a>
+    <div class="site-links">
+      <a href="index.html">Home</a>
+      <a href="about-project.html">About Project</a>
+      <a href="reporting-channel.html">Reporting Channel</a>
+      <a href="reporting-template.html">Reporting Template</a>
+      <a href="dashboard.html">Dashboard</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+  <div class="page-header">
+    <div class="eyebrow">SURAKKHA Project</div>
+    <h1>About the Project</h1>
+    <p class="lede">Objectives, goal, donor, and partners — and a library of project reference documents below.</p>
+  </div>
+
+  <div class="stats-strip" id="statsStrip"></div>
+
+  <div class="section-wrap" style="max-width:1140px; margin:0 auto; padding:10px 20px 10px;">
+    <div class="info-grid" id="infoGrid"></div>
+    <div class="section-tabs" id="sectionTabs"></div>
+    <div class="prose" id="proseBlock"></div>
+  </div>
+
+  <div class="section-wrap">
+    <h2 class="section-title">Project Library</h2>
+    <p class="section-sub">Reference documents, kept as books on the shelf — click a book to open it.</p>
+  </div>
+
+
+  <div class="shelf-unit">
+    <div class="shelf-row" id="shelfRow"></div>
+    <div class="shelf-board"></div>
+    <div class="shelf-caption">Click a book to open · dashed books are still awaiting a file</div>
+  </div>
+
+  <div class="section-wrap">
+    <h2 class="section-title">Facility Map</h2>
+    <p class="section-sub">Project facilities by name and location — GPS data to be added.</p>
+    <div id="facilityMap" class="facility-map"></div>
+    <div id="facilityMapEmpty" class="facility-map-empty">
+      No facility locations added yet. Once GPS coordinates are provided, they'll appear here as pins on the map.
+    </div>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+
+  <div class="site-footer-inner">
+    <span>SURAKKHA PROJECT · DG ECHO 2026/00158 — FIVDB</span>
+    <span>Support: <a href="mailto:mohasan.uddin@fivdb.org">mohasan.uddin@fivdb.org</a></span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase-client.js"></script>
+<script src="site-shared.js"></script>
+<script>showStaffOnlyNotice(); enforceStaffGate();</script>
+<script>
+  // ---------------------------------------------------------------
+  // This page reads two files — edit them and re-upload to update
+  // the page, no changes to this file needed:
+  //   about-project.csv  → info cards + Goal/Objectives text
+  //   library.csv        → the bookshelf (one row per book)
+  // ---------------------------------------------------------------
+
+  const INFO_ICONS = {
+    'Donor': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
+    'Project code': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h10M7 13h6"/></svg>',
+    'Technical partner': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+    'Consortium partner(s)': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18M3 12h18"/></svg>'
+  };
+
+  function renderAboutInfo(fields){
+    const grid = document.getElementById('infoGrid');
+    const cards = [
+      ['Donor', fields.donor],
+      ['Project code', fields.project_code],
+      ['Technical partner', fields.technical_partner],
+      ['Consortium partner(s)', fields.consortium_partner],
+    ];
+    grid.innerHTML = cards.map(([label, val])=>{
+      const isPlaceholder = !val || /to be updated/i.test(val);
+      return `<div class="info-card">
+        <span class="lbl">${INFO_ICONS[label] || ''}${label}</span>
+        <div class="val${isPlaceholder ? ' placeholder' : ''}">${val || 'To be updated'}</div>
+      </div>`;
+    }).join('');
+  }
+
+  function renderAboutSections(rows){
+    const tabsHost = document.getElementById('sectionTabs');
+    const prose = document.getElementById('proseBlock');
+    if(!rows.length){
+      tabsHost.innerHTML = '';
+      prose.innerHTML = '<p class="placeholder">No sections added yet.</p>';
+      return;
+    }
+    const sorted = rows.slice().sort((a,b) => (parseInt(a.order,10) || 0) - (parseInt(b.order,10) || 0));
+
+    tabsHost.innerHTML = sorted.map((r, i)=>
+      `<button type="button" class="section-tab${i === 0 ? ' active' : ''}" data-idx="${i}">${r.heading}</button>`
+    ).join('');
+
+    const showSection = (idx)=>{
+      const r = sorted[idx];
+      const isPlaceholder = !r.content || /update this section/i.test(r.content);
+      prose.innerHTML = `<div class="about-section">
+        <h3>${r.heading}</h3>
+        <p${isPlaceholder ? ' class="placeholder"' : ''}>${r.content || ''}</p>
+      </div>`;
+      tabsHost.querySelectorAll('.section-tab').forEach(t => t.classList.toggle('active', t.dataset.idx == idx));
+    };
+
+    tabsHost.querySelectorAll('.section-tab').forEach(btn=>{
+      btn.addEventListener('click', ()=> showSection(btn.dataset.idx));
+    });
+
+    showSection(0);
+  }
+
+  function animateCount(el, target, suffix){
+    const duration = 1200;
+    const start = performance.now();
+    const step = (now)=>{
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.round(target * eased).toLocaleString() + suffix;
+      if(progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  function renderStats(rows){
+    const host = document.getElementById('statsStrip');
+    if(!rows.length){ host.style.display = 'none'; return; }
+    host.innerHTML = rows.map((r,i)=>`
+      <div class="stat-block">
+        <div class="stat-num" id="statNum${i}">0</div>
+        <div class="stat-label">${r.label}</div>
+      </div>`).join('');
+
+    const blocks = host.querySelectorAll('.stat-block');
+    if('IntersectionObserver' in window){
+      const io = new IntersectionObserver((entries)=>{
+        entries.forEach(entry=>{
+          if(entry.isIntersecting){
+            const idx = [...blocks].indexOf(entry.target);
+            const r = rows[idx];
+            animateCount(document.getElementById('statNum' + idx), parseInt(r.value, 10) || 0, r.suffix || '');
+            io.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.4 });
+      blocks.forEach(b => io.observe(b));
+    } else {
+      rows.forEach((r,i) => document.getElementById('statNum' + i).textContent = r.value + (r.suffix || ''));
+    }
+  }
+
+  watchForUpdates(['about-project.csv','about-sections.csv','about-stats.csv','library.csv','facilities.csv']);
+
+  fetchCSV('about-project.csv')
+    .then(rows=>{
+      const fields = {};
+      rows.forEach(r => fields[r.field] = r.value);
+      renderAboutInfo(fields);
+      refreshScrollReveal();
+    })
+    .catch(err => csvLoadError(document.getElementById('infoGrid'), err, 'Project info'));
+
+  fetchCSV('about-sections.csv')
+    .then(rows => { renderAboutSections(rows); refreshScrollReveal(); })
+    .catch(err => csvLoadError(document.getElementById('proseBlock'), err, 'Project sections'));
+
+  fetchCSV('about-stats.csv')
+    .then(renderStats)
+    .catch(()=>{ document.getElementById('statsStrip').style.display = 'none'; });
+
+  function renderShelf(books){
+    const host = document.getElementById('shelfRow');
+    if(!books.length){
+      host.innerHTML = '<p style="font-size:13px; color:var(--muted); font-style:italic;">No books added yet.</p>';
+      return;
+    }
+    host.innerHTML = books.map(b=>{
+      if(!b.file){
+        return `<div class="book empty" title="${b.title} — awaiting file"><span class="spine-title">${b.title}</span></div>`;
+      }
+      const viewerUrl = `library-viewer.html?file=${encodeURIComponent(b.file)}&title=${encodeURIComponent(b.title)}`;
+      return `<a class="book" style="background:${b.color || 'var(--primary)'}" href="${viewerUrl}" title="${b.title} (read-only preview)"><span class="spine-title">${b.title}</span></a>`;
+    }).join('');
+  }
+
+  fetchCSV('library.csv')
+    .then(books => { renderShelf(books); refreshScrollReveal(); })
+    .catch(err => csvLoadError(document.getElementById('shelfRow'), err, 'Library'));
+
+  // ---------------------------------------------------------------
+  // Facility map — reads facilities.csv (same folder). Columns:
+  // name, id, lat, lon, type. Add a row per facility once GPS data
+  // is available; the map appears automatically once there's at
+  // least one valid row. No changes to this file needed.
+  // ---------------------------------------------------------------
+  fetchCSV('facilities.csv')
+    .then(rows=>{
+      const valid = rows.filter(r => r.lat && r.lon && !isNaN(parseFloat(r.lat)) && !isNaN(parseFloat(r.lon)));
+      const mapEl = document.getElementById('facilityMap');
+      const emptyEl = document.getElementById('facilityMapEmpty');
+      if(!valid.length){
+        mapEl.style.display = 'none';
+        emptyEl.style.display = 'block';
+        return;
+      }
+      mapEl.style.display = 'block';
+      emptyEl.style.display = 'none';
+      const map = L.map('facilityMap');
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 18
+      }).addTo(map);
+      const markers = valid.map(r=>{
+        const m = L.marker([parseFloat(r.lat), parseFloat(r.lon)]).addTo(map);
+        const label = r.id ? `${r.name} <span style="color:#888;">(${r.id})</span>` : r.name;
+        m.bindPopup(`<strong>${label}</strong>${r.type ? '<br>' + r.type : ''}`);
+        return m;
+      });
+      if(markers.length === 1){
+        map.setView(markers[0].getLatLng(), 13);
+      } else {
+        map.fitBounds(L.featureGroup(markers).getBounds().pad(0.2));
+      }
+      refreshScrollReveal();
+    })
+    .catch(()=>{
+      document.getElementById('facilityMap').style.display = 'none';
+      document.getElementById('facilityMapEmpty').style.display = 'block';
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SURAKKHA · Document Viewer — FIVDB</title>
+<link rel="stylesheet" href="site-shared.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+  .viewer-wrap{max-width:900px; margin:0 auto; padding:24px 20px 60px;}
+  .viewer-title{font-family:var(--serif); font-size:22px; color:var(--primary); margin:0 0 6px;}
+  .viewer-note{
+    font-size:12.5px; color:var(--ink); background:var(--surface); border-left:3px solid var(--warn);
+    padding:10px 14px; border-radius:0 5px 5px 0; margin:0 0 20px; line-height:1.6;
+  }
+  #docPages{
+    user-select:none; -webkit-user-select:none; -moz-user-select:none; -ms-user-select:none;
+    display:flex; flex-direction:column; gap:14px; align-items:center;
+  }
+  #docPages canvas{
+    max-width:100%; height:auto; box-shadow:var(--shadow-md); border-radius:4px; background:#fff;
+  }
+  .watermark-tag{
+    text-align:center; font-family:var(--mono); font-size:10.5px; color:var(--muted); margin-top:6px;
+  }
+  .loading, .error-box{
+    text-align:center; padding:60px 20px; color:var(--muted); font-family:var(--mono); font-size:13px; line-height:1.7;
+  }
+  .back-link{display:inline-flex; align-items:center; gap:6px; font-size:13px; color:var(--primary); text-decoration:none; margin-bottom:16px;}
+  .back-link:hover{text-decoration:underline;}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<nav class="site-nav" aria-label="Main navigation">
+  <div class="site-nav-inner">
+    <a class="site-brand" href="index.html">
+      <span class="brand-mark">S</span>
+      <span class="brand-text">
+        <span class="b1">SURAKKHA PROJECT</span>
+        <span class="b2">FIVDB &middot; DG ECHO 2026/00158</span>
+      </span>
+    </a>
+    <div class="site-links">
+      <a href="index.html">Home</a>
+      <a href="about-project.html">About Project</a>
+      <a href="reporting-channel.html">Reporting Channel</a>
+      <a href="reporting-template.html">Reporting Template</a>
+      <a href="dashboard.html">Dashboard</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+  <div class="viewer-wrap">
+    <a class="back-link" href="about-project.html">← Back to Project Library</a>
+    <h1 class="viewer-title" id="docTitle">Document</h1>
+    <p class="viewer-note">
+      This is a <strong>read-only preview</strong>. The toolbar, download, and print controls are turned off, and right-click and text selection are disabled on this page. Please note honestly: a browser can never fully prevent someone from copying content on their own screen (screenshots, for example, can't be blocked) — this reduces casual copying, it isn't a security guarantee.
+    </p>
+    <div id="docPages">
+      <div class="loading">Loading document…</div>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>SURAKKHA PROJECT · DG ECHO 2026/00158 — FIVDB</span>
+    <span>Support: <a href="mailto:mohasan.uddin@fivdb.org">mohasan.uddin@fivdb.org</a></span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase-client.js"></script>
+<script src="site-shared.js"></script>
+<script>showStaffOnlyNotice(); enforceStaffGate();</script>
+<script>
+  // Deterrents — not real security, see the note above.
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  document.addEventListener('keydown', e => {
+    const k = e.key.toLowerCase();
+    if((e.ctrlKey || e.metaKey) && ['p','s','c','u'].includes(k)){
+      e.preventDefault();
+    }
+  });
+  document.addEventListener('dragstart', e => e.preventDefault());
+
+  const params = new URLSearchParams(location.search);
+  const file = params.get('file');
+  const title = params.get('title') || 'Document';
+  document.getElementById('docTitle').textContent = title;
+  document.title = 'SURAKKHA · ' + title;
+
+  const host = document.getElementById('docPages');
+
+  if(!file){
+    host.innerHTML = '<div class="error-box">No document specified.</div>';
+  } else if(!file.toLowerCase().endsWith('.pdf')){
+    host.innerHTML = '<div class="error-box">This viewer currently supports PDF files only.<br>Requested file: ' + file.replace(/</g,'&lt;') + '</div>';
+  } else {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    pdfjsLib.getDocument(file).promise.then(pdf=>{
+      host.innerHTML = '';
+      const renderPage = (num)=>{
+        pdf.getPage(num).then(page=>{
+          const scale = 1.4;
+          const viewport = page.getViewport({ scale });
+          const canvas = document.createElement('canvas');
+          canvas.width = viewport.width;
+          canvas.height = viewport.height;
+          host.appendChild(canvas);
+          const ctx = canvas.getContext('2d');
+          page.render({ canvasContext: ctx, viewport });
+          if(num < pdf.numPages) renderPage(num + 1);
+          else {
+            const tag = document.createElement('div');
+            tag.className = 'watermark-tag';
+            tag.textContent = `${pdf.numPages} page${pdf.numPages === 1 ? '' : 's'} — SURAKKHA Project Library`;
+            host.appendChild(tag);
+          }
+        });
+      };
+      renderPage(1);
+    }).catch(err=>{
+      host.innerHTML = '<div class="error-box">Could not load this document (' + err.message + ').<br><br>' +
+        'If you\'re viewing this file locally rather than on the published site, this is expected — it will work once published on GitHub Pages.<br><br>' +
+        'If this is happening on the published site, double-check: (1) the PDF filename in library.csv matches the uploaded file exactly, including capitalization, and (2) the PDF was uploaded to the repo root, not inside a subfolder.</div>';
+    });
+  }
+</script>
+</body>
+</html>

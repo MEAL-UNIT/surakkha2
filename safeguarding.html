@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SURAKKHA · Safeguarding — FIVDB</title>
+<link rel="stylesheet" href="site-shared.css">
+<style>
+  .wrap{max-width:1000px; margin:0 auto; padding:0 20px 60px;}
+  .intro-lede{font-size:15px; color:var(--muted); line-height:1.7; max-width:70ch; margin:0 0 32px;}
+
+  .principles-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; margin-bottom:40px;}
+  .principle-card{
+    background:var(--surface); border:1px solid var(--line); border-top:4px solid var(--accent2);
+    border-radius:8px; padding:18px 20px; transition:transform .18s, box-shadow .18s;
+  }
+  .principle-card:hover{transform:translateY(-3px); box-shadow:var(--shadow-md);}
+  .principle-card .p-icon{font-size:24px; margin-bottom:8px;}
+  .principle-card h3{font-family:var(--serif); font-size:15px; color:var(--primary); margin:0 0 6px;}
+  .principle-card p{font-size:12.5px; color:var(--muted); line-height:1.55; margin:0;}
+
+  .section-title{font-family:var(--serif); font-size:21px; color:var(--primary); margin:0 0 14px;}
+
+  .conduct-list{list-style:none; margin:0 0 40px; padding:0; display:grid; gap:10px;}
+  .conduct-list li{
+    display:flex; gap:10px; align-items:flex-start; font-size:13.5px; color:var(--ink);
+    background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:12px 14px; line-height:1.5;
+  }
+  .conduct-list li svg{width:16px; height:16px; flex:none; color:var(--accent2); margin-top:2px;}
+
+  .report-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; margin-bottom:40px;}
+  .report-card{
+    display:block; background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:18px;
+    text-decoration:none; transition:transform .18s, box-shadow .18s; border-left:4px solid var(--warn);
+  }
+  .report-card:hover{transform:translateY(-3px); box-shadow:var(--shadow-md);}
+  .report-card h3{font-family:var(--sans); font-size:14px; color:var(--ink); margin:0 0 4px;}
+  .report-card p{font-size:12px; color:var(--muted); margin:0;}
+
+  .faq-item{border-bottom:1px solid var(--line);}
+  .faq-q{
+    width:100%; text-align:left; background:none; border:none; padding:16px 4px; cursor:pointer;
+    display:flex; justify-content:space-between; align-items:center; gap:14px;
+    font-family:var(--sans); font-weight:700; font-size:14px; color:var(--ink);
+  }
+  .faq-q .chev{font-size:13px; color:var(--muted); transition:transform .2s ease; flex:none;}
+  .faq-item.open .faq-q .chev{transform:rotate(180deg);}
+  .faq-a{max-height:0; overflow:hidden; transition:max-height .3s ease;}
+  .faq-a p{font-size:13px; color:var(--muted); line-height:1.65; padding:0 4px 16px; margin:0;}
+
+  .flow-steps{display:flex; flex-direction:column; gap:0; margin-bottom:36px;}
+  .flow-step{display:flex; gap:16px; padding:14px 0; border-bottom:1px solid var(--line);}
+  .flow-step:last-child{border-bottom:none;}
+  .flow-num{
+    flex:none; width:30px; height:30px; border-radius:50%; background:var(--primary); color:#fff;
+    display:flex; align-items:center; justify-content:center; font-family:var(--serif); font-weight:700; font-size:14px;
+  }
+  .flow-step h3{font-family:var(--sans); font-size:14px; color:var(--ink); margin:2px 0 4px;}
+  .flow-step p{font-size:12.5px; color:var(--muted); line-height:1.55; margin:0;}
+
+  .confidential-note{
+    margin-top:36px; padding:16px 20px; background:var(--surface); border-left:3px solid var(--warn);
+    border-radius:0 6px 6px 0; font-size:12.5px; color:var(--ink); line-height:1.6;
+  }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<nav class="site-nav" aria-label="Main navigation">
+  <div class="site-nav-inner">
+    <a class="site-brand" href="index.html">
+      <span class="brand-mark">S</span>
+      <span class="brand-text">
+        <span class="b1">SURAKKHA PROJECT</span>
+        <span class="b2">FIVDB &middot; DG ECHO 2026/00158</span>
+      </span>
+    </a>
+    <div class="site-links">
+      <a href="index.html">Home</a>
+      <a href="about-project.html">About Project</a>
+      <a href="reporting-channel.html">Reporting Channel</a>
+      <a href="reporting-template.html">Reporting Template</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="register.html">Register</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+  <div class="page-header">
+    <div class="eyebrow">SURAKKHA Project</div>
+    <h1>Safeguarding &amp; Protection</h1>
+    <p class="lede">Our shared commitment to keeping children, adolescents, and communities safe — and how to raise a concern if you ever need to.</p>
+  </div>
+
+  <div class="wrap">
+    <p class="intro-lede">
+      Safeguarding means the responsibility every organisation and individual has to prevent harm — abuse, exploitation, and neglect — from happening to the people we work with and for, especially children. On SURAKKHA, that responsibility belongs to everyone: staff, volunteers, partners, and the communities we serve.
+    </p>
+
+    <h2 class="section-title">Our Core Principles</h2>
+    <div class="principles-grid" id="principlesGrid">
+      <div class="principle-card">
+        <div class="p-icon">🧒</div>
+        <h3>Best Interest of the Child</h3>
+        <p>Every decision and action puts the safety and wellbeing of children first.</p>
+      </div>
+      <div class="principle-card">
+        <div class="p-icon">🛡️</div>
+        <h3>Do No Harm</h3>
+        <p>Our presence and activities should never put anyone at greater risk.</p>
+      </div>
+      <div class="principle-card">
+        <div class="p-icon">🔒</div>
+        <h3>Confidentiality</h3>
+        <p>Information about a concern is shared only with those who need to know, to protect everyone involved.</p>
+      </div>
+      <div class="principle-card">
+        <div class="p-icon">⚖️</div>
+        <h3>Non-Discrimination</h3>
+        <p>Every concern is taken seriously regardless of who raises it or who it concerns.</p>
+      </div>
+      <div class="principle-card">
+        <div class="p-icon">🚫</div>
+        <h3>Zero Tolerance</h3>
+        <p>Abuse, exploitation, and harassment are never acceptable, from anyone, under any circumstance.</p>
+      </div>
+      <div class="principle-card">
+        <div class="p-icon">📋</div>
+        <h3>Accountability</h3>
+        <p>Every report is followed up, and the person raising it is kept informed appropriately.</p>
+      </div>
+    </div>
+
+    <h2 class="section-title">Code of Conduct — Key Commitments</h2>
+    <ul class="conduct-list">
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>All staff, volunteers, and partners complete safeguarding and PSEA training before working with communities.</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>No staff member may be alone with a child in an unsupervised, closed setting.</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>Photos or stories involving children are only used with documented, informed consent.</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>Any exchange of money, gifts, or favours in return for assistance or access is strictly prohibited.</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>Every team member is expected — and protected — when reporting a genuine concern in good faith.</li>
+    </ul>
+
+    <h2 class="section-title">Data Protection</h2>
+    <p class="intro-lede" style="margin-bottom:16px;">
+      How we handle personal information — names, contact details, photos, and case details — is covered separately, in our <a href="data-protection.html">Data Protection</a> page.
+    </p>
+
+    <h2 class="section-title">How to Raise a Concern</h2>
+    <div class="report-grid">
+      <a class="report-card" href="fivdb-incident-report.html">
+        <h3>Safeguarding / PSEA Incident</h3>
+        <p>For any actual or suspected incident of abuse or exploitation.</p>
+      </a>
+      <a class="report-card" href="fivdb-general-incident-report.html">
+        <h3>General Incident</h3>
+        <p>Security, accident, fire, or other non-safeguarding incidents.</p>
+      </a>
+      <a class="report-card" href="incident-notify.html">
+        <h3>Immediate Information Share</h3>
+        <p>Send a quick notification while you gather full details.</p>
+      </a>
+    </div>
+
+    <p class="confidential-note">
+      This page intentionally contains only general safeguarding information and principles — no details about specific cases, incidents, or individuals are ever published here, in keeping with FIVDB's commitment to confidentiality.
+    </p>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>SURAKKHA PROJECT · DG ECHO 2026/00158 — FIVDB</span>
+    <span>Support: <a href="mailto:mohasan.uddin@fivdb.org">mohasan.uddin@fivdb.org</a></span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase-client.js"></script>
+<script src="site-shared.js"></script>
+<script>showStaffOnlyNotice(); enforceStaffGate();</script>
+<script>
+  document.querySelectorAll('.faq-item').forEach(item=>{
+    const q = item.querySelector('.faq-q');
+    const a = item.querySelector('.faq-a');
+    q.addEventListener('click', ()=>{
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(other=>{
+        if(other !== item){ other.classList.remove('open'); other.querySelector('.faq-a').style.maxHeight = '0px'; }
+      });
+      item.classList.toggle('open', !isOpen);
+      a.style.maxHeight = !isOpen ? a.scrollHeight + 'px' : '0px';
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SURAKKHA Event / Activity Report</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+  :root{
+    --ink:#262626;
+    --paper:#ffffff;
+    --line:#bfbfbf;
+    --accent:#1F3864;
+    --accent-teal:#2E7D6B;
+    --accent-soft:#F2F2F2;
+    --muted:#595959;
+    --danger:#a5402f;
+  }
+  *{box-sizing:border-box;}
+  #report p, #report li, #report .annex-tag, #report .role{text-align:justify;}
+  @media print{
+    *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; color-adjust:exact !important; }
+  }
+  body{
+    margin:0;
+    background:#e5e5e5;
+    font-family: "Calibri", "Segoe UI", Arial, sans-serif;
+    color:var(--ink);
+  }
+  .toolbar{
+    position:sticky; top:0; z-index:50;
+    background:var(--ink); color:#f2f1ea;
+    padding:10px 18px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;
+    font-family:"Helvetica Neue", Arial, sans-serif;
+  }
+  .toolbar .brand{font-weight:700; letter-spacing:.04em; margin-right:auto; font-size:13px; text-transform:uppercase; color:#cfead9;}
+  .toolbar button{
+    background:transparent; color:#f2f1ea; border:1px solid #56685f;
+    padding:7px 12px; border-radius:5px; font-size:12.5px; cursor:pointer;
+    font-family:inherit; transition:background .15s;
+  }
+  .toolbar button:hover{background:#33463c;}
+  .toolbar button.primary{background:var(--accent); border-color:var(--accent);}
+  .toolbar button.primary:hover{background:#264e42;}
+  .toolbar .status{font-size:11.5px; color:#a9c6b6; min-width:120px;}
+  .toolbar .preview-only{display:none;}
+
+  /* ---- Print Preview: on-screen approximation of the printed/PDF result, with page-break guides kept visible ---- */
+  html.preview-mode body{background:#c9c9c9;}
+  html.preview-mode .toolbar .edit-only{display:none !important;}
+  html.preview-mode .toolbar .preview-only{display:inline-block;}
+  html.preview-mode #previewBtn{background:var(--danger); border-color:var(--danger);}
+  html.preview-mode .add-row, html.preview-mode .row-del, html.preview-mode .sig-clear,
+  html.preview-mode .sig-hint, html.preview-mode input[type=file]{display:none !important;}
+  html.preview-mode textarea, html.preview-mode input:not([type=checkbox]):not([type=radio]){
+    pointer-events:none; border-bottom-color:transparent;
+  }
+  html.preview-mode input[type=checkbox], html.preview-mode input[type=radio]{pointer-events:none;}
+  html.preview-mode #report, html.preview-mode .cover-page{box-shadow:0 6px 28px rgba(0,0,0,.3);}
+  html.preview-mode .page-marker::after{content:"Page break — content will start fresh on next A4 page";}
+
+  .page-wrap{width:210mm; margin:26px auto 80px; padding:0 16px; box-sizing:border-box;}
+  #report{
+    width:210mm; margin:0 auto; box-sizing:border-box;
+    background:var(--paper);
+    border:1px solid var(--line);
+    padding:20mm 15mm;
+    box-shadow:0 2px 18px rgba(0,0,0,.12);
+  }
+  .page-marker{
+    position:relative; height:0; margin:0 -15mm;
+    border-top:1px dashed var(--accent); opacity:.55;
+  }
+  .page-marker::after{
+    content:"Page break ▸"; position:absolute; right:4px; top:-9px;
+    font-size:9px; letter-spacing:.04em; text-transform:uppercase; color:var(--accent);
+    background:var(--paper); padding:0 4px; font-family:"Helvetica Neue",Arial,sans-serif;
+  }
+  .cover-page{
+    width:210mm; height:297mm; margin:0 auto 26px; box-sizing:border-box;
+    background:var(--paper); box-shadow:0 2px 18px rgba(0,0,0,.12);
+    display:flex; align-items:center; justify-content:center; text-align:center;
+    padding:60px; position:relative;
+  }
+  .cover-page::before, .cover-page::after{
+    content:""; position:absolute; left:44px; right:44px; height:0; border-top:3px solid var(--accent);
+  }
+  .cover-page::before{top:44px;}
+  .cover-page::after{bottom:44px;}
+  .cover-inner{max-width:520px;}
+  .cover-proj{font-size:13px; letter-spacing:.06em; color:var(--accent-teal); font-family:"Times New Roman",Times,serif; font-weight:700; margin-bottom:22px;}
+  .cover-title{
+    font-size:26px; margin:0 0 18px; line-height:1.2; font-family:"Times New Roman","Times",serif;
+    font-weight:700; text-align:center; width:100%; color:var(--accent-teal);
+    text-transform:uppercase;
+  }
+  .cover-org{font-size:20px; color:var(--ink); font-style:italic; padding-top:18px; border-top:1px solid var(--line); display:inline-block; font-family:"Times New Roman",Times,serif;}
+  .cover-sub{margin-top:60px; font-size:14px; color:var(--ink); font-family:"Times New Roman",Times,serif;}
+
+  .masthead{text-align:right; border-bottom:1px solid var(--line); padding-bottom:10px; margin-bottom:26px;}
+  .masthead .proj{font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); font-family:"Helvetica Neue",Arial,sans-serif;}
+
+  /* keep every content block whole — nothing gets sliced by the A4 page boundary.
+     if a block doesn't fit in the remaining space on a page, it moves entirely to the next page. */
+  table.grid tr, .sign-box, .photo-card, .field-row, .field, ul.dyn-list li,
+  textarea, .checks, .annex-list li, .sign-fields, .sig-upload-wrap, .photo-card .meta-row{
+    break-inside: avoid; page-break-inside: avoid;
+  }
+  h2.section, h3.sub{ break-after: avoid-page; page-break-after: avoid; break-inside: avoid; page-break-inside: avoid; }
+  #annexPhotos{ break-before: page; page-break-before: always; }
+  .photo-grid{ break-inside: avoid; page-break-inside: avoid; }
+
+  @media print{
+    .cover-page{
+      page-break-after:always; box-shadow:none; margin-bottom:0;
+      height:auto; min-height:calc(297mm - 0.75in - 0.4in);
+    }
+    #annexPhotos{page-break-before:always;}
+  }
+
+  /* ---- export mode: used for PDF generation (html2canvas ignores @media print) ---- */
+  .pdf-export .toolbar{display:none !important;}
+  .pdf-export body{background:#fff !important;}
+  .pdf-export .page-wrap{margin:0 !important; padding:0 !important;}
+  .pdf-export #report{box-shadow:none !important; border:none !important; padding:8mm 6mm !important; background-image:none !important;}
+  .pdf-export .page-marker{display:none !important;}
+  .pdf-export .cover-page{box-shadow:none !important; border:none !important; margin-bottom:0 !important; padding:30px !important;}
+  .pdf-export .add-row, .pdf-export .row-del, .pdf-export .sig-clear, .pdf-export .sig-hint, .pdf-export input[type=file]{display:none !important;}
+  .pdf-export *{box-shadow:none !important;}
+  .pdf-export body, .pdf-export .page-wrap, .pdf-export #report, .pdf-export .cover-page,
+  .pdf-export .photo-frame, .pdf-export .sig-upload, .pdf-export input, .pdf-export textarea{background-color:#fff !important;}
+  .pdf-export table.grid th{background-color:#fff !important; color:#000 !important;}
+  .pdf-export table.grid tfoot td{background-color:#F2F2F2 !important;}
+  .pdf-export input, .pdf-export textarea{border-bottom:1px solid #999 !important;}
+  .pdf-export .sig-upload{border:1px solid #ccc !important;}
+  .pdf-export .photo-frame{border:1px solid #ccc !important;}
+
+  .field-row{display:flex; gap:18px; margin-bottom:10px; flex-wrap:wrap;}
+  .field{flex:1 1 260px;}
+  label{display:block; font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-family:"Helvetica Neue",Arial,sans-serif; margin-bottom:3px;}
+  input[type=text], input[type=date], textarea{
+    width:100%; border:none; border-bottom:1px solid var(--line); background:transparent;
+    font-family:inherit; font-size:14.5px; padding:5px 2px; color:var(--ink);
+  }
+  input[type=text]:focus, input[type=date]:focus, textarea:focus{outline:none; border-bottom:1px solid var(--accent);}
+  textarea{resize:none; overflow:hidden; min-height:56px; line-height:1.6; text-align:justify; word-wrap:break-word; overflow-wrap:break-word;}
+  input[type=text]{text-align:justify;}
+
+  .checks{display:flex; gap:14px; flex-wrap:wrap; font-family:"Helvetica Neue",Arial,sans-serif; font-size:13px;}
+  .checks label{display:flex; align-items:center; gap:5px; text-transform:none; letter-spacing:0; color:var(--ink); font-size:13px;}
+
+  h2.section{
+    font-size:14.7px; color:var(--accent); font-weight:700;
+    margin:28px 0 12px; font-family:"Times New Roman", Times, serif;
+  }
+  h3.sub{font-size:13px; margin:16px 0 8px; color:var(--accent); font-weight:700; font-family:"Times New Roman", Times, serif;}
+
+  ul.dyn-list{list-style:none; margin:0; padding:0;}
+  ul.dyn-list li{display:flex; align-items:flex-start; gap:8px; margin-bottom:6px;}
+  ul.dyn-list li .num{font-size:12px; color:var(--muted); width:16px; flex:none; font-family:"Helvetica Neue",Arial,sans-serif; padding-top:6px;}
+  ul.dyn-list textarea{
+    flex:1; border:none; border-bottom:1px solid var(--line); background:transparent;
+    font-family:inherit; font-size:14.5px; padding:5px 2px; color:var(--ink);
+    text-align:justify; line-height:1.5; resize:none; overflow:hidden; min-height:32px;
+    white-space:normal; word-wrap:break-word; overflow-wrap:break-word;
+  }
+  ul.dyn-list textarea:focus{outline:none; border-bottom:1px solid var(--accent);}
+  .row-del{
+    flex:none; border:none; background:none; color:var(--danger); cursor:pointer;
+    font-size:15px; line-height:1; padding:2px 6px; font-family:"Helvetica Neue",Arial,sans-serif;
+  }
+  td.remarks-cell{position:relative;}
+  td.remarks-cell textarea{padding-right:20px;}
+  td.remarks-cell .row-del{position:absolute; top:2px; right:0; padding:2px 4px; font-size:13px;}
+  .add-row{
+    border:1px dashed var(--line); background:none; color:var(--accent); cursor:pointer;
+    font-size:12px; padding:5px 10px; border-radius:4px; font-family:"Helvetica Neue",Arial,sans-serif; margin-top:2px;
+  }
+  .add-row:hover{background:var(--accent-soft);}
+
+  table.grid{width:100%; table-layout:fixed; border-collapse:collapse; margin-top:6px; font-size:12.5px;}
+  table.grid th, table.grid td{border:1px solid var(--line); padding:6px; text-align:center; vertical-align:middle; word-wrap:break-word; overflow-wrap:break-word;}
+  table.grid th{background:var(--accent); font-family:"Times New Roman",Times,serif; font-weight:700; font-size:11px; color:#ffffff;}
+  table.grid td input{border:none; background:transparent; width:100%; text-align:center; font-size:13px; font-family:inherit;}
+  table.grid td input:focus{outline:none; background:var(--accent-soft);}
+  table.grid td textarea{
+    border:none; background:transparent; width:100%; font-size:13px; font-family:inherit;
+    text-align:justify; line-height:1.45; resize:none; overflow:hidden; min-height:34px; padding:2px;
+    white-space:normal; word-wrap:break-word; overflow-wrap:break-word;
+  }
+  table.grid td textarea:focus{outline:none; background:var(--accent-soft);}
+  table.grid tfoot td{font-weight:700; background:#F2F2F2;}
+  .table-actions{margin-top:6px;}
+
+  .maxlist li input{font-style:normal;}
+
+  .annex-list{font-size:13.5px; line-height:1.9; list-style:none; padding-left:0; margin-left:0; counter-reset:annexnum;}
+  .annex-list li{margin-bottom:3px; display:flex; align-items:flex-start; gap:8px; counter-increment:annexnum;}
+  .annex-list li::before{content:counter(annexnum) "."; flex:none; width:18px; color:var(--muted); font-family:"Helvetica Neue",Arial,sans-serif; font-size:12px; padding-top:2px;}
+  .annex-list label{display:flex; align-items:flex-start; gap:8px; text-transform:none; letter-spacing:0; cursor:pointer;}
+  .annex-list input[type=checkbox]{margin-top:4px; flex:none;}
+  .annex-list .annex-tag{font-size:10.5px; color:var(--muted); font-style:italic; font-family:"Helvetica Neue",Arial,sans-serif;}
+
+  .sign-grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:18px; margin-top:14px;}
+  .sign-box{border:1px solid var(--line); padding:12px;}
+  .sign-box > label{margin-bottom:6px; font-weight:700; color:var(--ink); font-size:13px;}
+  .sign-box .role{font-size:11px; color:var(--muted); font-style:italic; margin:2px 0 8px;}
+  .sig-upload-wrap{position:relative; margin-bottom:8px;}
+  .sig-upload{
+    width:100%; height:70px; border:1px dashed var(--line); background:#fff;
+    display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden;
+  }
+  .sig-upload img{max-width:100%; max-height:100%; object-fit:contain;}
+  .sig-upload .sig-placeholder{font-size:11px; color:var(--muted); font-family:"Helvetica Neue",Arial,sans-serif; text-align:center; padding:0 8px;}
+  .sig-controls{display:flex; justify-content:space-between; align-items:center; margin-top:3px;}
+  .sig-hint{font-size:10px; color:var(--muted); font-family:"Helvetica Neue",Arial,sans-serif; font-style:italic;}
+  .sig-clear{
+    border:none; background:none; color:var(--danger); font-size:11px; cursor:pointer;
+    font-family:"Helvetica Neue",Arial,sans-serif; padding:0;
+  }
+  .sign-fields{display:flex; flex-direction:column; gap:6px; margin-top:8px;}
+  .sign-fields .mini-field label{margin-bottom:2px;}
+  .sign-fields .mini-field input{font-size:13px; padding:4px 2px;}
+
+  .photo-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:10px;}
+  .photo-card{border:1px solid var(--line); padding:10px; font-size:12px; font-family:"Helvetica Neue",Arial,sans-serif;}
+  .photo-frame{
+    width:100%; height:150px; border:1px dashed var(--line); background:#f2f0e6;
+    display:flex; align-items:center; justify-content:center; overflow:hidden; margin-bottom:8px; cursor:pointer; position:relative;
+  }
+  .photo-frame img{width:100%; height:100%; object-fit:cover;}
+  .photo-frame .hint{color:var(--muted); font-size:11px; text-align:center; padding:0 10px;}
+  .photo-card .meta-row{display:flex; gap:6px; margin-bottom:5px;}
+  .photo-card .meta-row label{margin:0; flex:none; width:70px; font-size:10px; padding-top:4px;}
+  .photo-card .meta-row input{font-size:12px; padding:3px 2px;}
+  .consent{display:flex; gap:12px; align-items:center; margin-top:4px;}
+  .consent label{margin:0; text-transform:none; letter-spacing:0; font-size:12px; display:flex; gap:4px; align-items:center;}
+
+  .footer-note{margin-top:30px; text-align:center; font-size:11px; color:var(--muted); font-style:italic;}
+
+  @page{
+    size: A4; margin: 0.4in; margin-top: 0.75in;
+    @bottom-center{
+      content: "Page " counter(page) " of " counter(pages);
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      font-size: 9pt;
+      color: #595959;
+      padding-top: 0;
+      padding-bottom: 60pt;
+    }
+  }
+  @page :first{
+    @bottom-center{ content: normal; }
+  }
+
+  @media print{
+    body{background:#fff;}
+    .toolbar{display:none;}
+    .page-wrap{margin:0; padding:0; max-width:none; width:auto;}
+    #report{box-shadow:none; border:none; padding:0 0.4in 0.4in; background-image:none; width:auto;}
+    .page-marker{display:none;}
+    .add-row, .row-del{display:none;}
+    input, textarea{border-bottom:1px solid #999 !important;}
+    .photo-frame{background:#fff;}
+    table.grid td textarea{overflow:visible; resize:none;}
+    .sig-clear, .sig-hint{display:none;}
+    .sig-upload{border:none;}
+    input[type=file]{display:none;}
+    table.grid th{background:#fff !important; color:#000 !important;}
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <span class="brand">SURAKKHA · FIVDB Event Report</span>
+  <span class="status" id="statusMsg"></span>
+  <button id="previewBtn" onclick="togglePrintPreview()">🖨️ Print Preview</button>
+  <button class="edit-only primary" onclick="saveDraft()">💾 Save</button>
+  <button class="edit-only" onclick="loadDraft()">↺ Load saved</button>
+  <button class="edit-only" onclick="clearAll()">✕ Clear form</button>
+  <button class="preview-only" onclick="window.print()">🖨️ Print now</button>
+</div>
+
+<div class="page-wrap">
+<div id="printArea">
+
+  <div class="cover-page" id="coverPage">
+    <div class="cover-inner">
+      <div class="cover-proj">SURAKKHA PROJECT · DG ECHO 2026/00158</div>
+      <div class="cover-title">Event / Activity Report</div>
+      <div class="cover-org">Friends In Village Development Bangladesh (FIVDB)</div>
+      <div class="cover-sub" id="coverEventLine"></div>
+    </div>
+  </div>
+
+<div id="report">
+
+  <div class="masthead">
+    <div class="proj">SURAKKHA PROJECT · DG ECHO 2026/00158</div>
+  </div>
+
+  <div class="field-row">
+    <div class="field">
+      <label style="font-weight:700; color:var(--ink);">Event title</label>
+      <input type="text" data-field="eventTitle" placeholder="Enter the event title">
+    </div>
+  </div>
+  <div class="field-row">
+    <div class="field">
+      <label style="font-weight:700; color:var(--ink);">Activity code (R1Ax / R2Ax)</label>
+      <input type="text" data-field="activityCode" placeholder="e.g. R1A2">
+    </div>
+  </div>
+  <div class="field">
+    <label>Type</label>
+    <div class="checks">
+      <label><input type="checkbox" data-field="type_event"> Event</label>
+      <label><input type="checkbox" data-field="type_celebration"> Celebration</label>
+      <label><input type="checkbox" data-field="type_training"> Training</label>
+      <label><input type="checkbox" data-field="type_tot"> TOT</label>
+      <label><input type="checkbox" data-field="type_workshop"> Workshop</label>
+      <label><input type="checkbox" data-field="type_refresher"> Refresher</label>
+    </div>
+  </div>
+
+  <h2 class="section">1. Background</h2>
+  <textarea data-field="background" oninput="autoGrow(this)" placeholder="Why was this organized, which output/activity it sits under, who was invited, and how it connects to FIVDB's wider programme (2-4 sentences)."></textarea>
+
+  <h2 class="section">2. Objectives / learning outcomes</h2>
+  <ul class="dyn-list" id="objectivesList"></ul>
+  <button class="add-row" onclick="addListItem('objectivesList','Objective')">+ Add objective</button>
+
+  <h2 class="section">3. Date, venue, facilitators &amp; participants' profile</h2>
+
+  <h3 class="sub">Target vs. achievement &amp; variance</h3>
+  <textarea data-field="target_achievement" oninput="autoGrow(this)" placeholder="State the planned target (e.g., number of participants, sessions, or facilitators) versus what was actually achieved. If there is any variance between target and achievement, briefly explain the reason (e.g., weather, security situation, participant availability, logistics)."></textarea>
+
+  <p style="font-size:11.5px; color:var(--ink); font-family:'Helvetica Neue',Arial,sans-serif; margin:4px 0 12px; padding:8px 10px; background:var(--accent-soft); border-left:3px solid var(--accent); line-height:1.6;">
+    <strong>Note:</strong> only the <strong>targeted participants</strong> for this event should be entered in the table below — not every person who happened to attend or drop in. Numbers here should match the planned target discussed above.
+  </p>
+
+  <table class="grid" id="participantsTable">
+    <colgroup>
+      <col style="width:13%"><col style="width:15%"><col style="width:8%"><col style="width:8%">
+      <col style="width:8%"><col style="width:8%"><col style="width:8%"><col style="width:10%"><col style="width:22%">
+    </colgroup>
+    <thead>
+      <tr>
+        <th>Date &amp; total days</th><th>Venue / camp</th><th>&lt;18 Girls</th><th>&lt;18 Boys</th>
+        <th>&gt;18 Female</th><th>&gt;18 Male</th><th>Total</th><th># with disability</th><th>Remarks</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+    <tfoot>
+      <tr>
+        <td colspan="2">Grand Total</td>
+        <td id="gt_g">0</td><td id="gt_b">0</td><td id="gt_f">0</td><td id="gt_m">0</td>
+        <td id="gt_total">0</td><td id="gt_d">0</td><td></td>
+      </tr>
+    </tfoot>
+  </table>
+  <div class="table-actions"><button class="add-row" onclick="addParticipantRow()">+ Add row</button></div>
+
+  <p style="font-size:11.5px; color:var(--ink); font-family:'Helvetica Neue',Arial,sans-serif; margin:4px 0 6px; padding:8px 10px; background:var(--accent-soft); border-left:3px solid var(--accent); line-height:1.6;">
+    <strong>Note for finance support:</strong> only <strong>targeted participants</strong> go in the table above. If there's any mismatch between what was purchased/arranged and who actually attended — for example, food was requested for 10 people but 2 were absent, so those 2 portions were given to others staff (with their signature taken) — do <strong>not</strong> add those 2 people to the table above since they are not target participants. Instead, explain it in the box below, since finance still needs it for counting/reconciliation.
+  </p>
+  <textarea data-field="finance_reconciliation_note" oninput="autoGrow(this)" placeholder="e.g., Food was requested for 10 participants; 2 were absent on the day. Their portions were given to others staff, who signed for them. These 2 are not included in the participant count above, as they were not targeted participants — noted here for finance reconciliation."></textarea>
+
+  <h3 class="sub">Facilitators / organizing staff</h3>
+  <table class="grid" id="facilitatorsTable">
+    <colgroup>
+      <col style="width:6%"><col style="width:20%"><col style="width:8%">
+      <col style="width:22%"><col style="width:22%"><col style="width:22%">
+    </colgroup>
+    <thead><tr><th>SL.</th><th>Name</th><th>Sex</th><th>Designation</th><th>Organization</th><th>Remarks</th></tr></thead>
+    <tbody></tbody>
+  </table>
+  <div class="table-actions"><button class="add-row" onclick="addFacilitatorRow()">+ Add facilitator</button></div>
+
+  <h2 class="section">4. Implementation modality / methodology</h2>
+  <textarea data-field="modality" oninput="autoGrow(this)" placeholder="Describe how it ran from start to finish, or (for a training) the methodology used — lecture, practical, role-play, group work..."></textarea>
+
+  <h2 class="section">5. Materials provided</h2>
+  <textarea data-field="materials" oninput="autoGrow(this)" placeholder="List materials provided"></textarea>
+
+  <h2 class="section">6. Topics / content covered / agenda</h2>
+  <p style="font-size:11.5px; color:var(--ink); font-family:'Helvetica Neue',Arial,sans-serif; margin:0 0 10px; padding:8px 10px; background:var(--accent-soft); border-left:3px solid var(--accent); line-height:1.6;">
+    <strong>Mandatory:</strong> every event must include a session on <strong>Safeguarding, PSEA, DRM, CFRM/CFFM, and GBV key messages</strong> — and must clearly share the <strong>available reporting channel</strong> with participants (how and where to report a concern). Add this as one of the topics/sessions below.
+  </p>
+  <ul class="dyn-list" id="topicsList"></ul>
+  <button class="add-row" onclick="addListItem('topicsList','Activity/Session')">+ Add topic</button>
+
+  <h3 class="sub" style="margin-bottom:4px;">Pre/post-test evaluation</h3>
+  <label style="display:flex; align-items:center; gap:6px; text-transform:none; letter-spacing:0; font-size:13px; color:var(--ink); margin-bottom:8px;">
+    <input type="checkbox" id="testConducted" data-field="testConducted" onchange="toggleTestSection()"> A pre/post-test was conducted for this event
+  </label>
+  <div id="testSection" style="display:none;">
+    <table class="grid" id="testTable">
+      <thead><tr><th>Test type</th><th>No. of participants</th><th>Question marks</th><th>Total marks<br>(participants × marks)</th><th>Remarks</th></tr></thead>
+      <tbody>
+        <tr><td style="text-align:left">Pre-test</td><td><input type="text" data-field="pre_n"></td><td><input type="text" data-field="pre_q"></td><td><input type="text" data-field="pre_t"></td><td><textarea rows="1" data-field="pre_r" oninput="autoGrow(this)"></textarea></td></tr>
+        <tr><td style="text-align:left">Post-test</td><td><input type="text" data-field="post_n"></td><td><input type="text" data-field="post_q"></td><td><input type="text" data-field="post_t"></td><td><textarea rows="1" data-field="post_r" oninput="autoGrow(this)"></textarea></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="section">7. Observations &amp; areas for improvement</h2>
+  <textarea data-field="observations" oninput="autoGrow(this)"></textarea>
+
+  <h2 class="section">8. Feedback / quotes from participants <span style="font-weight:400; text-transform:none; font-size:11px;">(max 3)</span></h2>
+  <ul class="dyn-list maxlist" id="feedbackList"></ul>
+
+  <h2 class="section">9. Challenges faced <span style="font-weight:400; text-transform:none; font-size:11px;">(max 3)</span></h2>
+  <ul class="dyn-list maxlist" id="challengesList"></ul>
+
+  <h2 class="section">10. Recommendations / suggestions <span style="font-weight:400; text-transform:none; font-size:11px;">(max 3)</span></h2>
+  <ul class="dyn-list maxlist" id="recommendationsList"></ul>
+
+  <h2 class="section">11. Annexures list</h2>
+  <p style="font-size:11px; color:var(--muted); font-family:'Helvetica Neue',Arial,sans-serif; margin:-4px 0 6px;">Tick each item that is actually attached with this report.</p>
+  <p style="font-size:11.5px; color:var(--ink); font-family:'Helvetica Neue',Arial,sans-serif; margin:0 0 12px; padding:8px 10px; background:var(--accent-soft); border-left:3px solid var(--accent); line-height:1.6;">
+    <strong>How to name your attached files:</strong> rename each document you attach to match its line number here, in the format <strong>Annexes (N): [document name]</strong> — for example, the schedule file for item 3 should be saved as <em>"Annexes (3): Training Schedule.pdf"</em>. This keeps every attachment clearly linked to the checklist item it belongs to.
+  </p>
+  <ul class="annex-list">
+    <li><label><input type="checkbox" data-field="annex_1"><span><strong>Annexes (1):</strong> Concept Note <span class="annex-tag">(Mandatory)</span></span></label></li>
+    <li><label><input type="checkbox" data-field="annex_2"><span><strong>Annexes (2):</strong> Safeguarding &amp; PSHEA Risk Assessment for the event <span class="annex-tag">(Mandatory for each event)</span></span></label></li>
+    <li><label><input type="checkbox" data-field="annex_3"><span><strong>Annexes (3):</strong> Schedule <span class="annex-tag">(Mandatory)</span></span></label></li>
+    <li><label><input type="checkbox" data-field="annex_4"><span><strong>Annexes (4):</strong> Participants list <span class="annex-tag">(Mandatory)</span></span></label></li>
+    <li><label><input type="checkbox" data-field="annex_5"><span><strong>Annexes (5):</strong> Invitation / Approval / Notification Letter — e.g. acknowledgment letter</span></label></li>
+    <li><label><input type="checkbox" data-field="annex_6"><span><strong>Annexes (6):</strong> Email communication with stakeholder / technical partner, etc. (if any)</span></label></li>
+    <li><label><input type="checkbox" data-field="annex_7"><span><strong>Annexes (7):</strong> Photo <span class="annex-tag">(Good quality, including banner/visibility, covering all participants — max 3, as separate document or JPEG files)</span></span></label></li>
+    <li><label><input type="checkbox" data-field="annex_8"><span><strong>Annexes (8):</strong> Attendance Sheet <span class="annex-tag">(Mandatory — completed and scanned copy)</span></span></label></li>
+    <li><label><input type="checkbox" data-field="annex_9"><span><strong>Annexes (9):</strong> Master Roll <span class="annex-tag">(Mandatory for distributions — completed and scanned copy)</span></span></label></li>
+    <li><label><input type="checkbox" data-field="annex_10"><span><strong>Annexes (10):</strong> Assessment / Pre-Post Test / Evaluation <span class="annex-tag">(for training, series of sessions, etc.)</span></span></label></li>
+    <li><label><input type="checkbox" data-field="annex_11"><span><strong>Annexes (11):</strong> Resolution <span class="annex-tag">(in a few cases)</span></span></label></li>
+    <li><label><input type="checkbox" data-field="annex_12"><span><strong>Annexes (12):</strong> Documents / PPT <span class="annex-tag">(Mandatory)</span></span></label></li>
+    <li><label><input type="checkbox" data-field="annex_13"><span><strong>Annexes (13):</strong> Budget Breakdown <span class="annex-tag">(Optional)</span></span></label></li>
+  </ul>
+
+  <div class="sign-grid">
+    <div class="sign-box">
+      <label>Prepared by</label>
+      <div class="sig-upload-wrap">
+        <div class="sig-upload" onclick="document.getElementById('sigFile_prepared').click()">
+          <span class="sig-placeholder" data-sig-placeholder="prepared">Click to upload signature image</span>
+        </div>
+        <input type="file" accept="image/*" id="sigFile_prepared" style="display:none" onchange="handleSigUpload(this,'prepared')">
+      </div>
+      <div class="sig-controls"><span class="sig-hint">PNG/JPG of your signature</span><button type="button" class="sig-clear" onclick="clearSig('prepared')">Clear</button></div>
+      <div class="sign-fields">
+        <div class="mini-field"><label>Name</label><input type="text" data-field="prepared_name"></div>
+        <div class="mini-field"><label>Designation</label><input type="text" data-field="prepared_designation"></div>
+        <div class="mini-field"><label>Date</label><input type="text" data-field="prepared_date" placeholder="DD/MM/YYYY"></div>
+      </div>
+    </div>
+    <div class="sign-box">
+      <label>Reviewed by</label>
+      <div class="sig-upload-wrap">
+        <div class="sig-upload" onclick="document.getElementById('sigFile_reviewed').click()">
+          <span class="sig-placeholder" data-sig-placeholder="reviewed">Click to upload signature image</span>
+        </div>
+        <input type="file" accept="image/*" id="sigFile_reviewed" style="display:none" onchange="handleSigUpload(this,'reviewed')">
+      </div>
+      <div class="sig-controls"><span class="sig-hint">PNG/JPG of your signature</span><button type="button" class="sig-clear" onclick="clearSig('reviewed')">Clear</button></div>
+      <div class="sign-fields">
+        <div class="mini-field"><label>Name</label><input type="text" data-field="reviewed_name"></div>
+        <div class="mini-field"><label>Designation</label><input type="text" data-field="reviewed_designation"></div>
+        <div class="mini-field"><label>Date</label><input type="text" data-field="reviewed_date" placeholder="DD/MM/YYYY"></div>
+      </div>
+    </div>
+    <div class="sign-box">
+      <label>Approved by</label>
+      <div class="sig-upload-wrap">
+        <div class="sig-upload" onclick="document.getElementById('sigFile_approved').click()">
+          <span class="sig-placeholder" data-sig-placeholder="approved">Click to upload signature image</span>
+        </div>
+        <input type="file" accept="image/*" id="sigFile_approved" style="display:none" onchange="handleSigUpload(this,'approved')">
+      </div>
+      <div class="sig-controls"><span class="sig-hint">PNG/JPG of your signature</span><button type="button" class="sig-clear" onclick="clearSig('approved')">Clear</button></div>
+      <div class="sign-fields">
+        <div class="mini-field"><label>Name</label><input type="text" data-field="approved_name"></div>
+        <div class="mini-field"><label>Designation</label><input type="text" data-field="approved_designation"></div>
+        <div class="mini-field"><label>Date</label><input type="text" data-field="approved_date" placeholder="DD/MM/YYYY"></div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section" id="annexPhotos" style="margin-top:44px;">Annexes 7: Photo Documentation — (Photos 1–6)</h2>
+  <div class="photo-grid" id="photoGrid"></div>
+
+  <div class="footer-note">SURAKKHA PROJECT · DG ECHO 2026/00158 — FIVDB internal reporting template<br>For technical support, please contact <a href="mailto:mohasan.uddin@fivdb.org" style="color:inherit;">mohasan.uddin@fivdb.org</a></div>
+
+</div>
+</div>
+</div>
+
+<script>
+// ---------- Setup dynamic sections ----------
+function addListItem(listId, prefix, value){
+  const ul = document.getElementById(listId);
+  const li = document.createElement('li');
+  const n = ul.children.length + 1;
+  li.innerHTML = `<span class="num">${n}.</span><textarea rows="1" placeholder="${prefix} ${n}" oninput="autoGrow(this)">${escapeHtml(value)}</textarea><button class="row-del" onclick="removeLi(this,'${listId}')">✕</button>`;
+  ul.appendChild(li);
+  autoGrow(li.querySelector('textarea'));
+}
+function removeLi(btn, listId){
+  btn.closest('li').remove();
+  renumber(listId);
+}
+function renumber(listId){
+  const ul = document.getElementById(listId);
+  [...ul.children].forEach((li,i)=>{
+    li.querySelector('.num').textContent = (i+1)+'.';
+  });
+}
+function escapeAttr(s){ return (s||'').replace(/"/g,'&quot;'); }
+
+// participants table
+function addParticipantRow(data){
+  const tbody = document.querySelector('#participantsTable tbody');
+  const tr = document.createElement('tr');
+  const cols = ['date','venue','g','b','f','m','total','d','remarks'];
+  const textCols = ['date','venue','remarks'];
+  tr.innerHTML = cols.map(c=>{
+    const val = data&&data[c] ? data[c] : '';
+    if(textCols.includes(c)){
+      const cls = c==='remarks' ? ' class="remarks-cell"' : '';
+      const ph = c==='date' ? ' placeholder="dd-mm-yy to dd-mm-yy (total day/s)"' : '';
+      return `<td${cls}><textarea rows="1" data-col="${c}"${ph} oninput="autoGrow(this)">${escapeHtml(val)}</textarea></td>`;
+    }
+    return `<td><input type="text" data-col="${c}" oninput="recalcParticipants()" style="text-align:center" value="${escapeAttr(val)}"></td>`;
+  }).join('');
+  tr.querySelector('.remarks-cell').insertAdjacentHTML('beforeend', `<button class="row-del" onclick="this.closest('tr').remove(); recalcParticipants();">✕</button>`);
+  tbody.appendChild(tr);
+  tr.querySelectorAll('textarea').forEach(autoGrow);
+  recalcParticipants();
+}
+function autoGrow(el){
+  el.style.height='auto';
+  el.style.height=(el.scrollHeight)+'px';
+}
+function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function recalcParticipants(){
+  const rows = document.querySelectorAll('#participantsTable tbody tr');
+  let sums = {g:0,b:0,f:0,m:0,d:0};
+  rows.forEach(tr=>{
+    ['g','b','f','m','d'].forEach(c=>{
+      const v = parseFloat(tr.querySelector(`[data-col=${c}]`).value)||0;
+      sums[c]+=v;
+    });
+    const total = ['g','b','f','m'].reduce((s,c)=> s + (parseFloat(tr.querySelector(`[data-col=${c}]`).value)||0), 0);
+    tr.querySelector('[data-col=total]').value = total || '';
+  });
+  document.getElementById('gt_g').textContent = sums.g;
+  document.getElementById('gt_b').textContent = sums.b;
+  document.getElementById('gt_f').textContent = sums.f;
+  document.getElementById('gt_m').textContent = sums.m;
+  document.getElementById('gt_d').textContent = sums.d;
+  document.getElementById('gt_total').textContent = sums.g+sums.b+sums.f+sums.m;
+}
+
+// facilitators table
+function addFacilitatorRow(data){
+  const tbody = document.querySelector('#facilitatorsTable tbody');
+  const idx = tbody.children.length + 1;
+  const tr = document.createElement('tr');
+  const cols = ['name','sex','designation','org','remarks'];
+  const textCols = ['name','designation','org','remarks'];
+  tr.innerHTML = `<td>${String(idx).padStart(2,'0')}</td>` + cols.map(c=>{
+    const val = data&&data[c] ? data[c] : '';
+    if(textCols.includes(c)){
+      return `<td class="${c==='remarks'?'remarks-cell':''}"><textarea rows="1" data-col="${c}" oninput="autoGrow(this)">${escapeHtml(val)}</textarea></td>`;
+    }
+    return `<td><input type="text" data-col="${c}" style="text-align:center" value="${escapeAttr(val)}"></td>`;
+  }).join('');
+  tr.querySelector('.remarks-cell').insertAdjacentHTML('beforeend', `<button class="row-del" onclick="this.closest('tr').remove(); renumberFacilitators();">✕</button>`);
+  tbody.appendChild(tr);
+  tr.querySelectorAll('textarea').forEach(autoGrow);
+}
+function renumberFacilitators(){
+  document.querySelectorAll('#facilitatorsTable tbody tr').forEach((tr,i)=>{
+    tr.children[0].textContent = String(i+1).padStart(2,'0');
+  });
+}
+
+// photos
+function buildPhotoCards(saved){
+  const grid = document.getElementById('photoGrid');
+  grid.innerHTML='';
+  for(let i=0;i<6;i++){
+    const p = (saved && saved[i]) || {};
+    const card = document.createElement('div');
+    card.className='photo-card';
+    card.innerHTML = `
+      <div class="photo-frame" onclick="document.getElementById('photoInput${i}').click()">
+        ${p.img ? `<img src="${p.img}">` : `<span class="hint">Photo ${i+1}<br>Click to upload</span>`}
+      </div>
+      <input type="file" accept="image/*" id="photoInput${i}" style="display:none" onchange="handlePhoto(this,${i})">
+      <div class="meta-row"><label>Caption</label><input type="text" data-p="caption" value="${escapeAttr(p.caption)}"></div>
+      <div class="meta-row"><label>Date</label><input type="date" data-p="date" value="${escapeAttr(p.date)}"></div>
+      <div class="meta-row"><label>Location</label><input type="text" data-p="location" value="${escapeAttr(p.location)}"></div>
+      <div class="meta-row"><label>Captured by</label><input type="text" data-p="captured" placeholder="Name and Designation" value="${escapeAttr(p.captured)}"></div>
+      <div class="consent"><span style="font-size:11px; color:var(--muted)">Consent:</span>
+        <label><input type="radio" name="consent${i}" value="Yes" ${p.consent==='Yes'?'checked':''}> Yes</label>
+        <label><input type="radio" name="consent${i}" value="No" ${p.consent==='No'?'checked':''}> No</label>
+      </div>`;
+    grid.appendChild(card);
+  }
+}
+function handlePhoto(input, idx){
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    input.closest('.photo-card').querySelector('.photo-frame').innerHTML = `<img src="${e.target.result}">`;
+    input.closest('.photo-card').querySelector('.photo-frame').dataset.img = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+// ---------- Data collection / restore ----------
+function collectData(){
+  const data = {};
+  document.querySelectorAll('#printArea [data-field]').forEach(el=>{
+    if(el.type==='checkbox') data[el.dataset.field]=el.checked;
+    else data[el.dataset.field]=el.value;
+  });
+  data.objectives = [...document.querySelectorAll('#objectivesList textarea')].map(i=>i.value);
+  data.topics = [...document.querySelectorAll('#topicsList textarea')].map(i=>i.value);
+  data.feedback = [...document.querySelectorAll('#feedbackList textarea')].map(i=>i.value);
+  data.challenges = [...document.querySelectorAll('#challengesList textarea')].map(i=>i.value);
+  data.recommendations = [...document.querySelectorAll('#recommendationsList textarea')].map(i=>i.value);
+  data.participants = [...document.querySelectorAll('#participantsTable tbody tr')].map(tr=>{
+    const o={}; tr.querySelectorAll('input, textarea').forEach(i=>o[i.dataset.col]=i.value); return o;
+  });
+  data.facilitators = [...document.querySelectorAll('#facilitatorsTable tbody tr')].map(tr=>{
+    const o={}; tr.querySelectorAll('input, textarea').forEach(i=>o[i.dataset.col]=i.value); return o;
+  });
+  data.photos = [...document.querySelectorAll('.photo-card')].map(card=>{
+    const frame = card.querySelector('.photo-frame');
+    const o={img: frame.dataset.img || (frame.querySelector('img')?frame.querySelector('img').src:'')};
+    card.querySelectorAll('[data-p]').forEach(i=> o[i.dataset.p]=i.value);
+    const checked = card.querySelector('input[type=radio]:checked');
+    o.consent = checked ? checked.value : '';
+    return o;
+  });
+  data.signatures = getSignatures();
+  return data;
+}
+
+function populateData(data){
+  if(!data) data = {};
+  document.querySelectorAll('#printArea [data-field]').forEach(el=>{
+    const val = data[el.dataset.field];
+    if(el.type==='checkbox') el.checked = !!val;
+    else el.value = val || '';
+    if(el.tagName==='TEXTAREA') autoGrow(el);
+  });
+  document.getElementById('objectivesList').innerHTML='';
+  (data.objectives && data.objectives.length ? data.objectives : ['','','','','']).forEach(v=>addListItem('objectivesList','Objective',v));
+
+  document.getElementById('topicsList').innerHTML='';
+  const defaultTopics = ["Introduction - opening remarks, welcome, objectives","Activity/Session 1","Activity/Session 2","Activity/Session 3","Safeguarding, PSEA, CFFM and GBV key messages","Closing - photo session and wrap-up"];
+  (data.topics && data.topics.length ? data.topics : defaultTopics).forEach(v=>addListItem('topicsList','Activity/Session',v));
+
+  ['feedback','challenges','recommendations'].forEach(key=>{
+    const map = {feedback:'feedbackList', challenges:'challengesList', recommendations:'recommendationsList'};
+    const placeholders = {feedback:'Feedback', challenges:'Challenge', recommendations:'Recommendation'};
+    const ul = document.getElementById(map[key]);
+    ul.innerHTML='';
+    const vals = (data[key] && data[key].length===3) ? data[key] : ['','',''];
+    vals.forEach(v=>addListItem(map[key], placeholders[key], v));
+  });
+
+  document.querySelector('#participantsTable tbody').innerHTML='';
+  (data.participants && data.participants.length ? data.participants : [{}]).forEach(r=>addParticipantRow(r));
+
+  document.querySelector('#facilitatorsTable tbody').innerHTML='';
+  (data.facilitators && data.facilitators.length ? data.facilitators : [{},{},{}]).forEach(r=>addFacilitatorRow(r));
+
+  buildPhotoCards(data.photos);
+  recalcParticipants();
+  toggleTestSection();
+  syncCoverLine();
+  Object.keys(sigPads).forEach(clearSig);
+  restoreSignatures(data.signatures);
+}
+
+function initEmpty(){ populateData({}); }
+
+function toggleTestSection(){
+  const on = document.getElementById('testConducted').checked;
+  document.getElementById('testSection').style.display = on ? '' : 'none';
+}
+
+// ---------- Signature uploads ----------
+const sigPads = {}; // key -> dataURL string ('' if none)
+function setupSignaturePads(){
+  document.querySelectorAll('.sig-upload').forEach(box=>{
+    const key = box.querySelector('.sig-placeholder').dataset.sigPlaceholder;
+    sigPads[key] = '';
+  });
+}
+function handleSigUpload(input, key){
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e=>{
+    sigPads[key] = e.target.result;
+    renderSig(key);
+  };
+  reader.readAsDataURL(file);
+}
+function renderSig(key){
+  const box = document.querySelector(`#sigFile_${key}`).previousElementSibling;
+  if(sigPads[key]){
+    box.innerHTML = `<img src="${sigPads[key]}" alt="Signature">`;
+  } else {
+    box.innerHTML = `<span class="sig-placeholder" data-sig-placeholder="${key}">Click to upload signature image</span>`;
+  }
+}
+function clearSig(key){
+  sigPads[key] = '';
+  const fileInput = document.getElementById('sigFile_'+key);
+  if(fileInput) fileInput.value = '';
+  renderSig(key);
+}
+function getSignatures(){
+  const out = {};
+  Object.keys(sigPads).forEach(k=>{ if(sigPads[k]) out[k] = sigPads[k]; });
+  return out;
+}
+function restoreSignatures(sigs){
+  if(!sigs) return;
+  Object.keys(sigs).forEach(k=>{
+    if(!(k in sigPads)) return;
+    sigPads[k] = sigs[k];
+    renderSig(k);
+  });
+}
+
+function syncCoverLine(){
+  const title = document.querySelector('[data-field="eventTitle"]').value;
+  const code = document.querySelector('[data-field="activityCode"]').value;
+  const parts = [];
+  if(title) parts.push(title);
+  if(code) parts.push('Activity code: ' + code);
+  document.getElementById('coverEventLine').textContent = parts.join(' — ');
+}
+document.addEventListener('input', e=>{
+  if(e.target && (e.target.dataset.field==='eventTitle' || e.target.dataset.field==='activityCode')) syncCoverLine();
+});
+
+// ---------- Actions ----------
+function setStatus(msg){
+  const s = document.getElementById('statusMsg');
+  s.textContent = msg;
+  setTimeout(()=>{ if(s.textContent===msg) s.textContent=''; }, 3500);
+}
+
+async function saveDraft(){
+  try{
+    const data = collectData();
+    const res = await window.storage.set('surakkha-report-draft', JSON.stringify(data), false);
+    downloadAsHTML(data);
+    setStatus(res ? '✓ Saved' : '✓ Downloaded (in-app save failed)');
+  }catch(e){
+    console.error(e);
+    downloadAsHTML(collectData());
+    setStatus('✓ Downloaded as HTML');
+  }
+}
+function downloadAsHTML(data){
+  const clone = document.documentElement.cloneNode(true);
+  const old = clone.querySelector('#embedded-data');
+  if(old) old.remove();
+  const script = clone.ownerDocument.createElement('script');
+  script.id = 'embedded-data';
+  script.type = 'application/json';
+  script.textContent = JSON.stringify(data);
+  clone.querySelector('head').appendChild(script);
+  const html = '<!DOCTYPE html>\n' + clone.outerHTML;
+  const blob = new Blob([html], { type: 'text/html' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  const stamp = new Date().toISOString().slice(0,10);
+  link.download = `SURAKKHA_Event_Report_${stamp}.html`;
+  link.click();
+}
+async function loadDraft(){
+  try{
+    const res = await window.storage.get('surakkha-report-draft', false);
+    if(res && res.value){
+      populateData(JSON.parse(res.value));
+      setStatus('✓ Loaded saved draft');
+    } else {
+      setStatus('No saved draft found');
+    }
+  }catch(e){
+    setStatus('No saved draft found');
+  }
+}
+function clearAll(){
+  if(!confirm('Clear all fields on this form? This cannot be undone.')) return;
+  populateData({});
+  setStatus('Form cleared');
+}
+
+function printWithHeaderFooter(){
+  const el = document.getElementById('printArea');
+  const opt = {
+    margin: [0.75, 0.4, 0.75, 0.4], // top, left, bottom, right (in) — top/bottom reserve room for header & footer text
+    filename: 'SURAKKHA_Event_Report.pdf',
+    image: { type: 'jpeg', quality: 0.95 },
+    html2canvas: {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      onclone: (clonedDoc)=>{
+        clonedDoc.documentElement.classList.add('pdf-export');
+      }
+    },
+    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait', compress: true },
+    pagebreak: { mode: ['css','legacy'], before: ['#report', '#annexPhotos'], avoid: ['table.grid tr', '.sign-box', '.photo-card', '.field-row', '.field', 'ul.dyn-list li', 'textarea', '.checks', '.annex-list li', '.sign-fields', '.sig-upload-wrap', 'h2.section', 'h3.sub', '.photo-grid'] }
+  };
+  setStatus('Preparing print view…');
+  html2pdf().set(opt).from(el).toPdf().get('pdf').then(pdf=>{
+    const total = pdf.internal.getNumberOfPages();
+    const pageW = pdf.internal.pageSize.getWidth();
+    const pageH = pdf.internal.pageSize.getHeight();
+    for(let i=1;i<=total;i++){
+      pdf.setPage(i);
+      // footer: page number, centered — the only thing shown in the footer
+      pdf.setFont('helvetica','normal');
+      pdf.setFontSize(9);
+      pdf.setTextColor(89,89,89);
+      const label = String(i).padStart(2,'0') + ' of ' + String(total).padStart(2,'0');
+      pdf.text(label, pageW/2, pageH-0.4, {align:'center'});
+    }
+    const blobUrl = pdf.output('bloburl');
+    const win = window.open(blobUrl, '_blank');
+    setStatus('✓ Ready — print from the new tab');
+    if(!win) setStatus('Pop-up blocked — allow pop-ups to print');
+  }).catch(err=>{
+    console.error(err);
+    setStatus('Falling back to browser print');
+    window.print();
+  });
+}
+
+function saveAsWord(){
+  const el = document.getElementById('printArea').cloneNode(true);
+  // signature images (uploaded files) clone as-is; just drop empty placeholders and file pickers
+  el.querySelectorAll('input[type=file]').forEach(f=>f.remove());
+  el.querySelectorAll('.sig-placeholder').forEach(p=>{ p.textContent=''; });
+  // convert inputs/textareas to plain text so it reads the same as the printed/PDF version
+  el.querySelectorAll('input, textarea').forEach(inp=>{
+    const span = document.createElement('span');
+    if(inp.type==='checkbox'){ span.textContent = inp.checked ? '☑' : '☐'; }
+    else if(inp.type==='radio'){ span.textContent = inp.checked ? '●' : '○'; }
+    else { span.textContent = inp.value || ''; span.style.borderBottom='1px solid #999'; }
+    inp.replaceWith(span);
+  });
+  el.querySelectorAll('.row-del, .add-row, .sig-clear, .sig-hint').forEach(b=>b.remove());
+  const cover = el.querySelector('#coverPage');
+  if(cover) cover.style.pageBreakAfter = 'always';
+  const html = `<!DOCTYPE html><html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+  <head><meta charset="utf-8"><title>SURAKKHA Event Report</title>
+  <style>
+    body{font-family:Calibri,"Segoe UI",Arial,sans-serif; color:#262626; font-size:11pt;}
+    p, span, div{text-align:justify;}
+    .cover-page, .cover-page *{text-align:center;}
+    .masthead, .masthead *{text-align:right;}
+    .cover-page{text-align:center; padding:80px 40px;}
+    .cover-proj{font-family:"Times New Roman",Times,serif; font-size:13px; color:#2E7D6B; font-weight:700;}
+    .cover-title{font-family:"Times New Roman",Times,serif; font-size:26px; font-weight:700; color:#2E7D6B; margin:14px 0; text-transform:uppercase;}
+    .cover-org{font-family:"Times New Roman",Times,serif; font-size:20px; color:#262626; font-style:italic;}
+    h2, h2.section{font-family:"Times New Roman",Times,serif; color:#1F3864; font-weight:700; font-size:14px; margin-top:22px;}
+    h3, h3.sub{font-family:"Times New Roman",Times,serif; color:#1F3864; font-weight:700; font-size:12px;}
+    table{border-collapse:collapse; width:100%;}
+    td, th{border:1px solid #bfbfbf; padding:5px; font-size:11px; font-family:"Times New Roman",Times,serif;}
+    table.grid th, thead th{background-color:#1F3864 !important; color:#ffffff !important; font-weight:700;}
+    table.grid tfoot td{background-color:#F2F2F2 !important; font-weight:700;}
+  </style></head>
+  <body>${el.outerHTML}</body></html>`;
+  const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'SURAKKHA_Event_Report.doc';
+  link.click();
+  setStatus('✓ Word document downloaded');
+}
+
+function togglePrintPreview(){
+  const html = document.documentElement;
+  const on = html.classList.toggle('preview-mode');
+  const btn = document.getElementById('previewBtn');
+  btn.textContent = on ? '✕ Exit Preview' : '🖨️ Print Preview';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ---------- Init ----------
+(async function(){
+  setupSignaturePads();
+  const embedded = document.getElementById('embedded-data');
+  if(embedded){
+    try{
+      populateData(JSON.parse(embedded.textContent));
+      return;
+    }catch(e){ /* fall through */ }
+  }
+  try{
+    const res = await window.storage.get('surakkha-report-draft', false);
+    if(res && res.value){ populateData(JSON.parse(res.value)); return; }
+  }catch(e){ /* no saved draft yet */ }
+  initEmpty();
+})();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase-client.js"></script>
+<script>
+  // This standalone form has no site nav, so it doesn't load all of
+  // site-shared.js — just enough to enforce the same login gate as
+  // the rest of the site.
+  (async function(){
+    const user = await getCurrentUser();
+    if(user && user.profile.status === 'approved') return;
+    showLoginPromptStandalone();
+  })();
+
+  function showLoginPromptStandalone(){
+    const overlay = document.createElement('div');
+    overlay.className = 'staff-gate-overlay';
+    overlay.innerHTML = `
+      <div class="staff-gate-card">
+        <button type="button" class="staff-gate-close" id="staffGateCancel" aria-label="Close">✕</button>
+        <h2>Staff Access</h2>
+        <p>This section is for registered SURAKKHA staff. Log in with the access name and access code you registered with.</p>
+        <input type="email" id="staffGateUser" placeholder="Access Name" autocomplete="username">
+        <input type="password" id="staffGateInput" placeholder="Access Code" autocomplete="current-password">
+        <div class="staff-gate-actions">
+          <button type="button" id="staffGateSubmit">Log in</button>
+          <a href="register.html">Not registered yet?</a>
+        </div>
+        <p class="staff-gate-error" id="staffGateError"></p>
+      </div>`;
+    document.body.appendChild(overlay);
+    document.body.classList.add('staff-gate-blurred');
+
+    document.getElementById('staffGateCancel').addEventListener('click', ()=>{ location.href = 'index.html'; });
+
+    const submit = async ()=>{
+      const email = document.getElementById('staffGateUser').value.trim();
+      const password = document.getElementById('staffGateInput').value;
+      const errEl = document.getElementById('staffGateError');
+      const btn = document.getElementById('staffGateSubmit');
+      btn.disabled = true; btn.textContent = 'Checking…';
+      try{
+        await loginAccount(email, password);
+        const user = await getCurrentUser();
+        if(user && user.profile.status === 'approved'){ location.reload(); return; }
+        errEl.textContent = user ? 'Your account hasn\'t been approved yet — check with MEAL.' : 'Login succeeded, but your profile could not be loaded.';
+        await logoutAccount();
+      }catch(err){
+        errEl.textContent = err.message || 'That access name or access code isn\'t right.';
+      }
+      btn.disabled = false; btn.textContent = 'Log in';
+    };
+    document.getElementById('staffGateSubmit').addEventListener('click', submit);
+    document.getElementById('staffGateInput').addEventListener('keydown', e=>{ if(e.key === 'Enter') submit(); });
+  }
+</script>
+<style>
+  body.staff-gate-blurred > *:not(.staff-gate-overlay){filter:blur(6px); pointer-events:none; user-select:none;}
+  .staff-gate-overlay{position:fixed; inset:0; z-index:1000; background:rgba(28,33,36,.55); display:flex; align-items:center; justify-content:center; padding:20px;}
+  .staff-gate-card{background:#fff; border-radius:12px; padding:30px 28px; max-width:380px; width:100%; box-shadow:0 20px 50px rgba(0,0,0,.3); text-align:center; position:relative; font-family:"Helvetica Neue",Arial,sans-serif;}
+  .staff-gate-close{position:absolute; top:12px; right:12px; background:none; border:none; cursor:pointer; width:28px; height:28px; border-radius:50%; color:#888; font-size:15px; font-weight:700;}
+  .staff-gate-close:hover{background:#f2f2f2;}
+  .staff-gate-card h2{font-family:Georgia,serif; color:#1F3864; font-size:21px; margin:0 0 10px;}
+  .staff-gate-card p{font-size:13px; color:#666; line-height:1.6; margin:0 0 16px;}
+  .staff-gate-card input{width:100%; font-size:15px; padding:11px 14px; border:1px solid #ccc; border-radius:6px; margin-bottom:14px; text-align:center; box-sizing:border-box;}
+  .staff-gate-actions{display:flex; flex-direction:column; gap:10px; align-items:center;}
+  .staff-gate-actions button{width:100%; font-weight:700; font-size:14px; padding:11px; border-radius:6px; border:none; background:#1F3864; color:#fff; cursor:pointer;}
+  .staff-gate-actions a{font-size:12.5px; color:#2E7D6B;}
+  .staff-gate-error{color:#a5402f; font-size:12px; min-height:16px; margin:10px 0 0;}
+</style>
+</body>
+</html>

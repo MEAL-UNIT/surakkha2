@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SURAKKHA · Photo Gallery — FIVDB</title>
+<link rel="stylesheet" href="site-shared.css">
+<style>
+  .wrap{max-width:1100px; margin:0 auto; padding:0 20px 60px;}
+  .gallery-group{margin-bottom:40px;}
+  .gallery-group-title{
+    font-family:var(--serif); font-size:19px; color:var(--primary); margin:0 0 4px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .gallery-group-date{font-family:var(--mono); font-size:11px; color:var(--muted); margin:0 0 14px;}
+  .gallery-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px;}
+  .gallery-item{
+    border-radius:8px; overflow:hidden; background:var(--surface); border:1px solid var(--line);
+    cursor:pointer; transition:transform .18s, box-shadow .18s;
+  }
+  .gallery-item:hover{transform:translateY(-3px); box-shadow:var(--shadow-md);}
+  .gallery-item img{width:100%; height:160px; object-fit:cover; display:block; background:var(--bg);}
+  .gallery-caption{padding:10px 12px; font-size:12px; color:var(--muted); line-height:1.5;}
+
+  .lightbox{
+    position:fixed; inset:0; z-index:900; background:rgba(10,12,14,.92);
+    display:none; align-items:center; justify-content:center; padding:30px; flex-direction:column;
+  }
+  .lightbox.open{display:flex;}
+  .lightbox img{max-width:90vw; max-height:78vh; border-radius:6px; box-shadow:0 10px 40px rgba(0,0,0,.5);}
+  .lightbox-caption{color:#fff; margin-top:16px; font-size:13.5px; text-align:center; max-width:70ch;}
+  .lightbox-close{
+    position:absolute; top:20px; right:24px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.3);
+    color:#fff; border-radius:8px; padding:8px 14px; font-family:var(--sans); font-weight:700; font-size:13px; cursor:pointer;
+  }
+  .gallery-empty{padding:40px 20px; text-align:center; color:var(--muted); font-family:var(--mono); font-size:12.5px;}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<nav class="site-nav" aria-label="Main navigation">
+  <div class="site-nav-inner">
+    <a class="site-brand" href="index.html">
+      <span class="brand-mark">S</span>
+      <span class="brand-text">
+        <span class="b1">SURAKKHA PROJECT</span>
+        <span class="b2">FIVDB &middot; DG ECHO 2026/00158</span>
+      </span>
+    </a>
+    <div class="site-links">
+      <a href="index.html">Home</a>
+      <a href="about-project.html">About Project</a>
+      <a href="reporting-channel.html">Reporting Channel</a>
+      <a href="reporting-template.html">Reporting Template</a>
+      <a href="dashboard.html">Dashboard</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+  <div class="page-header">
+    <div class="eyebrow">SURAKKHA Project</div>
+    <h1>Photo Gallery</h1>
+    <p class="lede">Activities from across the project, organized by activity.</p>
+  </div>
+
+  <div class="wrap">
+    <div id="galleryHost">
+      <p class="gallery-empty">Loading photos…</p>
+    </div>
+  </div>
+</main>
+
+<div class="lightbox" id="lightbox">
+  <button type="button" class="lightbox-close" id="lightboxClose">✕ Close</button>
+  <img id="lightboxImg" src="" alt="">
+  <div class="lightbox-caption" id="lightboxCaption"></div>
+</div>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>SURAKKHA PROJECT · DG ECHO 2026/00158 — FIVDB</span>
+    <span>Support: <a href="mailto:mohasan.uddin@fivdb.org">mohasan.uddin@fivdb.org</a></span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase-client.js"></script>
+<script src="site-shared.js"></script>
+<script>showStaffOnlyNotice(); enforceStaffGate();</script>
+<script>
+  // ---------------------------------------------------------------
+  // Reads gallery.csv (same folder). Add a row per photo — columns:
+  // activity, date, image (filename in the repo root), caption.
+  // Photos are grouped and shown under their activity name.
+  // ---------------------------------------------------------------
+  function renderGallery(rows){
+    const host = document.getElementById('galleryHost');
+    if(!rows.length){
+      host.innerHTML = '<p class="gallery-empty">No photos added yet.</p>';
+      return;
+    }
+
+    const groups = {};
+    rows.forEach(r=>{
+      const key = r.activity || 'Uncategorized';
+      if(!groups[key]) groups[key] = [];
+      groups[key].push(r);
+    });
+
+    host.innerHTML = Object.entries(groups).map(([activity, photos])=>{
+      const dates = photos.map(p => p.date).filter(Boolean).sort();
+      const dateLabel = dates.length ? (dates[0] === dates[dates.length-1] ? dates[0] : `${dates[0]} – ${dates[dates.length-1]}`) : '';
+      return `
+        <div class="gallery-group">
+          <h2 class="gallery-group-title">${activity}</h2>
+          ${dateLabel ? `<p class="gallery-group-date">${dateLabel}</p>` : ''}
+          <div class="gallery-grid">
+            ${photos.map(p => `
+              <div class="gallery-item" data-img="${p.image}" data-caption="${(p.caption||'').replace(/"/g,'&quot;')}">
+                <img src="${p.image}" alt="${(p.caption||activity).replace(/"/g,'&quot;')}" loading="lazy">
+                ${p.caption ? `<div class="gallery-caption">${p.caption}</div>` : ''}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    document.querySelectorAll('.gallery-item').forEach(item=>{
+      item.addEventListener('click', ()=>{
+        document.getElementById('lightboxImg').src = item.dataset.img;
+        document.getElementById('lightboxCaption').textContent = item.dataset.caption;
+        document.getElementById('lightbox').classList.add('open');
+      });
+    });
+
+    if(typeof refreshScrollReveal === 'function') refreshScrollReveal();
+  }
+
+  document.getElementById('lightboxClose').addEventListener('click', ()=>{
+    document.getElementById('lightbox').classList.remove('open');
+  });
+  document.getElementById('lightbox').addEventListener('click', (e)=>{
+    if(e.target.id === 'lightbox') document.getElementById('lightbox').classList.remove('open');
+  });
+  document.addEventListener('keydown', e=>{
+    if(e.key === 'Escape') document.getElementById('lightbox').classList.remove('open');
+  });
+
+  watchForUpdates(['gallery.csv']);
+
+  fetchCSV('gallery.csv')
+    .then(renderGallery)
+    .catch(err => csvLoadError(document.getElementById('galleryHost'), err, 'Gallery'));
+</script>
+</body>
+</html>

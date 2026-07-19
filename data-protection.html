@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SURAKKHA · Data Protection — FIVDB</title>
+<link rel="stylesheet" href="site-shared.css">
+<style>
+  .wrap{max-width:1000px; margin:0 auto; padding:0 20px 60px;}
+  .intro-lede{font-size:15px; color:var(--muted); line-height:1.7; max-width:70ch; margin:0 0 32px;}
+
+  .principles-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; margin-bottom:40px;}
+  .principle-card{
+    background:var(--surface); border:1px solid var(--line); border-top:4px solid var(--accent2);
+    border-radius:8px; padding:18px 20px; transition:transform .18s, box-shadow .18s;
+  }
+  .principle-card:hover{transform:translateY(-3px); box-shadow:var(--shadow-md);}
+  .principle-card .p-icon{font-size:24px; margin-bottom:8px;}
+  .principle-card h3{font-family:var(--serif); font-size:15px; color:var(--primary); margin:0 0 6px;}
+  .principle-card p{font-size:12.5px; color:var(--muted); line-height:1.55; margin:0;}
+
+  .section-title{font-family:var(--serif); font-size:21px; color:var(--primary); margin:0 0 14px;}
+
+  .conduct-list{list-style:none; margin:0 0 40px; padding:0; display:grid; gap:10px;}
+  .conduct-list li{
+    display:flex; gap:10px; align-items:flex-start; font-size:13.5px; color:var(--ink);
+    background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:12px 14px; line-height:1.5;
+  }
+  .conduct-list li svg{width:16px; height:16px; flex:none; color:var(--accent2); margin-top:2px;}
+
+  .report-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; margin-bottom:40px;}
+  .report-card{
+    display:block; background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:18px;
+    text-decoration:none; transition:transform .18s, box-shadow .18s; border-left:4px solid var(--warn);
+  }
+  .report-card:hover{transform:translateY(-3px); box-shadow:var(--shadow-md);}
+  .report-card h3{font-family:var(--sans); font-size:14px; color:var(--ink); margin:0 0 4px;}
+  .report-card p{font-size:12px; color:var(--muted); margin:0;}
+
+  .faq-item{border-bottom:1px solid var(--line);}
+  .faq-q{
+    width:100%; text-align:left; background:none; border:none; padding:16px 4px; cursor:pointer;
+    display:flex; justify-content:space-between; align-items:center; gap:14px;
+    font-family:var(--sans); font-weight:700; font-size:14px; color:var(--ink);
+  }
+  .faq-q .chev{font-size:13px; color:var(--muted); transition:transform .2s ease; flex:none;}
+  .faq-item.open .faq-q .chev{transform:rotate(180deg);}
+  .faq-a{max-height:0; overflow:hidden; transition:max-height .3s ease;}
+  .faq-a p{font-size:13px; color:var(--muted); line-height:1.65; padding:0 4px 16px; margin:0;}
+
+  .flow-steps{display:flex; flex-direction:column; gap:0; margin-bottom:36px;}
+  .flow-step{display:flex; gap:16px; padding:14px 0; border-bottom:1px solid var(--line);}
+  .flow-step:last-child{border-bottom:none;}
+  .flow-num{
+    flex:none; width:30px; height:30px; border-radius:50%; background:var(--primary); color:#fff;
+    display:flex; align-items:center; justify-content:center; font-family:var(--serif); font-weight:700; font-size:14px;
+  }
+  .flow-step h3{font-family:var(--sans); font-size:14px; color:var(--ink); margin:2px 0 4px;}
+  .flow-step p{font-size:12.5px; color:var(--muted); line-height:1.55; margin:0;}
+
+  .confidential-note{
+    margin-top:36px; padding:16px 20px; background:var(--surface); border-left:3px solid var(--warn);
+    border-radius:0 6px 6px 0; font-size:12.5px; color:var(--ink); line-height:1.6;
+  }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<nav class="site-nav" aria-label="Main navigation">
+  <div class="site-nav-inner">
+    <a class="site-brand" href="index.html">
+      <span class="brand-mark">S</span>
+      <span class="brand-text">
+        <span class="b1">SURAKKHA PROJECT</span>
+        <span class="b2">FIVDB &middot; DG ECHO 2026/00158</span>
+      </span>
+    </a>
+    <div class="site-links">
+      <a href="index.html">Home</a>
+      <a href="about-project.html">About Project</a>
+      <a href="reporting-channel.html">Reporting Channel</a>
+      <a href="reporting-template.html">Reporting Template</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="register.html">Register</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+  <div class="page-header">
+    <div class="eyebrow">SURAKKHA Project</div>
+    <h1>Data Protection</h1>
+    <p class="lede">How we handle the personal information people share with us — separate from, but related to, our <a href="safeguarding.html">safeguarding commitments</a>.</p>
+  </div>
+
+  <div class="wrap">
+    <p class="intro-lede">
+      Along with keeping people physically and emotionally safe, we're careful with the personal information people share with us — names, contact details, photos, and case details collected through this project's forms and activities.
+    </p>
+
+    <h2 class="section-title">Our Principles</h2>
+    <ul class="conduct-list">
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>We collect only what's needed for the purpose at hand — nothing extra "just in case."</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>Photos, videos, and personal stories are only used with documented, informed consent — see the <a href="fivdb-consent-form.html">Consent Form</a>.</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>Sensitive records (incident reports, case details) are shared only with people who need them to respond appropriately.</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>People can withdraw consent at any time — see the <a href="fivdb-consent-form.html">Consent Form</a> for how that works.</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>Personal data is kept only as long as it's needed for the project, then removed.</li>
+    </ul>
+
+    <h2 class="section-title">Data Sharing</h2>
+    <p class="intro-lede" style="margin-bottom:16px;">
+      Project data is never shared outside the immediate team casually. Any time it needs to go to a donor, partner, or other third party, it follows an approval process:
+    </p>
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="flow-num">1</div>
+        <div><h3>State the purpose</h3><p>What's being shared, with whom, and why — clearly written down before anything moves.</p></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">2</div>
+        <div><h3>Approval from the Project Lead</h3><p>No data leaves the team without the Project Lead's sign-off on that stated purpose.</p></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">3</div>
+        <div><h3>Verified by the MEAL Focal Person</h3><p>The MEAL focal checks the sharing is appropriate and consistent with what people actually consented to.</p></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">4</div>
+        <div><h3>Share the minimum necessary</h3><p>Only the specific data needed for that stated purpose — not the full record by default.</p></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">5</div>
+        <div><h3>Keep a record</h3><p>The request and the approval are documented, so there's a clear trail of who approved what, and why.</p></div>
+      </div>
+    </div>
+
+    <h2 class="section-title">Common Questions</h2>
+    <div id="faqList">
+      <div class="faq-item">
+        <button type="button" class="faq-q">Who can I ask if I'm not sure whether I can share something? <span class="chev">▾</span></button>
+        <div class="faq-a"><p>Start with the Project Lead or the MEAL Focal Person — when in doubt, ask before sharing, not after.</p></div>
+      </div>
+      <div class="faq-item">
+        <button type="button" class="faq-q">Does this apply to internal sharing too, like between team members? <span class="chev">▾</span></button>
+        <div class="faq-a"><p>The full approval process is for sharing outside the immediate team. Internally, the same spirit applies — only share what a colleague actually needs to do their part.</p></div>
+      </div>
+      <div class="faq-item">
+        <button type="button" class="faq-q">What if someone asks to have their data deleted? <span class="chev">▾</span></button>
+        <div class="faq-a"><p>People can withdraw consent and request removal at any time — raise this with the MEAL Focal Person, who will action it per the Consent Form's terms.</p></div>
+      </div>
+      <div class="faq-item">
+        <button type="button" class="faq-q">I'm not sure if what I saw counts as a "real" concern. Should I still report it? <span class="chev">▾</span></button>
+        <div class="faq-a"><p>Yes. You don't need to be certain — if something feels wrong, it's always better to raise it and let the MEAL/CFRM team assess it, than to stay silent.</p></div>
+      </div>
+      <div class="faq-item">
+        <button type="button" class="faq-q">Will my report stay confidential? <span class="chev">▾</span></button>
+        <div class="faq-a"><p>Yes. Reports are shared only with the people who need to know in order to respond — never made public, and never shared more widely than necessary to keep everyone involved safe.</p></div>
+      </div>
+      <div class="faq-item">
+        <button type="button" class="faq-q">What happens after I submit a report? <span class="chev">▾</span></button>
+        <div class="faq-a"><p>The MEAL/CFRM focal point reviews it, follows FIVDB's safeguarding response procedure, and takes appropriate action. Depending on the situation, you may be contacted for more information.</p></div>
+      </div>
+      <div class="faq-item">
+        <button type="button" class="faq-q">Can I report anonymously? <span class="chev">▾</span></button>
+        <div class="faq-a"><p>Yes, though providing contact details helps the team follow up if they need more information to act on your report effectively.</p></div>
+      </div>
+    </div>
+
+    <p class="confidential-note">
+      This page intentionally contains only general data protection principles and process — no details about specific individuals, cases, or shared records are ever published here.
+    </p>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>SURAKKHA PROJECT · DG ECHO 2026/00158 — FIVDB</span>
+    <span>Support: <a href="mailto:mohasan.uddin@fivdb.org">mohasan.uddin@fivdb.org</a></span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase-client.js"></script>
+<script src="site-shared.js"></script>
+<script>showStaffOnlyNotice(); enforceStaffGate();</script>
+<script>
+  document.querySelectorAll('.faq-item').forEach(item=>{
+    const q = item.querySelector('.faq-q');
+    const a = item.querySelector('.faq-a');
+    q.addEventListener('click', ()=>{
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(other=>{
+        if(other !== item){ other.classList.remove('open'); other.querySelector('.faq-a').style.maxHeight = '0px'; }
+      });
+      item.classList.toggle('open', !isOpen);
+      a.style.maxHeight = !isOpen ? a.scrollHeight + 'px' : '0px';
+    });
+  });
+</script>
+</body>
+</html>

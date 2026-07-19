@@ -1,0 +1,3 @@
+role,name,title,email,phone,color
+MEAL Focal Person,Mohasan Uddin,MEAL Focal (SURAKKHA Project),mohasan.uddin@fivdb.org,,var(--accent2)
+CFRM Focal Person,"Complaint, Feedback and Response Mechanism",SURAKKHA Project,cffm.fivdb@gmail.com,,var(--warn)
