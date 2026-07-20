@@ -329,16 +329,22 @@ function showLoginPrompt(blocking){
   overlay.innerHTML = `
     <div class="staff-gate-card">
       <button type="button" class="staff-gate-close" id="staffGateCancel" aria-label="Close">✕</button>
-      <h2>Staff Access</h2>
-      <p>This section is for registered SURAKKHA staff. Log in with the access name and access code you registered with.</p>
+      <h2>Access</h2>
+      <p id="staffGateIntro">This section requires Reporting access. Log in with the access name and access code you registered with.</p>
       <input type="email" id="staffGateUser" placeholder="Access Name" autocomplete="username">
-      <input type="password" id="staffGateInput" placeholder="Access Code" autocomplete="current-password">
+      <div class="pw-field-wrap">
+        <input type="password" id="staffGateInput" placeholder="Access Code" autocomplete="current-password">
+        <button type="button" class="pw-toggle-btn" id="staffGateToggle" aria-label="Show access code">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
       <div class="staff-gate-actions">
         <button type="button" id="staffGateSubmit">Log in</button>
         <a href="register.html">Not registered yet?</a>
       </div>
+      <button type="button" class="staff-gate-forgot" id="staffGateForgot">Forgot your access code?</button>
       <p class="staff-gate-error" id="staffGateError"></p>
-      <p class="staff-gate-fineprint">Your login is checked against SURAKKHA's account system — approved staff only. If you've just registered, your account needs MEAL's approval before you can log in.</p>
+      <p class="staff-gate-fineprint" id="staffGateFineprint">Your login is checked against SURAKKHA's account system — approved staff only. If you've just registered, your account needs MEAL's approval before you can log in.</p>
     </div>`;
   document.body.appendChild(overlay);
   if(blocking) document.body.classList.add('staff-gate-blurred');
@@ -358,6 +364,32 @@ function showLoginPrompt(blocking){
   if(!blocking){
     overlay.addEventListener('click', (e)=>{ if(e.target === overlay) closeOverlay(); });
   }
+
+  document.getElementById('staffGateToggle').addEventListener('click', ()=>{
+    const input = document.getElementById('staffGateInput');
+    input.type = input.type === 'password' ? 'text' : 'password';
+  });
+
+  document.getElementById('staffGateForgot').addEventListener('click', async ()=>{
+    const email = document.getElementById('staffGateUser').value.trim();
+    const errEl = document.getElementById('staffGateError');
+    if(!email){
+      errEl.textContent = 'Enter your access name (email) above first, then tap "Forgot your access code?" again.';
+      document.getElementById('staffGateUser').focus();
+      return;
+    }
+    const forgotBtn = document.getElementById('staffGateForgot');
+    forgotBtn.disabled = true; forgotBtn.textContent = 'Sending…';
+    try{
+      await requestPasswordReset(email);
+      document.getElementById('staffGateIntro').textContent = `A reset link has been sent to ${email} — open it to set a new access code, then come back and log in.`;
+      errEl.textContent = '';
+      document.getElementById('staffGateFineprint').style.display = 'none';
+    }catch(err){
+      errEl.textContent = err.message || 'Could not send a reset link — check the email address.';
+    }
+    forgotBtn.disabled = false; forgotBtn.textContent = 'Forgot your access code?';
+  });
 
   const submit = async ()=>{
     const email = document.getElementById('staffGateUser').value.trim();
@@ -604,7 +636,7 @@ async function showStaffOnlyNotice(){
   bar.className = 'staff-only-notice';
   bar.innerHTML = `
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-    <span>This section is for registered SURAKKHA staff. Not registered yet? <a href="register.html">Request access</a>.</span>
+    <span>This section requires Reporting access. Not registered yet? <a href="register.html">Request access</a>.</span>
   `;
   nav.insertAdjacentElement('afterend', bar);
 }

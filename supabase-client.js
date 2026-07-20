@@ -74,6 +74,15 @@ async function registerAccount({ email, password, full_name, designation, organi
   if(signUpError) throw signUpError;
   if(!signUpData.user) throw new Error('Sign-up did not return a user — check if email confirmation is required in your Supabase Auth settings.');
 
+  // If "Confirm email" is turned on in Supabase, signUp() succeeds but
+  // there's no active session yet — the profile insert below would be
+  // rejected by the database's security rules with a confusing, empty
+  // error. Catch that specific case here with a clear message instead.
+  const { data: { session } } = await client.auth.getSession();
+  if(!session){
+    throw new Error('Your account was created, but needs to be confirmed by email first — check your inbox for a confirmation link, then register again to finish setting up your profile. (If you keep seeing this, ask whoever manages the backend to turn off "Confirm email" in Supabase Auth settings.)');
+  }
+
   const { error: profileError } = await client.from('profiles').insert({
     id: signUpData.user.id,
     full_name, designation, organization, phone, whatsapp, email,
@@ -99,4 +108,23 @@ async function logoutAccount(){
   const client = sb();
   if(client) await client.auth.signOut();
   clearUserCache();
+}
+
+// ---------------------------------------------------------------
+// Password reset — sends a reset link by email, then reset-password.html
+// handles the second half (setting the new password).
+// ---------------------------------------------------------------
+async function requestPasswordReset(email){
+  const client = sb();
+  if(!client) throw new Error('Backend is not configured yet.');
+  const redirectTo = window.location.origin + window.location.pathname.replace(/[^/]*$/, '') + 'reset-password.html';
+  const { error } = await client.auth.resetPasswordForEmail(email, { redirectTo });
+  if(error) throw error;
+}
+
+async function updatePassword(newPassword){
+  const client = sb();
+  if(!client) throw new Error('Backend is not configured yet.');
+  const { error } = await client.auth.updateUser({ password: newPassword });
+  if(error) throw error;
 }
